@@ -2,38 +2,86 @@ using UnityEngine;
 
 public class CompanionAI : MonoBehaviour
 {
-    // set up variables to access and assign later
-    public Transform CurrentPlayer; 
-    public GameObject floatingText; 
+    public Transform CurrentPlayer; // Reference to the player
+    public GameObject floatingText; // Floating text to show when nearby
     private bool isBefriended = false;
-    private Rigidbody CompanionRidigbody;
+    private Rigidbody CompanionRigidbody;
 
-    // start up the rigidbody
+    public float DefaultFollowDistance = 3.0f; // Distance to maintain from the player
+    public float FollowSpeed = 12f; // Walking speed
+    public float CatchUpSpeed = 18f; // Catch-up speed for long distances
+    public float CatchUpThreshold = 5f; // Distance threshold for catch-up speed
+    public float RunningSpeedMultiplier = 2.5f; // Speed multiplier when the player is running
+    public float StoppingDistance = 0.5f; // Distance threshold to stop jittering
+
+    private Vector3 lastPosition; // Track the companion's last position for smooth movement
+
     void Start()
     {
-        CompanionRidigbody = GetComponent<Rigidbody>();
-        CompanionRidigbody.freezeRotation = true;
+        CompanionRigidbody = GetComponent<Rigidbody>();
+        CompanionRigidbody.freezeRotation = true;
     }
+
     void Update()
     {
         if (isBefriended)
         {
-            floatingText.SetActive(false); 
-            // figure out where the Companion needs to be
-            Vector3 CompanionLocation = CurrentPlayer.position - CurrentPlayer.forward * 3.0f;
-            CompanionLocation.y = transform.position.y; 
-            CompanionLocation.y = 0;
-
-            // Move towards the target based on their location and the distance offset we set
-            Vector3 direction = (CompanionLocation - transform.position).normalized;
-            CompanionRidigbody.MovePosition(transform.position + direction * 10f * Time.deltaTime);
+            floatingText.SetActive(false);
+            FollowPlayer();
         }
     }
 
-    // removes text and befriends the companion to the player
+    private void FollowPlayer()
+    {
+        // Calculate the target position behind the player
+        Vector3 targetPosition = CurrentPlayer.position - CurrentPlayer.forward * DefaultFollowDistance;
+        targetPosition.y = transform.position.y; // Keep companion at the same height
+
+        // Calculate the distance to the target position
+        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+
+        // If within stopping distance, don't move and reset velocity
+        if (distanceToTarget <= StoppingDistance)
+        {
+            CompanionRigidbody.velocity = Vector3.zero;
+            return; // Stop further calculations
+        }
+
+        // Determine movement speed
+        float speed = FollowSpeed; // Default walking speed
+        if (distanceToTarget > CatchUpThreshold)
+        {
+            speed = CatchUpSpeed; // Use catch-up speed if distance is too great
+        }
+
+        // If the player is running, multiply the speed
+        if (Input.GetKey(KeyCode.LeftShift) && IsPlayerMoving())
+        {
+            speed *= RunningSpeedMultiplier;
+        }
+
+        // Move towards the target position
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        Vector3 newPosition = transform.position + direction * speed * Time.deltaTime;
+
+        // Apply smooth movement to prevent jittering
+        if (Vector3.Distance(lastPosition, newPosition) > 0.01f) // Threshold to avoid tiny adjustments
+        {
+            CompanionRigidbody.MovePosition(newPosition);
+            lastPosition = transform.position; // Update the last position
+        }
+    }
+
     public void Befriend()
     {
-        floatingText.SetActive(false); 
+        floatingText.SetActive(false);
         isBefriended = true;
+    }
+
+    private bool IsPlayerMoving()
+    {
+        // Check if the player is pressing any movement keys
+        return Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D) ||
+               Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow);
     }
 }
