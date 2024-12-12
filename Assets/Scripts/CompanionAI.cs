@@ -7,10 +7,10 @@ public class CompanionAI : MonoBehaviour
     private bool isBefriended = false;
     private Rigidbody CompanionRigidbody;
 
-    public float DefaultFollowDistance = 3.0f; // Distance to maintain from the player
-    public float FollowSpeed = 12f; // Walking speed
-    public float CatchUpSpeed = 18f; // Catch-up speed for long distances
-    public float CatchUpThreshold = 5f; // Distance threshold for catch-up speed
+    public float DefaultFollowDistance = 1.8f; // Distance to maintain from the player
+    public float FollowSpeed = 16f; // Walking speed
+    public float CatchUpSpeed = 23f; // Catch-up speed for long distances
+    public float CatchUpThreshold = 3f; // Distance threshold for catch-up speed
     public float RunningSpeedMultiplier = 2.5f; // Speed multiplier when the player is running
     public float StoppingDistance = 0.5f; // Distance threshold to stop jittering
 

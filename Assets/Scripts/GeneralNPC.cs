@@ -3,23 +3,23 @@ using UnityEngine;
 public class GeneralNPC : MonoBehaviour
 {
     public GameObject floatingText; // Text to display when the player is near
-    public float detectionRadius = 3f; // Radius for detecting the player
+    public float detectionRadius = 10f; // Radius for detecting the player
     private Transform player; // Reference to the player's transform
 
-    protected virtual void Start() // Use "protected virtual" for inheritance
+    protected virtual void Start()
     {
-        // Hide floating text by default
+        // Disable floating text at the start
         if (floatingText != null)
         {
             floatingText.SetActive(false);
         }
 
-        // Find the player by tag
+        // Locate the player by tag
         player = GameObject.FindWithTag("Player")?.transform;
 
         if (player == null)
         {
-            Debug.LogError("Player not found in the scene. Make sure the Player GameObject has the 'Player' tag.");
+            Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
         }
     }
 
@@ -27,39 +27,41 @@ public class GeneralNPC : MonoBehaviour
     {
         if (player == null) return;
 
-        // Check the distance between the NPC and the player
+        // Calculate the distance to the player
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
+        // Handle interactions based on distance
         if (distanceToPlayer <= detectionRadius)
         {
-            HandlePlayerInRange();
+            OnPlayerInRange();
         }
         else
         {
-            HandlePlayerOutOfRange();
+            OnPlayerOutOfRange();
         }
     }
 
-    private void HandlePlayerInRange()
+    protected virtual void OnPlayerInRange()
     {
-        // Show floating text and face the player
+        // Enable floating text when in range
         if (floatingText != null && !floatingText.activeSelf)
         {
             floatingText.SetActive(true);
         }
 
+        // Face the player
         FacePlayer();
 
-        // Handle interaction if the player presses 'E'
+        // Detect interaction input
         if (Input.GetKeyDown(KeyCode.E))
         {
             Interact();
         }
     }
 
-    private void HandlePlayerOutOfRange()
+    protected virtual void OnPlayerOutOfRange()
     {
-        // Hide floating text when the player moves out of range
+        // Disable floating text when out of range
         if (floatingText != null && floatingText.activeSelf)
         {
             floatingText.SetActive(false);
@@ -68,7 +70,7 @@ public class GeneralNPC : MonoBehaviour
 
     private void FacePlayer()
     {
-        // Rotate the NPC to face the player
+        // Make the NPC face the player
         Vector3 direction = (player.position - transform.position).normalized;
         direction.y = 0; // Keep the rotation horizontal
         if (direction != Vector3.zero)
@@ -79,7 +81,7 @@ public class GeneralNPC : MonoBehaviour
 
     public virtual void Interact()
     {
-        // Base interaction behavior (can be overridden by child scripts)
-        Debug.Log($"{gameObject.name} interacted with. Override this method for specific behavior.");
+        // Default interaction behavior (can be overridden)
+        Debug.Log($"{gameObject.name} interacted with.");
     }
 }
