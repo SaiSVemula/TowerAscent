@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 27
-  productGUID: 9c19ac195b984cd4e9677b69b40be41b
+  productGUID: 9f0c637cc7258a749aa852b676c78c7f
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: TowerAscent
+  productName: Proto
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -626,7 +626,7 @@ PlayerSettings:
   webGLTemplate: APPLICATION:Default
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 1
+  webGLCompressionFormat: 2
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
@@ -672,14 +672,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: TowerAscent
+  metroPackageName: Proto
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: TowerAscent
+  metroApplicationDescription: Proto
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -748,10 +748,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 3c64ecdc-7646-4067-9575-b2fcfbc61fcf
+  cloudProjectId: f3b2e188-ba6e-4418-b939-3d9ce4787ea8
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: TowerAscent
+  projectName: Proto
   organizationId: saapoo
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
