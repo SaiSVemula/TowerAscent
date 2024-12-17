@@ -38,7 +38,16 @@ public class CompanionTriggerZone : MonoBehaviour
     {
         if (playerNearby && Input.GetKeyDown(KeyCode.E))
         {
-            FindObjectOfType<CompanionAI>().Befriend();
+            // Updated to use FindFirstObjectByType to avoid deprecation warning
+            var companionAI = Object.FindFirstObjectByType<CompanionAI>();
+            if (companionAI != null)
+            {
+                companionAI.Befriend();
+            }
+            else
+            {
+                Debug.LogWarning("No CompanionAI object found in the scene.");
+            }
         }
     }
 }
