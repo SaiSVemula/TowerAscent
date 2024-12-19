@@ -37,5 +37,10 @@ public class CameraMovement : MonoBehaviour
         // Apply rotation and look at the player
         transform.rotation = Quaternion.Euler(xAxisRotation, yAxisRotation, 0);
         transform.LookAt(CurrentPlayer);
+
+        
+        CurrentPlayer.localRotation = Quaternion.Euler(0, yAxisRotation, 0);
+
+
     }
 }

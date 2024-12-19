@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerControls playerControls;
     public Transform PlayerMainCam;
     private Rigidbody PlayerRigidBody;
+    public Animator animator;
 
     void Start() // Initialize variables in Start method
     {
@@ -29,23 +30,48 @@ public class PlayerMovement : MonoBehaviour
         bool JumpPressed = playerControls.Player.MakePlayerJump.triggered; // is space pressed to indicate user wants to jump?
         MakePlayerMove(UsersKeyStroke, CurrentlyRunning);
         if (JumpPressed) MakePlayerJump();
+        UpdateAnimator(UsersKeyStroke, CurrentlyRunning); 
     }
 
     private void MakePlayerMove(Vector2 UsersKeyStroke, bool CurrentlyRunning) // code to move player and apply walk or run speed
     {
         Vector3 MovementLocation = (PlayerMainCam.forward * UsersKeyStroke.y + PlayerMainCam.right * UsersKeyStroke.x).normalized;
         MovementLocation.y = 0; // stops the player from bopping up and down as they move
-        float SpeedOfMovement;
-        if (CurrentlyRunning) { SpeedOfMovement = 10f; }
-        else { SpeedOfMovement = 5f; }
+
+        float SpeedOfMovement = CurrentlyRunning ? 10f : 5f;
 
         PlayerRigidBody.MovePosition(transform.position + MovementLocation * SpeedOfMovement * Time.deltaTime);
     }
 
     //Makes a player jump by first checking whether the player is not already jumping (by checking if player is not touching the floor)
-    private void MakePlayerJump() { if (PlayerOnTheFloor) { PlayerRigidBody.AddForce(Vector3.up * 5f, ForceMode.Impulse); } }
+    private void MakePlayerJump() {
+        if (PlayerOnTheFloor) { 
+            PlayerRigidBody.AddForce(Vector3.up * 5f, ForceMode.Impulse); 
+
+        }
+        // Update jump animation
+        animator.SetTrigger("Jump");
+    }
 
     // checks if player is touching / not touching floor
     void OnCollisionEnter(Collision Touching) { if (Touching.gameObject.CompareTag("Floor")) { PlayerOnTheFloor = true; } }
     void OnCollisionExit(Collision Touching) { if (Touching.gameObject.CompareTag("Floor")) { PlayerOnTheFloor = false; } }
+
+    private void UpdateAnimator(Vector2 UsersKeyStroke, bool CurrentlyRunning)
+    {
+        // Idle
+        if (UsersKeyStroke.x == 0 && UsersKeyStroke.y == 0) { animator.SetTrigger("Idle"); }
+
+        // Forward facing
+        if (UsersKeyStroke.x == 0) { animator.SetTrigger("IsForward"); }
+
+        // Update jog animation
+        animator.SetFloat("Jog", UsersKeyStroke.y);
+
+        // Set direction - run forward and left/right
+        animator.SetFloat("Direction", UsersKeyStroke.x);
+
+        // Update run animation
+        animator.SetBool("IsRunning", CurrentlyRunning);
+    }
 }
