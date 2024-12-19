@@ -3,28 +3,27 @@ using UnityEngine;
 public class Shopkeeper : MonoBehaviour
 {
     public GameObject floatingText; // Text to display when the player is near
-    public GameObject shopMenu; // Reference to the shop menu UI
+    public GameObject shopMenu;     // Reference to the shop menu UI
     public float detectionRadius = 10f; // Radius for detecting the player
-    private Transform player; // Reference to the player's transform
+    private Transform player;       // Reference to the player's transform
+    private Rigidbody playerRigidbody; // Reference to the player's Rigidbody
+    private Vector3 savedVelocity;  // To save player's velocity
+    private bool wasKinematic;      // Track original kinematic state
+    private bool isGrounded;        // Check if player is grounded before saving
 
     protected virtual void Start()
     {
-        // Ensure floating text is disabled at the start
-        if (floatingText != null)
-        {
-            floatingText.SetActive(false);
-        }
+        if (floatingText != null) floatingText.SetActive(false);
+        if (shopMenu != null) shopMenu.SetActive(false);
 
-        // Ensure shop menu is disabled at the start
-        if (shopMenu != null)
-        {
-            shopMenu.SetActive(false);
-        }
-
-        // Find the player using the Player tag
         player = GameObject.FindWithTag("Player")?.transform;
-
-        if (player == null)
+        if (player != null)
+        {
+            playerRigidbody = player.GetComponent<Rigidbody>();
+            if (playerRigidbody == null)
+                Debug.LogError("Player Rigidbody not found. Ensure the Player has a Rigidbody component.");
+        }
+        else
         {
             Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
         }
@@ -34,9 +33,7 @@ public class Shopkeeper : MonoBehaviour
     {
         if (player == null) return;
 
-        // Calculate the distance between the player and the NPC
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
         if (distanceToPlayer <= detectionRadius)
         {
             HandlePlayerInRange();
@@ -46,7 +43,6 @@ public class Shopkeeper : MonoBehaviour
             HandlePlayerOutOfRange();
         }
 
-        // Allow exiting the shop menu with Escape
         if (shopMenu != null && shopMenu.activeSelf && Input.GetKeyDown(KeyCode.Escape))
         {
             CloseShop();
@@ -55,27 +51,22 @@ public class Shopkeeper : MonoBehaviour
 
     private void HandlePlayerInRange()
     {
-        // Show floating text if the player is in range
         if (floatingText != null && !floatingText.activeSelf)
         {
             floatingText.SetActive(true);
             Debug.Log("Floating text activated.");
         }
 
-        // Make the NPC face the player
         FacePlayer();
 
-        // Check for interaction input
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("E key pressed. Interact called.");
             Interact();
         }
     }
 
     private void HandlePlayerOutOfRange()
     {
-        // Hide floating text if the player moves out of range
         if (floatingText != null && floatingText.activeSelf)
         {
             floatingText.SetActive(false);
@@ -85,9 +76,8 @@ public class Shopkeeper : MonoBehaviour
 
     private void FacePlayer()
     {
-        // Rotate the NPC to face the player
         Vector3 direction = (player.position - transform.position).normalized;
-        direction.y = 0; // Keep the rotation horizontal
+        direction.y = 0;
         if (direction != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(direction);
@@ -96,33 +86,36 @@ public class Shopkeeper : MonoBehaviour
 
     public virtual void Interact()
     {
-        Debug.Log("Shopkeeper Interact method triggered.");
+        if (shopMenu != null && playerRigidbody != null)
+        {
+            if (IsPlayerGrounded())
+            {
+                savedVelocity = playerRigidbody.velocity; // Save only when grounded
+                wasKinematic = playerRigidbody.isKinematic;
+            }
 
-        if (shopMenu != null)
-        {
-            Debug.Log($"Shop menu reference is valid. Active state before activation: {shopMenu.activeSelf}");
-            shopMenu.SetActive(true); // Show the shop menu
-            Debug.Log($"Shop menu active state after activation: {shopMenu.activeSelf}");
-            Time.timeScale = 0f; // Pause the game
+            shopMenu.SetActive(true);
+            playerRigidbody.velocity = Vector3.zero; // Stop movement
+            playerRigidbody.isKinematic = true;      // Freeze Rigidbody
+            Time.timeScale = 0f;
             Debug.Log("Shop menu opened.");
-        }
-        else
-        {
-            Debug.LogError("Shop menu is null. Please assign it in the Inspector.");
         }
     }
 
     public void CloseShop()
     {
-        if (shopMenu != null)
+        if (shopMenu != null && playerRigidbody != null)
         {
-            Debug.Log("Closing shop menu.");
-            shopMenu.SetActive(false); // Hide the shop menu
-            Time.timeScale = 1f; // Resume the game
+            shopMenu.SetActive(false);
+            playerRigidbody.isKinematic = wasKinematic; // Restore original kinematic state
+            playerRigidbody.velocity = savedVelocity;   // Restore velocity
+            Time.timeScale = 1f;
+            Debug.Log("Shop menu closed.");
         }
-        else
-        {
-            Debug.LogError("Shop menu reference is missing. Cannot close shop.");
-        }
+    }
+
+    private bool IsPlayerGrounded()
+    {
+        return Physics.Raycast(player.position, Vector3.down, 0.2f);
     }
 }
