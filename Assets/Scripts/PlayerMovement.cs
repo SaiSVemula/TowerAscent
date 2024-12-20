@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform PlayerMainCam;
     private Rigidbody PlayerRigidBody;
     public Animator animator;
+    public Transform CurrentPlayer;
 
     void Start() // Initialize variables in Start method
     {
@@ -41,12 +42,25 @@ public class PlayerMovement : MonoBehaviour
         float SpeedOfMovement = CurrentlyRunning ? 10f : 5f;
 
         PlayerRigidBody.MovePosition(transform.position + MovementLocation * SpeedOfMovement * Time.deltaTime);
+
+        Quaternion targetRotation = CurrentPlayer.localRotation;
+
+        // Helps player rotate when WA and WD is pressed
+        if (UsersKeyStroke.magnitude > 0)
+        {
+            Quaternion movementRotation = Quaternion.LookRotation(MovementLocation);
+            targetRotation = Quaternion.Slerp(targetRotation, movementRotation, 5f * Time.deltaTime);
+        }
+
+
+        // Update player's rotation
+        CurrentPlayer.localRotation = targetRotation;
     }
 
     //Makes a player jump by first checking whether the player is not already jumping (by checking if player is not touching the floor)
     private void MakePlayerJump() {
         if (PlayerOnTheFloor) { 
-            PlayerRigidBody.AddForce(Vector3.up * 5f, ForceMode.Impulse); 
+            PlayerRigidBody.AddForce(Vector3.up * 4f, ForceMode.Impulse); 
 
         }
         // Update jump animation
@@ -60,13 +74,10 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateAnimator(Vector2 UsersKeyStroke, bool CurrentlyRunning)
     {
         // Idle
-        if (UsersKeyStroke.x == 0 && UsersKeyStroke.y == 0) { animator.SetTrigger("Idle"); }
-
-        // Forward facing
-        if (UsersKeyStroke.x == 0) { animator.SetTrigger("IsForward"); }
+        animator.SetBool("IsIdle", UsersKeyStroke.magnitude == 0);
 
         // Update jog animation
-        animator.SetFloat("Jog", UsersKeyStroke.y);
+        animator.SetBool("WASDPressed", UsersKeyStroke.magnitude != 0);
 
         // Set direction - run forward and left/right
         animator.SetFloat("Direction", UsersKeyStroke.x);
