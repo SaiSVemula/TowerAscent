@@ -6,10 +6,6 @@ public class Shopkeeper : MonoBehaviour
     public GameObject shopMenu;     // Reference to the shop menu UI
     public float detectionRadius = 10f; // Radius for detecting the player
     private Transform player;       // Reference to the player's transform
-    private Rigidbody playerRigidbody; // Reference to the player's Rigidbody
-    private Vector3 savedVelocity;  // To save player's velocity
-    private bool wasKinematic;      // Track original kinematic state
-    private bool isGrounded;        // Check if player is grounded before saving
 
     protected virtual void Start()
     {
@@ -17,13 +13,7 @@ public class Shopkeeper : MonoBehaviour
         if (shopMenu != null) shopMenu.SetActive(false);
 
         player = GameObject.FindWithTag("Player")?.transform;
-        if (player != null)
-        {
-            playerRigidbody = player.GetComponent<Rigidbody>();
-            if (playerRigidbody == null)
-                Debug.LogError("Player Rigidbody not found. Ensure the Player has a Rigidbody component.");
-        }
-        else
+        if (player == null)
         {
             Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
         }
@@ -57,8 +47,6 @@ public class Shopkeeper : MonoBehaviour
             Debug.Log("Floating text activated.");
         }
 
-        FacePlayer();
-
         if (Input.GetKeyDown(KeyCode.E))
         {
             Interact();
@@ -74,29 +62,11 @@ public class Shopkeeper : MonoBehaviour
         }
     }
 
-    private void FacePlayer()
-    {
-        Vector3 direction = (player.position - transform.position).normalized;
-        direction.y = 0;
-        if (direction != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(direction);
-        }
-    }
-
     public virtual void Interact()
     {
-        if (shopMenu != null && playerRigidbody != null)
+        if (shopMenu != null)
         {
-            if (IsPlayerGrounded())
-            {
-                savedVelocity = playerRigidbody.velocity; // Save only when grounded
-                wasKinematic = playerRigidbody.isKinematic;
-            }
-
             shopMenu.SetActive(true);
-            playerRigidbody.velocity = Vector3.zero; // Stop movement
-            playerRigidbody.isKinematic = true;      // Freeze Rigidbody
             Time.timeScale = 0f;
             Debug.Log("Shop menu opened.");
         }
@@ -104,18 +74,11 @@ public class Shopkeeper : MonoBehaviour
 
     public void CloseShop()
     {
-        if (shopMenu != null && playerRigidbody != null)
+        if (shopMenu != null)
         {
             shopMenu.SetActive(false);
-            playerRigidbody.isKinematic = wasKinematic; // Restore original kinematic state
-            playerRigidbody.velocity = savedVelocity;   // Restore velocity
             Time.timeScale = 1f;
             Debug.Log("Shop menu closed.");
         }
-    }
-
-    private bool IsPlayerGrounded()
-    {
-        return Physics.Raycast(player.position, Vector3.down, 0.2f);
     }
 }
