@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d4e25fa50886fa34e8dc1f2376a35703
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Weapons/StaffLich.prefab
+  uploadId: 427201
