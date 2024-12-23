@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9257ae217dd1b404c845ae1f178cbfd8
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Character/Wraith.prefab
+  uploadId: 427201

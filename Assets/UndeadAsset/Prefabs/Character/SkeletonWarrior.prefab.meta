@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 94025afe18059204e901d3bec7d70224
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Character/SkeletonWarrior.prefab
+  uploadId: 427201
