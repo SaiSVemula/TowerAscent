@@ -346,7 +346,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059c751bb536953409d9006b2e1de65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerMainCam: {fileID: 1626827277}
 --- !u!54 &86497166
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1421,7 +1420,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000038146973, y: 0.00013154157}
+  m_AnchoredPosition: {x: 0.000038146973, y: 0.00017128386}
   m_SizeDelta: {x: 0, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &296553427
@@ -1433,6 +1432,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 296553431}
+  - component: {fileID: 296553433}
   - component: {fileID: 296553430}
   - component: {fileID: 296553429}
   - component: {fileID: 296553428}
@@ -1560,6 +1560,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &296553433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296553427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0feadfde8ccf92d48aad64af6039c0d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &423552188
 GameObject:
   m_ObjectHideFlags: 0
@@ -4115,7 +4127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059c751bb536953409d9006b2e1de65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerMainCam: {fileID: 1626827277}
 --- !u!54 &939437343
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4265,7 +4276,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 059c751bb536953409d9006b2e1de65e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerMainCam: {fileID: 1626827277}
 --- !u!54 &957900052
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6975,7 +6985,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1878899749}
-  - component: {fileID: 1878899748}
+  - component: {fileID: 1878899750}
   m_Layer: 0
   m_Name: CombatManagerObject
   m_TagString: Untagged
@@ -6983,55 +6993,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1878899748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878899747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c71159b0e410aa49b25353094266bfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  instructionsPanel: {fileID: 2142919317}
-  startBattleButton: {fileID: 1263147685}
-  playerHealth: 100
-  companion1Health: 80
-  enemyHealth: 150
-  enemyDamage: 15
-  playerHealthBar: {fileID: 601537078}
-  companion1HealthBar: {fileID: 33553755}
-  enemyHealthBar: {fileID: 1926379842}
-  centerText: {fileID: 745110499}
-  scrollableTextFeed: {fileID: 1292521914}
-  statusPromptsText: {fileID: 513126994}
-  weaponCardButton: {fileID: 875867200}
-  magic1CardButton: {fileID: 557501597}
-  magic2CardButton: {fileID: 988456905}
-  defenceCardButton: {fileID: 561899280}
-  combineCardsButton: {fileID: 879764879}
-  weaponCardText: {fileID: 223756848}
-  magic1CardText: {fileID: 209127458}
-  magic2CardText: {fileID: 111561054}
-  defenceCardText: {fileID: 766529499}
-  useButton: {fileID: 1169330564}
-  weaponCards:
-  - Pistol
-  - Sword
-  - AR
-  - Bow & Arrow
-  magicCards:
-  - Fire
-  - Ice
-  - Poison
-  - Storm
-  defenceCards:
-  - Lvl 1 Defense
-  - Lvl 2 Defense
-  - Lvl 3 Defense
-  mainCamera: {fileID: 1626827280}
 --- !u!4 &1878899749
 Transform:
   m_ObjectHideFlags: 0
@@ -7047,6 +7008,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1878899750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878899747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22ef97a1dbdf9a64b8fee1488b33d942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  playerHandTransform: {fileID: 0}
 --- !u!1 &1880434643
 GameObject:
   m_ObjectHideFlags: 0
