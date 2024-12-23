@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0d2c54ecc12765245aa90ca7d21c556b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Weapons/ShieldRound.prefab
+  uploadId: 427201

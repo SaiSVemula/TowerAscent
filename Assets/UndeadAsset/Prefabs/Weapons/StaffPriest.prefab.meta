@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: addae68ef48bf4c4487e95874f9c26c6
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Weapons/StaffPriest.prefab
+  uploadId: 427201

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4f27320a171e6b14faeeafcb26276f77
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Weapons/SwordBroken.prefab
+  uploadId: 427201

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: df9831c284dbacc43b55bc28be1d4e02
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Demo/Undead.lighting
+  uploadId: 427201
