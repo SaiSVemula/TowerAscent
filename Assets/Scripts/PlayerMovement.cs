@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
     //Makes a player jump by first checking whether the player is not already jumping (by checking if player is not touching the floor)
     private void MakePlayerJump() {
         if (PlayerOnTheFloor) { 
-            PlayerRigidBody.AddForce(Vector3.up * 4f, ForceMode.Impulse); 
+            PlayerRigidBody.AddForce(Vector3.up * 4.5f, ForceMode.Impulse); 
 
         }
         // Update jump animation
