@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ca92cad5fc837c44181f97e67e9cc297
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Weapons/AxeBroken.prefab
+  uploadId: 427201

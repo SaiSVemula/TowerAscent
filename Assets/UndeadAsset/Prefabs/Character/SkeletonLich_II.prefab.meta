@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 70b0d7633fc22d1419fe332a014ce87e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Prefabs/Character/SkeletonLich_II.prefab
+  uploadId: 427201

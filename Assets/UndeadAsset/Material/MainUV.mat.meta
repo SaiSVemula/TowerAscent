@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 78b245d1173626a439d1f58dfaf3d063
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 192820
+  packageName: Undead Skeleton Enemies
+  packageVersion: 1.0
+  assetPath: Assets/UndeadAsset/Material/MainUV.mat
+  uploadId: 427201
