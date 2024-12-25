@@ -7,7 +7,7 @@ public class StartMenu : MonoBehaviour
 {
     public void NewGame()
     {
-        GameManager.Instance.ResetGameState();
+        GameManager.Instance.Clear();
         SceneManager.LoadScene("ExplorationScene");
     }
 
@@ -18,7 +18,7 @@ public class StartMenu : MonoBehaviour
 
     public void Settings()
     {
-        GameManager.Instance.SaveScene();
+        GameManager.Instance.UpdateCurrentScene();
         SceneManager.LoadScene("SettingsPage");
     }
 
