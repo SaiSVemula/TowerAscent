@@ -3,25 +3,31 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Card/MagicCard")]
 public class MagicCard : Card
 {
-    [SerializeField] private int magicDamage;
-    [SerializeField] private string effect; // Serialized to allow effects like "Sleep" or "Reduce Attack"
+    [SerializeField] private int damage;
 
-    public int MagicDamage => magicDamage;
-    public string Effect => effect;
+    // Serialized to allow effects like "Sleep" or "Reduce Attack"
+    [SerializeField] private string effect; // not implemented yet
 
-    public override void Use(Player player, Enemy enemy)
+    public int Damage => damage;
+    public string Effect => effect;// not implemented yet
+
+    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
-        Debug.Log($"{Name} is used! It deals {MagicDamage} magic damage to the enemy with effect: {Effect}");
-        enemy.TakeDamage(MagicDamage);
+        //main logic for magic card
+        enemyBattle.TakeDamage(Damage);
 
+
+        Debug.Log($"{Name} is used! It deals {Damage} magic damage to the enemy with effect: {Effect}");
+        
+        //future implementation of effects
         if (Effect == "Sleep")
         {
-            Debug.Log($"{enemy.Name} is put to sleep and skips their next turn.");
+            Debug.Log($"{enemyBattle.EnemyName} is put to sleep and skips their next turn.");
             // Add sleep logic here
         }
         else if (Effect == "Reduce Attack")
         {
-            Debug.Log($"{enemy.Name}'s attack power is reduced.");
+            Debug.Log($"{enemyBattle.EnemyName}'s attack power is reduced.");
             // Add attack reduction logic here
         }
     }

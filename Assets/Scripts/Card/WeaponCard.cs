@@ -7,9 +7,9 @@ public class WeaponCard : Card
 
     public int Damage => damage;
 
-    public override void Use(Player player, Enemy enemy)
+    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)//player not really used
     {
         Debug.Log($"{Name} is used! It deals {Damage} physical damage to the enemy.");
-        enemy.TakeDamage(Damage);
+        enemyBattle.TakeDamage(Damage);
     }
 }

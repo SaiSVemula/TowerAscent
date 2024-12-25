@@ -1,58 +1,77 @@
-using System;
-using System.Collections.Generic;
+// Player.cs
+using UnityEngine;
 
-public class Player
+// This script handles the out-of-battle behavior for the player, including inventory,
+// player stats, card preset loadouts, and other meta information.
+public class Player : MonoBehaviour
 {
-    public string Name { get; set; }
-    public int Health { get; set; }
-    public int Defense { get; set; }
-    public List<Card> Hand { get; set; }
+    // Player's basic information
+    public string Name;
+    public int Wins;
+    public int Losses;
 
-    public Player(string name, int health, int Defence)//pass or add cards loadout here?
+    // Meta information
+    public int NpcInteractions;
+    public int QuestsCompleted;
+
+    // Inventory system (not implemented yet)
+    // public List<Item> Inventory;
+
+    // Card preset loadouts (for quick setup in battles, not in-battle management)
+    // public List<Card> CardPresetLoadouts;
+
+    // Player's health-related stats
+    public int MaxHealth = 100;
+    public int CurrentHealth;
+
+    // Example initialization of the player
+    public void Initialize(string name, int maxHealth)
     {
-        this.Name = name;
-        this.Health = health;
-        this.Defense = Defence;
-        Hand = new List<Card>();
+        Name = name;
+        MaxHealth = maxHealth;
+        CurrentHealth = maxHealth;
+        Wins = 0;
+        Losses = 0;
+        NpcInteractions = 0;
+        QuestsCompleted = 0;
+
+        Debug.Log($"Player {Name} initialized with MaxHealth: {MaxHealth}");
     }
 
-    // Takes damage, applying the current defense value first.
-    public void TakeDamage(int damage)
+    public void RecordWin()
     {
-        if (Defense > 0)
-        {
-            int mitigatedDamage = Math.Min(Defense, damage); // Reduce damage by defense amount
-            Defense -= mitigatedDamage;
-            damage -= mitigatedDamage;
-            Console.WriteLine($"{Name}'s defense absorbed {mitigatedDamage} damage. Remaining defense: {Defense}");
-        }
-
-        if (damage > 0)
-        {
-            Health -= damage;
-            Console.WriteLine($"{Name} took {damage} damage. Remaining health: {Health}");
-        }
+        Wins++;
+        Debug.Log($"{Name} recorded a win! Total wins: {Wins}");
     }
 
-    // Adds defense points to the player's current defense value.
-    public void AddDefense(int amount)
+    public void RecordLoss()
     {
-        Defense += amount;
-        Console.WriteLine($"{Name} gained {amount} defense. Total defense: {Defense}");
+        Losses++;
+        Debug.Log($"{Name} recorded a loss! Total losses: {Losses}");
     }
 
-    // Restores health to the player up to their maximum health.
+    public void InteractWithNpc()
+    {
+        NpcInteractions++;
+        Debug.Log($"{Name} interacted with an NPC. Total interactions: {NpcInteractions}");
+    }
+
+    public void CompleteQuest()
+    {
+        QuestsCompleted++;
+        Debug.Log($"{Name} completed a quest. Total quests completed: {QuestsCompleted}");
+    }
+
     public void Heal(int amount)
     {
-        int maxHealth = 100;
-        int healedAmount = Math.Min(amount, maxHealth - Health); // Prevent overhealing
-        Health += healedAmount;
-        Console.WriteLine($"{Name} healed {healedAmount} health. Current health: {Health}");
+        int healedAmount = Mathf.Min(amount, MaxHealth - CurrentHealth);
+        CurrentHealth += healedAmount;
+        Debug.Log($"{Name} healed {healedAmount} health. Current health: {CurrentHealth}");
     }
 
-    // Logs the player's current status for debugging or gameplay feedback.
-    public void PrintStatus()
+    public void TakeDamage(int damage)
     {
-        Console.WriteLine($"{Name}'s Status: Health = {Health}, Defense = {Defense}");
+        CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
+        Debug.Log($"{Name} took {damage} damage. Remaining health: {CurrentHealth}");
     }
 }

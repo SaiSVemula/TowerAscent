@@ -1,32 +1,24 @@
 using UnityEngine;
 
+//abstract class for all cards to inherit 
 public abstract class Card : ScriptableObject
 {
-    [SerializeField] private string name; 
+    [SerializeField] private string name;
     [SerializeField] private string description;
-    private bool isClicked; // Not serialized as used at runtime only
+    [SerializeField] private string status;
+    [SerializeField] private Sprite cardSprite;
 
     public string Name => name;
     public string Description => description;
+    public string Status => status;
+    public Sprite CardSprite => cardSprite;
 
-    // Called when the card is clicked or interacted with.
-    private void OnMouseDown()
+    public void Initialize(string Name, string Description, string Status)
     {
-        isClicked = true;
-        Debug.Log($"Card {Name} was clicked.");
+        name = Name;
+        description = Description;
+        status = Status;
     }
 
-    // Returns whether the card has been clicked and resets the state.
-    public bool IsClicked()
-    {
-        if (isClicked)
-        {
-            isClicked = false; // Reset the state after detecting
-            return true;
-        }
-        return false;
-    }
-
-    // Abstract method to define the card's effect.
-    public abstract void Use(Player player, Enemy enemy);
+    public abstract void Use(PlayerBattle player, EnemyBattle enemy);
 }

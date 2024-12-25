@@ -1,15 +1,17 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Card/DefenseCard")]
-public class DefenseCard : Card
+// Defense card class works like a temporary armmor for the player
+// best to play when you have low health and companion can attack for you
+[CreateAssetMenu(menuName = "Card/DefenceCard")]
+public class DefenceCard : Card
 {
-    [SerializeField] private int defenseValue;
+    [SerializeField] private int defence;
 
-    public int DefenseValue => defenseValue;
+    public int Defence => defence;
 
-    public override void Use(Player player, Enemy enemy)
+    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
-        Debug.Log($"{Name} is used! It adds {DefenseValue} defense to the player.");
-        player.AddDefense(DefenseValue);
+        Debug.Log($"{Name} is used! It adds {Defence} defence to the player.");
+        playerBattle.AddDefence(Defence);
     }
 }

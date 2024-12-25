@@ -3,13 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Card/HealingCard")]
 public class HealingCard : Card
 {
-    [SerializeField] private int healingAmount;
-    [SerializeField] private bool canRevive;
+    [SerializeField] private int healing;
+    [SerializeField] private bool canRevive;//not added in yet 
 
-    public int HealingAmount => healingAmount;
+    public int Healing => healing;
     public bool CanRevive => canRevive;
 
-    public override void Use(Player player, Enemy enemy)
+    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
         if (CanRevive)
         {
@@ -18,8 +18,8 @@ public class HealingCard : Card
         }
         else
         {
-            Debug.Log($"{Name} is used! Healing {HealingAmount} health.");
-            player.Heal(HealingAmount);
+            Debug.Log($"{Name} is used! Healing {Healing} health.");
+            playerBattle.Heal(Healing);
         }
     }
 }
