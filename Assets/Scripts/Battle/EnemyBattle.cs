@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class EnemyBattle : MonoBehaviour
 {
     [SerializeField] private string enemyName = "Enemy";
-    [SerializeField] private int maxHealth = 50;
+    [SerializeField] private int maxHealth = 50;// change this according to the enemy
     private int currentHealth;
 
     [SerializeField] private int attackDamage = 10;
@@ -20,7 +20,8 @@ public class EnemyBattle : MonoBehaviour
         // Initialize the enemy's health
         currentHealth = maxHealth;
         healthBarSlider.maxValue = maxHealth;
-        //UpdateHealthBar();
+        Debug.Log($"Current health: {currentHealth}");
+        UpdateHealthBar();
     }
 
     // Update the health bar fill amount

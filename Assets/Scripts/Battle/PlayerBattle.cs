@@ -25,6 +25,7 @@ public class PlayerBattle : MonoBehaviour
         currentDefence = baseDefence;
 
         healthBarSlider.maxValue = maxHealth;
+        UpdateHealthBar();
         //Debug.Log($"Current health: {currentHealth}");
 
         //UpdateHealthBar();
