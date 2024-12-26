@@ -94,37 +94,22 @@ using System.Collections.Generic;
 
 public class InventoryUITest : MonoBehaviour
 {
-    public Transform cardGrid; // Reference to the CardGrid
-    public Sprite defaultCardSprite; // Placeholder sprite for cards
-    private List<Card> temporaryCards; // List to hold temporary card data
+    [SerializeField] private Transform cardGrid; // Reference to the CardGrid
+    [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
+    [SerializeField] private List<Card> cards; // Serialized card list for Unity Inspector
 
     void Start()
     {
-        InitializeTemporaryCards(); // Create test card data
         GenerateTestCards(); // Generate cards in UI
     }
 
-    // Initialize the temporary card list with your Card class and derived types
-    void InitializeTemporaryCards()
-    {
-        temporaryCards = new List<Card>();
-
-        // Simulate test cards using ScriptableObjects
-        for (int i = 0; i < 5; i++) // Simulate a small sample of cards
-        {
-            Card card = Resources.Load<Card>($"Cards/Card{i + 1}"); // Load from Resources folder
-            if (card != null)
-            {
-                temporaryCards.Add(card);
-            }
-        }
-    }
-
-    // Generate cards in the UI based on the temporary card list
+    // Generate cards in the UI based on the serialized card list
     void GenerateTestCards()
     {
-        foreach (Card card in temporaryCards)
+        foreach (Card card in cards)
         {
+            if (card == null) continue;
+
             // Create a new card GameObject
             GameObject newCard = new GameObject(card.Name, typeof(RectTransform), typeof(Image));
 

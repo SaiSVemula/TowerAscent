@@ -1089,7 +1089,7 @@ GameObject:
   - component: {fileID: 217948415}
   - component: {fileID: 217948414}
   m_Layer: 5
-  m_Name: HealthPanel
+  m_Name: EnemyHealthPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1594,9 +1594,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: Enemy
-  maxHealth: 50
-  attackDamage: 10
-  healthBarSlider: {fileID: 1926379842}
+  enemyMaxHealth: 50
+  enemyAttackDamage: 10
+  enemyHealthBar: {fileID: 1926379842}
 --- !u!1 &423552188
 GameObject:
   m_ObjectHideFlags: 0
@@ -2396,7 +2396,7 @@ GameObject:
   - component: {fileID: 601537077}
   - component: {fileID: 601537078}
   m_Layer: 5
-  m_Name: HealthBar
+  m_Name: PlayerHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3262,7 +3262,7 @@ GameObject:
   - component: {fileID: 745619039}
   - component: {fileID: 745619038}
   m_Layer: 5
-  m_Name: HealthPanel
+  m_Name: PlayerHealthPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4268,10 +4268,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95acc9c98aefea7459553bcea067eaef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  baseDefence: 0
-  cardLoadout: []
-  healthBarSlider: {fileID: 601537078}
+  playerMaxHealth: 100
+  playerBaseDefence: 0
+  playerCardLoadout: []
+  playerHealthBar: {fileID: 601537078}
 --- !u!1 &957900050
 GameObject:
   m_ObjectHideFlags: 0
@@ -7410,7 +7410,7 @@ GameObject:
   - component: {fileID: 1926379841}
   - component: {fileID: 1926379842}
   m_Layer: 5
-  m_Name: HealthBar
+  m_Name: EnemyHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
