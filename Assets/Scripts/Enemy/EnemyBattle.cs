@@ -32,6 +32,7 @@ public class EnemyBattle : MonoBehaviour
     public void EnemyTakeDamage(int damageAmount)
     {
         enemyCurrentHealth = Mathf.Max(enemyCurrentHealth - damageAmount, 0);
+        UpdateEnemyHealthBar();
         Debug.Log($"{enemyName} takes {damageAmount} damage. Current health: {enemyCurrentHealth}");
     }
 
