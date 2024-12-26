@@ -11,36 +11,12 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
+        // Render initial cards for the player
         battleUI.RenderCards(playerBattle.PlayerCardLoadout);
     }
 
-    public void StartEnemyTurn()
-    {
-        if (!isPlayerTurn) return;
-
-        isPlayerTurn = false;
-
-        // Enemy attacks
-        enemyBattle.EnemyAttackPlayer(playerBattle);
-
-        // Update health bar
-        playerBattle.UpdatePlayerHealthBar();
-
-        // Check for loss condition
-        if (playerBattle.PlayerCurrentHealth <= 0)
-        {
-            EndBattle(false);
-            return;
-        }
-
-        // Return to player's turn
-        isPlayerTurn = true;
-    }
-
-
     public void OnPlayerUseCard(int cardIndex)
     {
-        Debug.Log($"Card index {cardIndex} clicked");
         if (!isPlayerTurn) return;
 
         // Use the selected card
@@ -54,15 +30,15 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Switch to enemy turn
+        // Decrement timers and switch to the enemy's turn
+        battleUI.UpdateEffectTimers(); // Update UI
         isPlayerTurn = false;
-        enemyBattle.UpdateEnemyHealthBar();
         EnemyTurn();
     }
 
-
-    private void EnemyTurn()
+    public void EnemyTurn()
     {
+        // Enemy attacks the player
         enemyBattle.EnemyAttackPlayer(playerBattle);
 
         // Check if the player is defeated
@@ -72,9 +48,11 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Return to player's turn
-        playerBattle.UpdatePlayerHealthBar();
+        // Decrement timers and switch to the player's turn
+        playerBattle.DecrementEffectTimers();
+        battleUI.UpdateEffectTimers(); // Update UI
         isPlayerTurn = true;
+        battleUI.RenderCards(playerBattle.PlayerCardLoadout);
     }
 
     public void EndBattle(bool playerWon)

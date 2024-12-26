@@ -4,10 +4,12 @@ using UnityEngine;
 public class HealingCard : Card
 {
     [SerializeField] private int healing;
+    [SerializeField] private int timer; // How many turns the healing lasts
     [SerializeField] private bool canRevive;//not added in yet 
 
     public int Healing => healing;
     public bool CanRevive => canRevive;
+    public int Timer => timer;
 
     public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
@@ -18,8 +20,9 @@ public class HealingCard : Card
         }
         else
         {
-            Debug.Log($"{Name} is used! Healing {Healing} health.");
-            playerBattle.PlayerHeal(Healing);
+            Debug.Log($"{Name} is used! It heals {Healing} health for {Timer} turns.");
+            playerBattle.AddTemporaryHealing(Healing, Timer); // Pass card-specific timer
         }
     }
+
 }

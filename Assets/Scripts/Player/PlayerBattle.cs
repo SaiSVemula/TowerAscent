@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,15 @@ public class PlayerBattle : MonoBehaviour
     [SerializeField] private List<Card> playerCardLoadout;
 
     [SerializeField] private Slider playerHealthBar; // Player-specific health bar
+
+    // Temporary defense and healing effects stored as (value, timer) tuples
+    private List<(int value, int timer)> temporaryDefenses = new List<(int, int)>();
+    private List<(int value, int timer)> temporaryHeals = new List<(int, int)>();
+
+    public List<(int value, int timer)> TemporaryDefenses => temporaryDefenses;
+    public List<(int value, int timer)> TemporaryHeals => temporaryHeals;
+
+
     public int PlayerCurrentHealth => playerCurrentHealth;
     public int PlayerCurrentDefence => playerCurrentDefence;
     public List<Card> PlayerCardLoadout => playerCardLoadout;
@@ -77,5 +87,56 @@ public class PlayerBattle : MonoBehaviour
         {
             selectedCard.Use(this, targetEnemy);
         }
+    }
+
+    public void AddTemporaryDefence(int value, int timer)
+    {
+        Debug.Log($"Adding defense: Value = {value}, Timer = {timer}");
+        temporaryDefenses.Add((value, timer));
+        UpdateCurrentDefence();
+    }
+
+    public void AddTemporaryHealing(int value, int timer)
+    {
+        Debug.Log($"Adding healing: Value = {value}, Timer = {timer}");
+        temporaryHeals.Add((value, timer));
+    }
+
+    // Update current defense based on active temporary defenses
+    private void UpdateCurrentDefence()
+    {
+        playerCurrentDefence = playerBaseDefence + temporaryDefenses.Sum(d => d.value);
+        Debug.Log($"Player defense updated. Current defense: {playerCurrentDefence}");
+    }
+
+    // Decrement all effect timers and remove expired effects
+    public void DecrementEffectTimers()
+    {
+        Debug.Log("Decrementing Timers");
+
+        // Decrement defense timers
+        for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
+        {
+            Debug.Log($"Before: Defense Value = {temporaryDefenses[i].value}, Timer = {temporaryDefenses[i].timer}");
+            temporaryDefenses[i] = (temporaryDefenses[i].value, temporaryDefenses[i].timer - 1);
+            if (temporaryDefenses[i].timer <= 0)
+            {
+                temporaryDefenses.RemoveAt(i);
+            }
+        }
+        UpdateCurrentDefence();
+
+        // Decrement healing timers
+        for (int i = temporaryHeals.Count - 1; i >= 0; i--)
+        {
+            Debug.Log($"Before: Healing Value = {temporaryHeals[i].value}, Timer = {temporaryHeals[i].timer}");
+            playerCurrentHealth = Mathf.Min(playerCurrentHealth + temporaryHeals[i].value, playerMaxHealth);
+            temporaryHeals[i] = (temporaryHeals[i].value, temporaryHeals[i].timer - 1);
+            if (temporaryHeals[i].timer <= 0)
+            {
+                temporaryHeals.RemoveAt(i);
+            }
+        }
+        UpdatePlayerHealthBar();
     }
 }

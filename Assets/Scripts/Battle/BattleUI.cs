@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +14,9 @@ public class BattleUI : MonoBehaviour
 
     private List<GameObject> renderedCards = new List<GameObject>();
 
+    [SerializeField] private TextMeshProUGUI defenseTimerText; // Text for defense timer
+    [SerializeField] private TextMeshProUGUI healingTimerText; // Text for healing timer
+
     public void RenderCards(List<Card> cards)
     {
         // Clear existing cards
@@ -21,58 +26,103 @@ public class BattleUI : MonoBehaviour
         }
         renderedCards.Clear();
 
-        // Define spacing and alignment
-        float cardWidth = 150f; // Desired card width
-        float cardHeight = 200f; // Desired card height
-        float spacing = 20f;   // Gap between cards
-        float startX = -(cards.Count * (cardWidth + spacing)) / 2 + (cardWidth / 2); // Center alignment
+        // Define card spacing
+        float cardWidth = 150f;
+        float cardHeight = 200f;
+        float spacing = 20f;
+        float startX = -(cards.Count * (cardWidth + spacing)) / 2 + (cardWidth / 2);
 
         for (int i = 0; i < cards.Count; i++)
         {
-            Card currentCard = cards[i]; // Capture the current card
+            Card currentCard = cards[i];
 
-            // Create the card GameObject
-            GameObject cardObject = new GameObject(currentCard.Name);
-            cardObject.transform.SetParent(cardContainer, false); // Set parent to CardsPanel
-
-            // Add components
-            Image cardImage = cardObject.AddComponent<Image>();
-            cardImage.sprite = currentCard.CardSprite;
+            // Instantiate from the template
+            GameObject cardObject = Instantiate(cardTemplate, cardContainer);
+            cardObject.SetActive(true); // Enable the instantiated object
 
             // Configure RectTransform
             RectTransform rectTransform = cardObject.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(cardWidth, cardHeight); // Card dimensions
-            rectTransform.localScale = Vector3.one; // Ensure scale is 1
-            rectTransform.localPosition = new Vector3(startX + i * (cardWidth + spacing), 0, 0);
+            if (rectTransform != null)
+            {
+                rectTransform.sizeDelta = new Vector2(cardWidth, cardHeight);
+                rectTransform.localScale = Vector3.one * 0.7f; // Scale adjustment
+                rectTransform.localPosition = new Vector3(startX + i * (cardWidth + spacing), 0, 0);
+            }
+
+            // Update card visuals
+            Image cardImage = cardObject.GetComponent<Image>();
+            if (cardImage != null && currentCard.CardSprite != null)
+            {
+                cardImage.sprite = currentCard.CardSprite;
+            }
+
+            Text cardNameText = cardObject.GetComponentInChildren<Text>();
+            if (cardNameText != null)
+            {
+                cardNameText.text = currentCard.Name;
+            }
 
             // Add button interaction
-            Button cardButton = cardObject.AddComponent<Button>();
-            cardButton.onClick.AddListener(() => OnCardClicked(currentCard)); // Use captured card
+            Button cardButton = cardObject.GetComponent<Button>();
+            if (cardButton != null)
+            {
+                int index = i;
+                cardButton.onClick.AddListener(() => battleManager.OnPlayerUseCard(index));
+            }
 
             renderedCards.Add(cardObject);
         }
     }
 
-    private void OnCardClicked(Card card)
+    // Update defense and healing timer displays
+    public void UpdateEffectTimers()
     {
-        Debug.Log($"Card clicked: {card.Name}");
-
-        // Use the card and apply its effect
-        card.Use(playerBattle, enemyBattle);
-
-        // Update health bars
-        playerBattle.UpdatePlayerHealthBar();
-        enemyBattle.UpdateEnemyHealthBar();
-
-        // Check for win/loss conditions
-        if (enemyBattle.EnemyCurrentHealth <= 0)
+        if (defenseTimerText == null || healingTimerText == null)
         {
-            battleManager.EndBattle(true);
+            Debug.LogError("Timer Text references are not assigned in the BattleUI script.");
             return;
         }
 
-        // Switch turns
-        battleManager.StartEnemyTurn();
+        // Defense Timer
+        if (playerBattle.TemporaryDefenses.Count == 0)
+        {
+            defenseTimerText.text = "Defense: 0"; // Set text to zero immediately
+            StartCoroutine(RemoveTextAfterDelay(defenseTimerText, 5f)); // Delay removal
+        }
+        else
+        {
+            string defenseText = "Defense:\n";
+            foreach (var defense in playerBattle.TemporaryDefenses)
+            {
+                defenseText += $"Value: {defense.value}, Turns Left: {defense.timer}\n";
+            }
+            defenseTimerText.text = defenseText;
+            defenseTimerText.gameObject.SetActive(true); // Ensure visibility
+        }
+
+        // Healing Timer
+        if (playerBattle.TemporaryHeals.Count == 0)
+        {
+            healingTimerText.text = "Healing: 0"; // Set text to zero immediately
+            StartCoroutine(RemoveTextAfterDelay(healingTimerText, 5f)); // Delay removal
+        }
+        else
+        {
+            string healingText = "Healing:\n";
+            foreach (var heal in playerBattle.TemporaryHeals)
+            {
+                healingText += $"Value: {heal.value}, Turns Left: {heal.timer}\n";
+            }
+            healingTimerText.text = healingText;
+            healingTimerText.gameObject.SetActive(true); // Ensure visibility
+        }
     }
 
+    // Remove text after a delay
+    private IEnumerator RemoveTextAfterDelay(TextMeshProUGUI textElement, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        textElement.gameObject.SetActive(false); // Hide the text after delay
+        textElement.text = ""; // Clear the text content
+    }
 }
