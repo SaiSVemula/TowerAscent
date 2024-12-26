@@ -9606,6 +9606,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardGrid: {fileID: 1493981596}
   defaultCardSprite: {fileID: 21300000, guid: 36fea8d5ca0dd52408f223f400ef265d, type: 3}
+  cards:
+  - {fileID: 11400000, guid: 36ee4adf9e83b8743badc3664f28798b, type: 2}
+  - {fileID: 11400000, guid: 7a28c84479e335540b5a401038cf9ef9, type: 2}
+  - {fileID: 11400000, guid: f809519271ca28d43b2156917aa16787, type: 2}
+  - {fileID: 11400000, guid: e131117d0f0854441bd43e5df975d9ec, type: 2}
+  - {fileID: 11400000, guid: cf784752456c5a240a32d9e3180dca62, type: 2}
+  - {fileID: 11400000, guid: ef0758262254462409a12bb4b5984e0a, type: 2}
+  - {fileID: 11400000, guid: ab4a480e82ecd3640921b756edf6442a, type: 2}
+  - {fileID: 11400000, guid: 5636d6f99e0880548839183bebb355e2, type: 2}
+  - {fileID: 11400000, guid: 6ebf86584060b70479bf4f547fd5f9cd, type: 2}
+  - {fileID: 11400000, guid: b710a36f3e0a6694a809fa6ed467aa64, type: 2}
+  - {fileID: 11400000, guid: e66cb4a6bc78ddb4fbfaadec0e01bfb7, type: 2}
+  - {fileID: 11400000, guid: 23a17353f57dea245b484dd95371befe, type: 2}
+  - {fileID: 11400000, guid: e7808d33186721747a62a9c4be3dc7bd, type: 2}
+  - {fileID: 11400000, guid: f7f794447b5444e49b962a128cc04caa, type: 2}
+  - {fileID: 11400000, guid: 74e0e137cb40fe940a3ea71df9747a1d, type: 2}
+  - {fileID: 11400000, guid: 2c8f5bdce875bc74d98e3fe7cdceba68, type: 2}
+  - {fileID: 11400000, guid: 55e67df2d3717b042945348752fdb109, type: 2}
+  - {fileID: 11400000, guid: ddfab9bba0f71c247bfa1b5185d5b54f, type: 2}
+  - {fileID: 11400000, guid: bd188b048d64d854a94479c65b3022f1, type: 2}
+  - {fileID: 11400000, guid: 6066b910a6eeadb4aa5242398da3ff76, type: 2}
+  - {fileID: 11400000, guid: 14a70cfc43ebf9c4b9dfff6cb5248b83, type: 2}
 --- !u!114 &1533761818
 MonoBehaviour:
   m_ObjectHideFlags: 0
