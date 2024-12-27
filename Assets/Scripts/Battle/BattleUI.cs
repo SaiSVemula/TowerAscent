@@ -6,16 +6,146 @@ using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour
 {
-    [SerializeField] private Transform cardContainer; // The container where cards will be rendered
-    [SerializeField] private GameObject cardTemplate; // A single card template in the UI
+
+    [Header("UI Canvases")]
+    [SerializeField] private Canvas instructionCanvas;
+    [SerializeField] private Canvas battleCanvas;
+
+    [Header("Instructions")]
+    [SerializeField] private TextMeshProUGUI gameInstructionText;
+    [SerializeField] private Button startBattleButton;
+
+    [Header("Card System")]
+    [SerializeField] private GameObject cardPanel;
+    [SerializeField] private Transform cardContainer;
+    [SerializeField] private GameObject cardTemplate;
     [SerializeField] private BattleManager battleManager;
     [SerializeField] private PlayerBattle playerBattle;
     [SerializeField] private EnemyBattle enemyBattle;
 
-    private List<GameObject> renderedCards = new List<GameObject>();
+    [Header("Battle Log")]
+    [SerializeField] private ScrollRect battleLogScrollRect;
+    [SerializeField] private TextMeshProUGUI logEntryTemplate;
+    [SerializeField] private RectTransform logContainer;
+    [SerializeField] private float logEntrySpacing = 10f;
 
-    [SerializeField] private TextMeshProUGUI defenseTimerText; // Text for defense timer
-    [SerializeField] private TextMeshProUGUI healingTimerText; // Text for healing timer
+    [Header("Status Effects")]
+    [SerializeField] private TextMeshProUGUI defenceTimerText;
+    [SerializeField] private TextMeshProUGUI healingTimerText;
+
+    private Queue<TextMeshProUGUI> logPool = new Queue<TextMeshProUGUI>();
+    private List<TextMeshProUGUI> activeLogEntries = new List<TextMeshProUGUI>();
+    private List<GameObject> renderedCards = new List<GameObject>();
+    private const int MAX_LOG_ENTRIES = 50;
+    private const int POOL_SIZE = 60;
+
+    [Header("Turn Indicator")]
+    [SerializeField] private TextMeshProUGUI turnIndicatorText;
+    [SerializeField] private Image turnIndicatorBackground;
+    [SerializeField] private Color playerTurnColor = new Color(0.2f, 0.6f, 1f, 1f); // Light blue
+    [SerializeField] private Color enemyTurnColor = new Color(1f, 0.3f, 0.3f, 1f);  // Light red
+
+    [Header("Game Status")]
+    [SerializeField] private TextMeshProUGUI gameStatusText;
+    private bool isInitialized = false;
+
+    private void Awake()
+    {
+        Debug.Log("BattleUI Awake");
+
+        // Initially show only instruction canvas
+        instructionCanvas.enabled = true;
+        battleCanvas.enabled = false;
+
+        SetupInstructions();
+        isInitialized = true;
+        Debug.Log("BattleUI Initialized");
+    }
+
+    private void SetupInstructions()
+    {
+        if (startBattleButton == null || gameInstructionText == null)
+        {
+            Debug.LogError("Missing critical references!");
+            return;
+        }
+
+        gameInstructionText.text = "Battle Instructions:\n\n" +
+            "• Click cards to use them\n" +
+            "• Attack cards deal damage\n" +
+            "• Defense cards block damage\n" +
+            "• Healing cards restore health\n" +
+            "• Take turns with the enemy\n\n" +
+            "Click 'Start Battle' to begin!";
+
+        startBattleButton.onClick.RemoveAllListeners();
+        startBattleButton.onClick.AddListener(OnStartBattleClick);
+    }
+
+    // Start battle button click event
+    private void OnStartBattleClick()
+    {
+        if (!isInitialized)
+        {
+            Debug.LogError("BattleUI not initialized!");
+            return;
+        }
+
+        Debug.Log("Start Battle clicked");
+
+        // First disable instruction canvas
+        instructionCanvas.enabled = false;
+
+        // Then enable battle canvas
+        battleCanvas.enabled = true;
+
+        // Start battle initialization
+        if (battleManager != null)
+        {
+            StartCoroutine(battleManager.InitializeBattle());
+        }
+        else
+        {
+            Debug.LogError("BattleManager reference missing!");
+        }
+    }
+
+    private void Start()
+    {
+        SetupScrollView();
+        InitializeLogPool();
+    }
+
+    private void SetupScrollView()
+    {
+        VerticalLayoutGroup verticalLayout = logContainer.GetComponent<VerticalLayoutGroup>();
+        if (verticalLayout == null)
+        {
+            verticalLayout = logContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            verticalLayout.spacing = logEntrySpacing;
+            verticalLayout.childAlignment = TextAnchor.UpperCenter;
+            verticalLayout.childForceExpandHeight = false;
+            verticalLayout.childForceExpandWidth = true;
+        }
+
+        ContentSizeFitter contentSizeFitter = logContainer.GetComponent<ContentSizeFitter>();
+        if (contentSizeFitter == null)
+        {
+            contentSizeFitter = logContainer.gameObject.AddComponent<ContentSizeFitter>();
+            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+    }
+
+    private void InitializeLogPool()
+    {
+        logEntryTemplate.gameObject.SetActive(false);
+        for (int i = 0; i < POOL_SIZE; i++)
+        {
+            TextMeshProUGUI newEntry = Instantiate(logEntryTemplate, logContainer);
+            newEntry.gameObject.SetActive(false);
+            logPool.Enqueue(newEntry);
+        }
+    }
 
     public void RenderCards(List<Card> cards)
     {
@@ -26,47 +156,72 @@ public class BattleUI : MonoBehaviour
         }
         renderedCards.Clear();
 
-        // Define card spacing
+        // Layout calculations
         float cardWidth = 150f;
         float cardHeight = 200f;
         float spacing = 20f;
         float startX = -(cards.Count * (cardWidth + spacing)) / 2 + (cardWidth / 2);
 
+        // Create and setup cards
         for (int i = 0; i < cards.Count; i++)
         {
             Card currentCard = cards[i];
-
-            // Instantiate from the template
             GameObject cardObject = Instantiate(cardTemplate, cardContainer);
-            cardObject.SetActive(true); // Enable the instantiated object
+            cardObject.SetActive(true);
 
-            // Configure RectTransform
+            // Setup RectTransform
             RectTransform rectTransform = cardObject.GetComponent<RectTransform>();
             if (rectTransform != null)
             {
                 rectTransform.sizeDelta = new Vector2(cardWidth, cardHeight);
-                rectTransform.localScale = Vector3.one * 0.7f; // Scale adjustment
+                rectTransform.localScale = Vector3.one * 0.7f;
                 rectTransform.localPosition = new Vector3(startX + i * (cardWidth + spacing), 0, 0);
             }
 
-            // Update card visuals
+            // Setup card visuals
             Image cardImage = cardObject.GetComponent<Image>();
             if (cardImage != null && currentCard.CardSprite != null)
             {
                 cardImage.sprite = currentCard.CardSprite;
             }
 
+            // Setup card name
             Text cardNameText = cardObject.GetComponentInChildren<Text>();
             if (cardNameText != null)
             {
                 cardNameText.text = currentCard.Name;
             }
 
-            // Add button interaction
+            // Setup button and handle card states
             Button cardButton = cardObject.GetComponent<Button>();
             if (cardButton != null)
             {
                 int index = i;
+                bool isDisabled = false;
+
+                // Check if card should be disabled
+                if (currentCard is DefenceCard && playerBattle.TemporaryDefences.Count > 0)
+                {
+                    isDisabled = true;
+                }
+                else if (currentCard is HealingCard && playerBattle.TemporaryHeals.Count > 0)
+                {
+                    isDisabled = true;
+                }
+
+                // Set button state
+                cardButton.interactable = !isDisabled;
+
+                // Visual feedback for disabled state
+                if (isDisabled)
+                {
+                    cardImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+                }
+                else
+                {
+                    cardImage.color = Color.white;
+                }
+
                 cardButton.onClick.AddListener(() => battleManager.OnPlayerUseCard(index));
             }
 
@@ -74,55 +229,260 @@ public class BattleUI : MonoBehaviour
         }
     }
 
-    // Update defense and healing timer displays
     public void UpdateEffectTimers()
     {
-        if (defenseTimerText == null || healingTimerText == null)
+        if (defenceTimerText == null || healingTimerText == null)
         {
-            Debug.LogError("Timer Text references are not assigned in the BattleUI script.");
+            Debug.LogError("Timer Text references are not assigned.");//not assigned in unity.
             return;
         }
 
-        // Defense Timer
-        if (playerBattle.TemporaryDefenses.Count == 0)
+        defenceTimerText.text = playerBattle.TemporaryDefences.Count == 0
+            ? "Current Defence: 0"
+            : $"Current Defense: {string.Join(" ", playerBattle.TemporaryDefences.ConvertAll(d => d.value.ToString()))}";
+
+        healingTimerText.text = playerBattle.TemporaryHeals.Count == 0
+            ? "Current Healing: 0"
+            : $"Current Healing: {string.Join(" ", playerBattle.TemporaryHeals.ConvertAll(h => h.value.ToString()))}";
+
+        defenceTimerText.gameObject.SetActive(true);
+        healingTimerText.gameObject.SetActive(true);
+    }
+
+    public void AddBattleLog(string message)
+    {
+        if (activeLogEntries.Count >= MAX_LOG_ENTRIES)
         {
-            defenseTimerText.text = "Defense: 0"; // Set text to zero immediately
-            StartCoroutine(RemoveTextAfterDelay(defenseTimerText, 5f)); // Delay removal
-        }
-        else
-        {
-            string defenseText = "Defense:\n";
-            foreach (var defense in playerBattle.TemporaryDefenses)
-            {
-                defenseText += $"Value: {defense.value}, Turns Left: {defense.timer}\n";
-            }
-            defenseTimerText.text = defenseText;
-            defenseTimerText.gameObject.SetActive(true); // Ensure visibility
+            TextMeshProUGUI oldestLog = activeLogEntries[activeLogEntries.Count - 1];
+            activeLogEntries.RemoveAt(activeLogEntries.Count - 1);
+            oldestLog.gameObject.SetActive(false);
+            logPool.Enqueue(oldestLog);
         }
 
-        // Healing Timer
-        if (playerBattle.TemporaryHeals.Count == 0)
+        TextMeshProUGUI newLogEntry = GetLogEntry();
+        newLogEntry.text = message;
+        newLogEntry.transform.SetAsFirstSibling();
+        activeLogEntries.Insert(0, newLogEntry);
+
+        UpdateLogPositions();
+        StartCoroutine(ScrollToTop());
+    }
+
+    private TextMeshProUGUI GetLogEntry()
+    {
+        TextMeshProUGUI entry;
+        if (logPool.Count > 0)
         {
-            healingTimerText.text = "Healing: 0"; // Set text to zero immediately
-            StartCoroutine(RemoveTextAfterDelay(healingTimerText, 5f)); // Delay removal
+            entry = logPool.Dequeue();
         }
         else
         {
-            string healingText = "Healing:\n";
-            foreach (var heal in playerBattle.TemporaryHeals)
-            {
-                healingText += $"Value: {heal.value}, Turns Left: {heal.timer}\n";
-            }
-            healingTimerText.text = healingText;
-            healingTimerText.gameObject.SetActive(true); // Ensure visibility
+            entry = Instantiate(logEntryTemplate, logContainer);
+            entry.fontSize = logEntryTemplate.fontSize;
+            entry.fontStyle = logEntryTemplate.fontStyle;
+            entry.color = logEntryTemplate.color;
+            entry.alignment = logEntryTemplate.alignment;
+        }
+        entry.gameObject.SetActive(true);
+        return entry;
+    }
+
+    private void UpdateLogPositions()
+    {
+        float currentY = 0;
+        foreach (TextMeshProUGUI entry in activeLogEntries)
+        {
+            RectTransform rt = entry.rectTransform;
+            rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, currentY);
+            currentY -= rt.rect.height + logEntrySpacing;
+        }
+
+        Vector2 contentSize = logContainer.sizeDelta;
+        contentSize.y = Mathf.Abs(currentY);
+        logContainer.sizeDelta = contentSize;
+    }
+
+    private IEnumerator ScrollToTop()
+    {
+        yield return new WaitForEndOfFrame();
+        battleLogScrollRect.verticalNormalizedPosition = 1f;
+    }
+
+
+    public void UpdateTurnIndicator(bool isPlayerTurn)
+    {
+        if (turnIndicatorText != null && turnIndicatorBackground != null)
+        {
+            turnIndicatorText.text = isPlayerTurn ? "Player's Turn" : "Enemy's Turn";
+            turnIndicatorBackground.color = isPlayerTurn ? playerTurnColor : enemyTurnColor;
+
+            // Optional: Start pulse animation
+            StartCoroutine(PulseTurnIndicator());
         }
     }
 
-    // Remove text after a delay
-    private IEnumerator RemoveTextAfterDelay(TextMeshProUGUI textElement, float delay)
+    private IEnumerator PulseTurnIndicator()
     {
-        yield return new WaitForSeconds(delay);
-        textElement.gameObject.SetActive(false); // Hide the text after delay
-        textElement.text = ""; // Clear the text content
+        Vector3 originalScale = turnIndicatorBackground.transform.localScale;
+        Vector3 targetScale = originalScale * 1.1f;
+        float duration = 0.2f;
+        float elapsed = 0;
+
+        // Scale up
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / duration;
+            turnIndicatorBackground.transform.localScale = Vector3.Lerp(originalScale, targetScale, progress);
+            yield return null;
+        }
+
+        // Scale down
+        elapsed = 0;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / duration;
+            turnIndicatorBackground.transform.localScale = Vector3.Lerp(targetScale, originalScale, progress);
+            yield return null;
+        }
+
+        turnIndicatorBackground.transform.localScale = originalScale;
+    }
+    //public IEnumerator ShowGameStatus(string message, float duration, System.Action onComplete = null)
+    //{
+    //    if (gameStatusText != null)
+    //    {
+    //        StopAllCoroutines();
+    //        gameStatusText.text = message;
+    //        gameStatusText.color = Color.white;
+    //        gameStatusText.gameObject.SetActive(true);
+
+    //        yield return StartCoroutine(FadeGameStatus(duration));
+
+    //        onComplete?.Invoke();
+    //    }
+    //}
+
+    //private IEnumerator FadeGameStatus(float duration)
+    //{
+    //    yield return new WaitForSeconds(duration);
+
+    //    float fadeDuration = 0.5f;
+    //    float elapsed = 0;
+    //    Color originalColor = gameStatusText.color;
+
+    //    while (elapsed < fadeDuration)
+    //    {
+    //        elapsed += Time.deltaTime;
+    //        float alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
+    //        gameStatusText.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+    //        yield return null;
+    //    }
+
+    //    gameStatusText.gameObject.SetActive(false);
+    //    gameStatusText.color = originalColor;
+    //}
+
+    //public IEnumerator ShowGameResult(bool playerWon, float duration)
+    //{
+    //    if (gameStatusText != null)
+    //    {
+    //        gameStatusText.text = playerWon ? "Victory!" : "Defeat!";
+    //        gameStatusText.gameObject.SetActive(true);
+    //        yield return StartCoroutine(FadeGameStatus(duration));
+    //    }
+    //}
+
+    public IEnumerator ShowCountdown()
+    {
+        if (gameStatusText == null)
+        {
+            Debug.LogError("GameStatusText reference missing!");
+            yield break;
+        }
+
+        gameStatusText.gameObject.SetActive(true);
+
+        // Prepare message
+        gameStatusText.text = "Prepare for Battle!";
+        gameStatusText.color = Color.white;
+        yield return new WaitForSeconds(2f);
+
+        // Begin countdown
+        gameStatusText.text = "Begin in...";
+        yield return new WaitForSeconds(1f);
+
+        // Numbers countdown
+        for (int i = 3; i > 0; i--)
+        {
+            gameStatusText.text = i.ToString();
+            yield return new WaitForSeconds(1f);
+        }
+
+        // Fight message
+        gameStatusText.text = "Fight!";
+        yield return new WaitForSeconds(1f);
+
+        gameStatusText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator ShowBattleResult(bool playerWon)
+    {
+        if (gameStatusText == null)
+        {
+            Debug.LogError("GameStatusText reference missing!");
+            yield break;
+        }
+
+        turnIndicatorText.text = "Game Over";
+        turnIndicatorBackground.color = enemyTurnColor;
+        DisableCardInteractions();//So the player cannot use cards after the battle is over.
+
+        gameStatusText.gameObject.SetActive(true);
+        gameStatusText.text = playerWon ? "Victory!" : "Defeat!";
+        gameStatusText.color = Color.white;
+
+        yield return new WaitForSeconds(2f);
+
+        float fadeDuration = 0.5f;
+        float elapsed = 0;
+
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
+            gameStatusText.color = new Color(1f, 1f, 1f, alpha);
+            yield return null;
+        }
+
+        gameStatusText.gameObject.SetActive(false);
+    }
+
+    public void DisableCardInteractions()
+    {
+        if (cardPanel != null)
+        {
+            cardPanel.SetActive(false);
+            Debug.Log("Card interactions disabled");
+        }
+        else
+        {
+            Debug.LogError("CardPanel reference missing - cannot disable interactions");
+        }
+    }
+
+    public void EnableCardInteractions()
+    {
+        if (cardPanel != null)
+        {
+            cardPanel.SetActive(true);
+            RenderCards(playerBattle.PlayerCardLoadout); // Refresh cards
+            Debug.Log("Card interactions enabled");
+        }
+        else
+        {
+            Debug.LogError("CardPanel reference missing - cannot enable interactions");
+        }
     }
 }

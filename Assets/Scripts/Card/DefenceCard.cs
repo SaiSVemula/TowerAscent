@@ -11,10 +11,10 @@ public class DefenceCard : Card
     public int Defence => defence;
     public int Timer => timer;
 
-    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
+    public override string Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
-        Debug.Log($"{Name} is used! It adds {Defence} defense for {Timer} turns.");
-        playerBattle.AddTemporaryDefence(Defence, Timer); // Pass card-specific timer
+        playerBattle.AddTemporaryDefence(Defence, Timer);
+        return $"Player used {Name} gaining {Defence} defense for {Timer} turns!";
     }
 
 }

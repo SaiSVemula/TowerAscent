@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +22,7 @@ public class EnemyBattle : MonoBehaviour
         UpdateEnemyHealthBar();
     }
 
-    public void UpdateEnemyHealthBar()
+    private void UpdateEnemyHealthBar()
     {
         if (enemyHealthBar != null)
         {

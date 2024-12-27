@@ -11,18 +11,14 @@ public class HealingCard : Card
     public bool CanRevive => canRevive;
     public int Timer => timer;
 
-    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
+    public override string Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
         if (CanRevive)
         {
-            Debug.Log($"{Name} is used! Reviving a fallen ally with minimal health.");
-            // Handle revive logic here
+            return $"Player used {Name} attempting to revive!";
         }
-        else
-        {
-            Debug.Log($"{Name} is used! It heals {Healing} health for {Timer} turns.");
-            playerBattle.AddTemporaryHealing(Healing, Timer); // Pass card-specific timer
-        }
-    }
 
+        playerBattle.AddTemporaryHealing(Healing, Timer);
+        return $"Player used {Name} healing {Healing} HP for {Timer} turns!";
+    }
 }

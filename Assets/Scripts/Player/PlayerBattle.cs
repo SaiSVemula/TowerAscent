@@ -20,8 +20,11 @@ public class PlayerBattle : MonoBehaviour
     private List<(int value, int timer)> temporaryDefenses = new List<(int, int)>();
     private List<(int value, int timer)> temporaryHeals = new List<(int, int)>();
 
-    public List<(int value, int timer)> TemporaryDefenses => temporaryDefenses;
+    public List<(int value, int timer)> TemporaryDefences => temporaryDefenses;
     public List<(int value, int timer)> TemporaryHeals => temporaryHeals;
+
+    public bool HasActiveDefense => temporaryDefenses.Count > 0;
+    public bool HasActiveHealing => temporaryHeals.Count > 0;
 
 
     public int PlayerCurrentHealth => playerCurrentHealth;
@@ -45,7 +48,7 @@ public class PlayerBattle : MonoBehaviour
         };
     }
 
-    public void UpdatePlayerHealthBar()
+    private void UpdatePlayerHealthBar()
     {
         if (playerHealthBar != null)
         {
@@ -57,6 +60,7 @@ public class PlayerBattle : MonoBehaviour
     {
         int netDamage = Mathf.Max(damageAmount - playerCurrentDefence, 0);
         playerCurrentHealth = Mathf.Max(playerCurrentHealth - netDamage, 0);
+        UpdatePlayerHealthBar();
         Debug.Log($"Player takes {netDamage} damage. Current health: {playerCurrentHealth}");
     }
 
@@ -112,12 +116,9 @@ public class PlayerBattle : MonoBehaviour
     // Decrement all effect timers and remove expired effects
     public void DecrementEffectTimers()
     {
-        Debug.Log("Decrementing Timers");
-
-        // Decrement defense timers
+        // Defense timers
         for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
         {
-            Debug.Log($"Before: Defense Value = {temporaryDefenses[i].value}, Timer = {temporaryDefenses[i].timer}");
             temporaryDefenses[i] = (temporaryDefenses[i].value, temporaryDefenses[i].timer - 1);
             if (temporaryDefenses[i].timer <= 0)
             {
@@ -126,17 +127,16 @@ public class PlayerBattle : MonoBehaviour
         }
         UpdateCurrentDefence();
 
-        // Decrement healing timers
+        // Healing timers
         for (int i = temporaryHeals.Count - 1; i >= 0; i--)
         {
-            Debug.Log($"Before: Healing Value = {temporaryHeals[i].value}, Timer = {temporaryHeals[i].timer}");
-            playerCurrentHealth = Mathf.Min(playerCurrentHealth + temporaryHeals[i].value, playerMaxHealth);
+            // Apply healing before decrementing timer
+            PlayerHeal(temporaryHeals[i].value);
             temporaryHeals[i] = (temporaryHeals[i].value, temporaryHeals[i].timer - 1);
             if (temporaryHeals[i].timer <= 0)
             {
                 temporaryHeals.RemoveAt(i);
             }
         }
-        UpdatePlayerHealthBar();
     }
 }

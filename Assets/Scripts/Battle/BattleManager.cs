@@ -1,4 +1,5 @@
 // BattleManager.cs
+using System.Collections;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -9,55 +10,104 @@ public class BattleManager : MonoBehaviour
 
     private bool isPlayerTurn = true;
 
-    private void Start()
+    //public IEnumerator InitializeBattle()
+    //{
+    //    Debug.Log("Battle initialization started");
+
+    //    // Initial validation
+    //    if (battleUI == null || playerBattle == null)
+    //    {
+    //        Debug.LogError("Critical references missing!");
+    //        yield break;
+    //    }
+
+    //    // Ensure cards are hidden during countdown
+    //    battleUI.DisableCardInteractions();
+
+    //    // Show countdown sequence with proper yields
+    //    battleUI.ShowGameStatus("Prepare for Battle!", 2f);
+    //    battleUI.ShowGameStatus("Begin in...", 1f);
+    //    battleUI.ShowGameStatus("3", 1f);
+    //    battleUI.ShowGameStatus("2", 1f);
+    //    battleUI.ShowGameStatus("1", 1f);
+    //    battleUI.ShowGameStatus("Fight!", 1f);
+
+    //    // Initialize battle state
+    //    battleUI.RenderCards(playerBattle.PlayerCardLoadout);
+    //    battleUI.EnableCardInteractions();
+    //    battleUI.AddBattleLog("Battle Start!");
+    //    battleUI.UpdateTurnIndicator(true);
+
+    //    Debug.Log("Battle initialization complete");
+    //}
+
+    // Replace existing InitializeBattle with:
+    public IEnumerator InitializeBattle()
     {
-        // Render initial cards for the player
+        Debug.Log("Battle initialization started");
+
+        if (battleUI == null || playerBattle == null)
+        {
+            Debug.LogError("Critical references missing!");
+            yield break;
+        }
+
+        yield return StartCoroutine(battleUI.ShowCountdown());
+
+        Debug.Log("Battle initialization in progress");
+
         battleUI.RenderCards(playerBattle.PlayerCardLoadout);
+        battleUI.EnableCardInteractions();
+        battleUI.AddBattleLog("Battle Start!");
+        battleUI.UpdateTurnIndicator(true);
+
+        Debug.Log("Battle initialization complete");
     }
 
     public void OnPlayerUseCard(int cardIndex)
     {
         if (!isPlayerTurn) return;
 
-        // Use the selected card
         Card selectedCard = playerBattle.PlayerCardLoadout[cardIndex];
-        selectedCard.Use(playerBattle, enemyBattle);
+        string logMessage = selectedCard.Use(playerBattle, enemyBattle);
+        battleUI.AddBattleLog(logMessage);
 
-        // Check if the enemy is defeated
         if (enemyBattle.EnemyCurrentHealth <= 0)
         {
-            EndBattle(true);
+            StartCoroutine(EndBattle(true));
             return;
         }
 
-        // Decrement timers and switch to the enemy's turn
-        battleUI.UpdateEffectTimers(); // Update UI
+        battleUI.UpdateEffectTimers();
         isPlayerTurn = false;
-        EnemyTurn();
+        battleUI.UpdateTurnIndicator(isPlayerTurn);
+        StartCoroutine(EnemyTurnWithDelay());
     }
 
-    public void EnemyTurn()
+    private IEnumerator EnemyTurnWithDelay()
     {
-        // Enemy attacks the player
+        yield return new WaitForSeconds(1f); // Wait before enemy action
+
         enemyBattle.EnemyAttackPlayer(playerBattle);
 
-        // Check if the player is defeated
         if (playerBattle.PlayerCurrentHealth <= 0)
         {
-            EndBattle(false);
-            return;
+            StartCoroutine(EndBattle(false));
+            yield break;
         }
 
-        // Decrement timers and switch to the player's turn
         playerBattle.DecrementEffectTimers();
-        battleUI.UpdateEffectTimers(); // Update UI
+        battleUI.UpdateEffectTimers();
         isPlayerTurn = true;
+        battleUI.UpdateTurnIndicator(isPlayerTurn);
         battleUI.RenderCards(playerBattle.PlayerCardLoadout);
     }
 
-    public void EndBattle(bool playerWon)
+    public IEnumerator EndBattle(bool playerWon)
     {
         Debug.Log(playerWon ? "Player wins!" : "Enemy wins!");
-        // Implement end game logic here (e.g., show results UI)
+        yield return StartCoroutine(battleUI.ShowBattleResult(playerWon));
+        isPlayerTurn = false;
+        //transition into next scene or back into the main scene
     }
 }
