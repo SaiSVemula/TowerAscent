@@ -13,8 +13,16 @@ public class StartMenu : MonoBehaviour
 
     public void Resume()
     {
-        // Add Code Here To Call Variables From Browser
+        if (PlayerPrefs.HasKey("SavedScene")) // Check if a saved game exists
+        {
+            LoadManager.LoadGameState(); // Load the saved game state from PlayerPrefs
+        }
+        else
+        {
+            Debug.LogWarning("No saved game found!");
+        }
     }
+
 
     public void Settings()
     {
@@ -26,5 +34,4 @@ public class StartMenu : MonoBehaviour
     {
         SceneManager.LoadScene("EndPage");
     }
-
 }
