@@ -18,6 +18,8 @@ public class PlayerBattle : MonoBehaviour
     public int PlayerCurrentDefence => playerCurrentDefence;
     public List<Card> PlayerCardLoadout => playerCardLoadout;
 
+
+
     private void Awake()
     {
         playerCurrentHealth = playerMaxHealth;
@@ -33,6 +35,9 @@ public class PlayerBattle : MonoBehaviour
             Resources.Load<Card>("Cards/Dodge"),
             Resources.Load<Card>("Cards/First Aid")
         };
+
+        
+
     }
 
     public void UpdatePlayerHealthBar()
