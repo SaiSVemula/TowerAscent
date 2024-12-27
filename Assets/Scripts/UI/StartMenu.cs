@@ -26,7 +26,14 @@ public class StartMenu : MonoBehaviour
 
     public void Resume()
     {
-        // Add code here to fetch and restore variables from GameManager or other persistence systems
+        if (PlayerPrefs.HasKey("SavedScene")) // Check if a saved game exists
+        {
+            LoadManager.LoadGameState(); // Load the saved game state from PlayerPrefs
+        }
+        else
+        {
+            Debug.LogWarning("No saved game found!");
+        }
     }
 
     public void Settings()

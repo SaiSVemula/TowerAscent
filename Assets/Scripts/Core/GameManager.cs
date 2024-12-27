@@ -19,6 +19,11 @@ public class GameManager : MonoBehaviour
     private string[] CardsInInventory;
     private string PlayerName;
 
+    private int minibattleWins;
+    private int minibattleLosses;
+    private int bigbattleWins;
+    private int bigbattleLosses;
+
     private void Awake()
     {
         // Singleton pattern for GameManager
@@ -108,6 +113,10 @@ public class GameManager : MonoBehaviour
     public int GetPlayerCoinCount() { return CurrentCoins; }
     public string[] GetPlayerCards() { return CardsInInventory; }
     public string GetPlayerName() { return PlayerName; }
+    public int GetMinibattleWins() { return minibattleWins; }
+    public int GetMinibattleLosses() { return minibattleLosses; }
+    public int GetBigbattleWins() { return bigbattleWins; }
+    public int GetBigbattleLosses() { return bigbattleLosses; }
 
     // Methods to set values on the GameManager
     public void UpdateCurrentScene() { SavedScene = SceneManager.GetActiveScene().name; }
@@ -116,21 +125,29 @@ public class GameManager : MonoBehaviour
     public void UpdatePlayerCoinCount(int coins) { CurrentCoins = coins; }
     public void UpdatePlayerCards(string[] cards) { CardsInInventory = cards; }
     public void UpdatePlayerName(string name) { PlayerName = name; }
+    public void UpdateMinibattleWins(int wins) { minibattleWins = wins; }
+    public void UpdateMinibattleLosses(int losses) { minibattleLosses = losses; }
+    public void UpdateBigbattleWins(int wins) { bigbattleWins = wins; }
+    public void UpdateBigbattleLosses(int losses) { bigbattleLosses = losses; }
 
     // Full get method, used when saving a game to perfs
-    public (string, Vector3, int, int, string[], string) GetFullGameState()
+    public (string, Vector3, int, int, string[], string, int, int, int, int) GetFullGameState()
     {
-        return (SavedScene, PlayerCoord, CurrentHealth, CurrentCoins, CardsInInventory, PlayerName);
+        return (SavedScene, PlayerCoord, CurrentHealth, CurrentCoins, CardsInInventory, PlayerName, minibattleWins, minibattleLosses, bigbattleWins, bigbattleLosses);
     }
 
     // Full update method, used when resuming a game and loading from perfs
-    public void UpdateFullGameState(Transform playerTransform, int health, int coins, string[] cards, string name)
+    public void UpdateFullGameState(Transform playerTransform, int health, int coins, string[] cards, string name, int miniWins, int miniLosses, int bigWins, int bigLosses)
     {
         UpdatePlayerLocation(playerTransform.position);
         UpdatePlayerHealth(health);
         UpdatePlayerCoinCount(coins);
         UpdatePlayerCards(cards);
         UpdatePlayerName(name);
+        UpdateMinibattleWins(miniWins);
+        UpdateMinibattleLosses(miniLosses);
+        UpdateBigbattleWins(bigWins);
+        UpdateBigbattleLosses(bigLosses);
         UpdateCurrentScene();
         Debug.Log("Game state updated.");
     }
