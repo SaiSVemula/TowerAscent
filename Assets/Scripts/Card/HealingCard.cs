@@ -4,22 +4,21 @@ using UnityEngine;
 public class HealingCard : Card
 {
     [SerializeField] private int healing;
+    [SerializeField] private int timer; // How many turns the healing lasts
     [SerializeField] private bool canRevive;//not added in yet 
 
     public int Healing => healing;
     public bool CanRevive => canRevive;
+    public int Timer => timer;
 
-    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
+    public override string Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
         if (CanRevive)
         {
-            Debug.Log($"{Name} is used! Reviving a fallen ally with minimal health.");
-            // Handle revive logic here
+            return $"Player used {Name} attempting to revive!";
         }
-        else
-        {
-            Debug.Log($"{Name} is used! Healing {Healing} health.");
-            playerBattle.PlayerHeal(Healing);
-        }
+
+        playerBattle.AddTemporaryHealing(Healing, Timer);
+        return $"Player used {Name} healing {Healing} HP for {Timer} turns!";
     }
 }

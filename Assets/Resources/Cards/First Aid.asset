@@ -17,4 +17,5 @@ MonoBehaviour:
   status: Common
   cardSprite: {fileID: 21300000, guid: bfc3553f0088e0749970fa9893a30c93, type: 3}
   healing: 8
+  timer: 3
   canRevive: 0
