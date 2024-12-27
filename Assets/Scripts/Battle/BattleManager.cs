@@ -10,38 +10,6 @@ public class BattleManager : MonoBehaviour
 
     private bool isPlayerTurn = true;
 
-    //public IEnumerator InitializeBattle()
-    //{
-    //    Debug.Log("Battle initialization started");
-
-    //    // Initial validation
-    //    if (battleUI == null || playerBattle == null)
-    //    {
-    //        Debug.LogError("Critical references missing!");
-    //        yield break;
-    //    }
-
-    //    // Ensure cards are hidden during countdown
-    //    battleUI.DisableCardInteractions();
-
-    //    // Show countdown sequence with proper yields
-    //    battleUI.ShowGameStatus("Prepare for Battle!", 2f);
-    //    battleUI.ShowGameStatus("Begin in...", 1f);
-    //    battleUI.ShowGameStatus("3", 1f);
-    //    battleUI.ShowGameStatus("2", 1f);
-    //    battleUI.ShowGameStatus("1", 1f);
-    //    battleUI.ShowGameStatus("Fight!", 1f);
-
-    //    // Initialize battle state
-    //    battleUI.RenderCards(playerBattle.PlayerCardLoadout);
-    //    battleUI.EnableCardInteractions();
-    //    battleUI.AddBattleLog("Battle Start!");
-    //    battleUI.UpdateTurnIndicator(true);
-
-    //    Debug.Log("Battle initialization complete");
-    //}
-
-    // Replace existing InitializeBattle with:
     public IEnumerator InitializeBattle()
     {
         Debug.Log("Battle initialization started");
@@ -108,6 +76,7 @@ public class BattleManager : MonoBehaviour
         Debug.Log(playerWon ? "Player wins!" : "Enemy wins!");
         yield return StartCoroutine(battleUI.ShowBattleResult(playerWon));
         isPlayerTurn = false;
+
         //transition into next scene or back into the main scene
     }
 }

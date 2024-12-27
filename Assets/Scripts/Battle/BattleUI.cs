@@ -49,13 +49,23 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameStatusText;
     private bool isInitialized = false;
 
+    // Reference to the LevelLoader instance in the scene
+    private LevelLoader levelLoader;
+
     private void Awake()
     {
         Debug.Log("BattleUI Awake");
+        // Find the LevelLoader instance in the current scene
+        levelLoader = FindObjectOfType<LevelLoader>();
+        if (levelLoader == null)
+        {
+            Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
+        }
 
         // Initially show only instruction canvas
         instructionCanvas.enabled = true;
         battleCanvas.enabled = false;
+
 
         SetupInstructions();
         isInitialized = true;
@@ -96,8 +106,7 @@ public class BattleUI : MonoBehaviour
         // First disable instruction canvas
         instructionCanvas.enabled = false;
 
-        // Then enable battle canvas
-        battleCanvas.enabled = true;
+        gameStatusText.enabled = true;
 
         // Start battle initialization
         if (battleManager != null)
@@ -349,50 +358,6 @@ public class BattleUI : MonoBehaviour
 
         turnIndicatorBackground.transform.localScale = originalScale;
     }
-    //public IEnumerator ShowGameStatus(string message, float duration, System.Action onComplete = null)
-    //{
-    //    if (gameStatusText != null)
-    //    {
-    //        StopAllCoroutines();
-    //        gameStatusText.text = message;
-    //        gameStatusText.color = Color.white;
-    //        gameStatusText.gameObject.SetActive(true);
-
-    //        yield return StartCoroutine(FadeGameStatus(duration));
-
-    //        onComplete?.Invoke();
-    //    }
-    //}
-
-    //private IEnumerator FadeGameStatus(float duration)
-    //{
-    //    yield return new WaitForSeconds(duration);
-
-    //    float fadeDuration = 0.5f;
-    //    float elapsed = 0;
-    //    Color originalColor = gameStatusText.color;
-
-    //    while (elapsed < fadeDuration)
-    //    {
-    //        elapsed += Time.deltaTime;
-    //        float alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
-    //        gameStatusText.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-    //        yield return null;
-    //    }
-
-    //    gameStatusText.gameObject.SetActive(false);
-    //    gameStatusText.color = originalColor;
-    //}
-
-    //public IEnumerator ShowGameResult(bool playerWon, float duration)
-    //{
-    //    if (gameStatusText != null)
-    //    {
-    //        gameStatusText.text = playerWon ? "Victory!" : "Defeat!";
-    //        gameStatusText.gameObject.SetActive(true);
-    //        yield return StartCoroutine(FadeGameStatus(duration));
-    //    }
-    //}
 
     public IEnumerator ShowCountdown()
     {
@@ -423,6 +388,9 @@ public class BattleUI : MonoBehaviour
         // Fight message
         gameStatusText.text = "Fight!";
         yield return new WaitForSeconds(1f);
+
+        // Then enable battle canvas
+        battleCanvas.enabled = true;
 
         gameStatusText.gameObject.SetActive(false);
     }
@@ -457,10 +425,21 @@ public class BattleUI : MonoBehaviour
         }
 
         gameStatusText.gameObject.SetActive(false);
+
+        string nextScene = GameManager.Instance.GetNextScene();
+        if (!string.IsNullOrEmpty(nextScene))
+        {
+            levelLoader.LoadScene("BattleScene", nextScene); // Load the next scene after the battle
+        }
+        else
+        {
+            Debug.LogError("Next scene is not set in GameManager.");
+        }
     }
 
     public void DisableCardInteractions()
     {
+        battleCanvas.enabled = true;
         if (cardPanel != null)
         {
             cardPanel.SetActive(false);
@@ -474,6 +453,7 @@ public class BattleUI : MonoBehaviour
 
     public void EnableCardInteractions()
     {
+        battleCanvas.enabled = true;
         if (cardPanel != null)
         {
             cardPanel.SetActive(true);
