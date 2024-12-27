@@ -11,24 +11,10 @@ public class MagicCard : Card
     public int Damage => damage;
     public string Effect => effect;// not implemented yet
 
-    public override void Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
+    public override string Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
     {
-        //main logic for magic card
         enemyBattle.EnemyTakeDamage(Damage);
-
-
-        Debug.Log($"{Name} is used! It deals {Damage} magic damage to the enemy with effect: {Effect}");
-        
-        //future implementation of effects
-        if (Effect == "Sleep")
-        {
-            Debug.Log($"{enemyBattle.EnemyName} is put to sleep and skips their next turn.");
-            // Add sleep logic here
-        }
-        else if (Effect == "Reduce Attack")
-        {
-            Debug.Log($"{enemyBattle.EnemyName}'s attack power is reduced.");
-            // Add attack reduction logic here
-        }
+        string effectText = !string.IsNullOrEmpty(Effect) ? $" with {Effect} effect" : "";
+        return $"Player cast {Name} dealing {Damage} magic damage{effectText}!";
     }
 }
