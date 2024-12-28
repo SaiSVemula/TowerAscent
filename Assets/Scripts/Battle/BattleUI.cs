@@ -390,9 +390,9 @@ public class BattleUI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // Then enable battle canvas
-        battleCanvas.enabled = true;
+        battleCanvas.gameObject.SetActive(true);
 
-        gameStatusText.gameObject.SetActive(false);
+        gameStatusText.gameObject.SetActive(false);   
     }
 
     public IEnumerator ShowBattleResult(bool playerWon)
