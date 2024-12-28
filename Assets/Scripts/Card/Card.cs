@@ -20,5 +20,5 @@ public abstract class Card : ScriptableObject
         status = Status;
     }
 
-    public abstract void Use(PlayerBattle player, EnemyBattle enemy);
+    public abstract string Use(PlayerBattle player, EnemyBattle enemy);
 }

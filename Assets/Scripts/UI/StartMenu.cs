@@ -1,30 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class StartMenu : MonoBehaviour
 {
+    private LevelLoader levelLoader;
+    private void Start()
+    {
+        // Find the LevelLoader instance in the current scene
+        levelLoader = FindObjectOfType<LevelLoader>();
+        if (levelLoader == null)
+        {
+            Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
+        }
+    }
+
     public void NewGame()
     {
-        GameManager.Instance.Clear();
-        SceneManager.LoadScene("ExplorationScene");
+        if (levelLoader != null)
+        {
+            GameManager.Instance.Clear();
+            levelLoader.LoadScene("StartMenu", "ExplorationScene"); // Pass current and next scenes
+        }
     }
 
     public void Resume()
     {
-        // Add Code Here To Call Variables From Browser
+        if (PlayerPrefs.HasKey("SavedScene")) // Check if a saved game exists
+        {
+            LoadManager.LoadGameState(); // Load the saved game state from PlayerPrefs
+        }
+        else
+        {
+            Debug.LogWarning("No saved game found!");
+        }
     }
 
     public void Settings()
     {
-        GameManager.Instance.UpdateCurrentScene();
-        SceneManager.LoadScene("SettingsPage");
+        if (levelLoader != null)
+        {
+            GameManager.Instance.UpdateCurrentScene();
+            levelLoader.LoadScene("StartMenu", "SettingsPage"); // Transition to SettingsPage
+        }
     }
 
     public void Quit()
     {
-        SceneManager.LoadScene("EndPage");
+        if (levelLoader != null)
+        {
+            levelLoader.LoadScene("StartMenu", "EndPage"); // Transition to EndPage
+        }
     }
-
 }
