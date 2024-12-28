@@ -31,7 +31,7 @@ public class PlayerBattle : MonoBehaviour
     public int PlayerCurrentDefence => playerCurrentDefence;
     public List<Card> PlayerCardLoadout => playerCardLoadout;
 
-
+    public Animator animator;
 
     private void Awake()
     {
@@ -49,7 +49,7 @@ public class PlayerBattle : MonoBehaviour
             Resources.Load<Card>("Cards/First Aid")
         };
 
-        
+        animator.SetBool("InBattle", true);
 
     }
 
@@ -67,6 +67,7 @@ public class PlayerBattle : MonoBehaviour
         playerCurrentHealth = Mathf.Max(playerCurrentHealth - netDamage, 0);
         UpdatePlayerHealthBar();
         Debug.Log($"Player takes {netDamage} damage. Current health: {playerCurrentHealth}");
+        animator.SetTrigger("GetHit");
     }
 
     public void PlayerAddDefence(int defenceAmount)
@@ -95,7 +96,9 @@ public class PlayerBattle : MonoBehaviour
         if (selectedCard != null)
         {
             selectedCard.Use(this, targetEnemy);
+            animator.SetTrigger("Attack");
         }
+        
     }
 
     public void AddTemporaryDefence(int value, int timer)
@@ -103,6 +106,7 @@ public class PlayerBattle : MonoBehaviour
         Debug.Log($"Adding defense: Value = {value}, Timer = {timer}");
         temporaryDefenses.Add((value, timer));
         UpdateCurrentDefence();
+        
     }
 
     public void AddTemporaryHealing(int value, int timer)

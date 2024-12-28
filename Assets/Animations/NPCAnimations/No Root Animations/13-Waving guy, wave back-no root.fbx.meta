@@ -1,7 +1,15 @@
 fileFormatVersion: 2
 guid: 9d22574010ee71e4e829336b3742ba22
+AssetOrigin:
+  serializedVersion: 1
+  productId: 253521
+  packageName: Various Attitudes animations (Motion Cast - FREE01)
+  packageVersion: 1.0U
+  assetPath: Assets/Animations/NPCAnimations/No Root Animations/13-Waving guy, wave
+    back-no root.fbx
+  uploadId: 596120
 ModelImporter:
-  serializedVersion: 21300
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
       74: -7516009266300708805
@@ -22,8 +30,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -42,8 +48,8 @@ ModelImporter:
       name: 13-Waving guy, wave back-NR
       takeName: 13-Waving guy, wave back-NR
       internalID: 0
-      firstFrame: 1
-      lastFrame: 442
+      firstFrame: 181
+      lastFrame: 260
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -66,7 +72,7 @@ ModelImporter:
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+      additiveReferencePoseFrame: 1
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -75,6 +81,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -102,6 +109,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -605,8 +613,7 @@ ModelImporter:
     - name: LeftFinger01
       parentName: LeftFinger0
       position: {x: -0.00000016570091, y: 0.028033132, z: 0.00000002026558}
-      rotation: {x: -0.000000048428767, y: -0.0000003352761, z: -0.0000012679956,
-        w: 1}
+      rotation: {x: -0.000000048428767, y: -0.0000003352761, z: -0.0000012679956, w: 1}
       scale: {x: 1.0000001, y: 1.0000005, z: 0.9999997}
     - name: LeftFinger02
       parentName: LeftFinger01
@@ -746,8 +753,7 @@ ModelImporter:
     - name: RightFinger31
       parentName: RightFinger3
       position: {x: 0.000000030249357, y: 0.05070494, z: 0.000000019073486}
-      rotation: {x: 0.00000042840833, y: 0.000000052154057, z: -0.00000054482365,
-        w: 1}
+      rotation: {x: 0.00000042840833, y: 0.000000052154057, z: -0.00000054482365, w: 1}
       scale: {x: 1.0000002, y: 1.0000005, z: 1.0000001}
     - name: RightFinger32
       parentName: RightFinger31
@@ -762,8 +768,7 @@ ModelImporter:
     - name: RightFinger41
       parentName: RightFinger4
       position: {x: 0.000000063702466, y: 0.033952225, z: -0.0000000020861626}
-      rotation: {x: -0.000000026077027, y: -0.00000011920926, z: -0.0000006896442,
-        w: 1}
+      rotation: {x: -0.000000026077027, y: -0.00000011920926, z: -0.0000006896442, w: 1}
       scale: {x: 1.0000001, y: 1.0000004, z: 1.0000002}
     - name: RightFinger42
       parentName: RightFinger41
@@ -828,16 +833,9 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 253521
-  packageName: Various Attitudes animations (Motion Cast - FREE01)
-  packageVersion: 1.0U
-  assetPath: Assets/Motion Cast-FREE01/No Root Animations/13-Waving guy, wave back-no
-    root.fbx
-  uploadId: 596120
