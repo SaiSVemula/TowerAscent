@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
         playerControls = new PlayerControls();
         playerControls.Player.Enable(); // Enable input actions
         PlayerRigidBody.freezeRotation = true;
+        animator.SetBool("InBattle", false);
     }
 
     void Update() // will read the players inputs and will fill up variables as needed and will call move and jump methods as needed
@@ -61,10 +62,10 @@ public class PlayerMovement : MonoBehaviour
     private void MakePlayerJump() {
         if (PlayerOnTheFloor) { 
             PlayerRigidBody.AddForce(Vector3.up * 4.5f, ForceMode.Impulse); 
-
+            
+            // Update jump animation
+            animator.SetTrigger("Jump");
         }
-        // Update jump animation
-        animator.SetTrigger("Jump");
     }
 
     // checks if player is touching / not touching floor
