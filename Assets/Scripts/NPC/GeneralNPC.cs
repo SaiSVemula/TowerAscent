@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class GeneralNPC : MonoBehaviour
 {
+
+    public Animator animator;
+
     [Header("Floating Text and Dialogue")]
     public GameObject floatingText; // Text to display when the player is near
     public GameObject dialogueUI; // Reference to the dialogue UI
@@ -114,6 +117,8 @@ public class GeneralNPC : MonoBehaviour
         {
             dialogueUI.SetActive(true);
         }
+
+        animator.SetTrigger("WaveTrigger");
 
         // Display a random dialogue line
         DisplayRandomDialogueLine();

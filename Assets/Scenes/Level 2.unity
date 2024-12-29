@@ -1892,7 +1892,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-30572
+  m_Name: pb_Mesh83826
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -2066,6 +2066,14 @@ PrefabInstance:
     - target: {fileID: 1319517528997712, guid: 1543549dcdf638d488bd40cb68dd9b8e, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384285746103176, guid: 1543549dcdf638d488bd40cb68dd9b8e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1590364663389012, guid: 1543549dcdf638d488bd40cb68dd9b8e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4927681395739018, guid: 1543549dcdf638d488bd40cb68dd9b8e, type: 3}
       propertyPath: m_LocalScale.x
@@ -2625,6 +2633,7 @@ MonoBehaviour:
   PlayerMainCam: {fileID: 704768342}
   animator: {fileID: 601667935}
   CurrentPlayer: {fileID: 601667934}
+  Shield: {fileID: 0}
 --- !u!54 &1912641395
 Rigidbody:
   m_ObjectHideFlags: 0
