@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PickCardsManager : MonoBehaviour
 {
@@ -18,7 +19,10 @@ public class PickCardsManager : MonoBehaviour
     void Start()
     {
         // Add a listener to the button
-        pickCardsButton.onClick.AddListener(ToggleCardPicking);
+        if (SceneManager.GetActiveScene().name != "Loadout")
+        {
+            pickCardsButton.onClick.AddListener(ToggleCardPicking);
+        }
     }
 
     void ToggleCardPicking()

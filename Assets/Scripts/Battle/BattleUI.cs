@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour
@@ -81,11 +82,11 @@ public class BattleUI : MonoBehaviour
         }
 
         gameInstructionText.text = "Battle Instructions:\n\n" +
-            "• Click cards to use them\n" +
-            "• Attack cards deal damage\n" +
-            "• Defense cards block damage\n" +
-            "• Healing cards restore health\n" +
-            "• Take turns with the enemy\n\n" +
+            "ï¿½ Click cards to use them\n" +
+            "ï¿½ Attack cards deal damage\n" +
+            "ï¿½ Defense cards block damage\n" +
+            "ï¿½ Healing cards restore health\n" +
+            "ï¿½ Take turns with the enemy\n\n" +
             "Click 'Start Battle' to begin!";
 
         startBattleButton.onClick.RemoveAllListeners();
@@ -390,9 +391,9 @@ public class BattleUI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // Then enable battle canvas
-        battleCanvas.enabled = true;
+        battleCanvas.gameObject.SetActive(true);
 
-        gameStatusText.gameObject.SetActive(false);
+        gameStatusText.gameObject.SetActive(false);   
     }
 
     public IEnumerator ShowBattleResult(bool playerWon)
@@ -425,16 +426,12 @@ public class BattleUI : MonoBehaviour
         }
 
         gameStatusText.gameObject.SetActive(false);
+    }
 
-        string nextScene = GameManager.Instance.GetNextScene();
-        if (!string.IsNullOrEmpty(nextScene))
-        {
-            levelLoader.LoadScene("BattleScene", nextScene); // Load the next scene after the battle
-        }
-        else
-        {
-            Debug.LogError("Next scene is not set in GameManager.");
-        }
+    private void BattleEndTransition()
+    {
+        string nextScene = GameManager.Instance.NextScene;
+        levelLoader.LoadScene("BattleScene", nextScene);
     }
 
     public void DisableCardInteractions()

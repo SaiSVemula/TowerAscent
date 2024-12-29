@@ -119,14 +119,28 @@ public class TriggerZoneHandler : MonoBehaviour
         // Set the loading state to false
         isTriggered = false;
 
+        //getting scene names to set which scene to transition to after battle.
+        string nextScene;
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "ExplorationScene")
+        {
+            nextScene = "Level 1";
+        }
+        else if (currentScene == "Level 1")
+        {
+            nextScene = "Level 2";
+        }
+        else
+        {
+            nextScene = "EndPage";
+        }
+
         // Use the LevelLoader to load the scene
         if (levelLoader != null)
         {
-            levelLoader.LoadScene("CurrentScene", "BattleScene");
-            GameManager.Instance.SetNextScene("ExplorationScene");//need to adjust this to the next level.
-            //levlLoader.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-            //string nextSceneName = SceneManager.GetSceneByBuildIndex(SceneManager.GetActiveScene().buildIndex + 1).name;
-            //GameManager.Instance.SetNextScene(nextSceneName);
+            GameManager.Instance.NextScene = nextScene;
+            levelLoader.LoadScene(currentScene, "Loadout");
         }
         else
         {

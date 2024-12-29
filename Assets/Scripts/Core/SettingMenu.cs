@@ -9,12 +9,9 @@ public class SettingMenu : MonoBehaviour
     [SerializeField] private GameObject audioPanel;
     [SerializeField] private GameObject videoPanel;
 
-    private string previousScene; // Store the scene that called the settings menu
-
     private void Start()
     {
-        // Save the current scene name when the settings menu is loaded
-        previousScene = GameManager.Instance.GetCurrentScene();
+        
     }
 
     public void GeneralSettings()
@@ -35,9 +32,9 @@ public class SettingMenu : MonoBehaviour
     public void exit()
     {
         // Load the previous scene when exiting the settings menu
-        if (!string.IsNullOrEmpty(previousScene))
+        if (!string.IsNullOrEmpty(GameManager.Instance.PreviousScene))
         {
-            GameManager.Instance.LoadScene(previousScene);
+            GameManager.Instance.LoadScene(GameManager.Instance.PreviousScene);
         }
         else
         {

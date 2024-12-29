@@ -1,57 +1,27 @@
-//old version
 //using UnityEngine;
 //using UnityEngine.UI;
 //using System.Collections.Generic;
 
-//// Temporary Card Class
-//public class Card
-//{
-//    public string cardName; // Card name
-//    public Sprite cardImage; // Card image
-//    public int cardID; // Unique ID (optional)
-
-//    public Card(string name, Sprite image, int id)
-//    {
-//        cardName = name;
-//        cardImage = image;
-//        cardID = id;
-//    }
-//}
-
 //public class InventoryUITest : MonoBehaviour
 //{
-//    public Transform cardGrid; // Reference to the CardGrid
-//    public Sprite defaultCardSprite; // Placeholder sprite for cards
-//    private List<Card> temporaryCards; // List to hold temporary card data
+//    [SerializeField] private Transform cardGrid; // Reference to the CardGrid
+//    [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
+//    [SerializeField] private List<Card> cards; // Serialized card list for Unity Inspector
 
 //    void Start()
 //    {
-//        InitializeTemporaryCards(); // Create test card data
 //        GenerateTestCards(); // Generate cards in UI
 //    }
 
-//    // Initialize the temporary card list
-//    void InitializeTemporaryCards()
-//    {
-//        temporaryCards = new List<Card>();
-
-//        for (int i = 0; i < 26; i++) // Simulate 10 cards
-//        {
-//            string name = $"Card {i + 1}";
-//            Sprite image = defaultCardSprite; // Use the default sprite
-//            int id = i + 1;
-
-//            temporaryCards.Add(new Card(name, image, id));
-//        }
-//    }
-
-//    // Generate cards in the UI based on the temporary card list
+//    // Generate cards in the UI based on the serialized card list
 //    void GenerateTestCards()
 //    {
-//        foreach (Card card in temporaryCards)
+//        foreach (Card card in cards)
 //        {
+//            if (card == null) continue;
+
 //            // Create a new card GameObject
-//            GameObject newCard = new GameObject(card.cardName, typeof(RectTransform), typeof(Image));
+//            GameObject newCard = new GameObject(card.Name, typeof(RectTransform), typeof(Image));
 
 //            // Set the parent to the CardGrid
 //            newCard.AddComponent<BoxCollider>();
@@ -66,7 +36,7 @@
 
 //            // Add and configure Image component
 //            Image img = newCard.GetComponent<Image>();
-//            img.sprite = card.cardImage; // Use the card's image
+//            img.sprite = card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
 //            img.color = Color.white;
 
 //            // Add a child for the card's text
@@ -78,18 +48,21 @@
 
 //            // Configure the Text component
 //            Text text = textObj.GetComponent<Text>();
-//            text.text = card.cardName; // Use the card's name
+//            text.text = card.Name; // Use the card's name
 //            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 //            text.fontSize = 20;
 //            text.alignment = TextAnchor.MiddleCenter;
 //            text.color = Color.black;
+
+//            newCard.AddComponent<DraggableItem>(); // Add DraggableItem component
 //        }
 //    }
 //}
 
-//new version
+
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; // For scene management
 using System.Collections.Generic;
 
 public class InventoryUITest : MonoBehaviour
@@ -98,8 +71,14 @@ public class InventoryUITest : MonoBehaviour
     [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
     [SerializeField] private List<Card> cards; // Serialized card list for Unity Inspector
 
+    // Add this variable to check the current scene
+    private bool isLoadoutScene;
+
     void Start()
     {
+        // Check if the current scene is "Loadout"
+        isLoadoutScene = SceneManager.GetActiveScene().name == "Loadout";
+
         GenerateTestCards(); // Generate cards in UI
     }
 
@@ -143,6 +122,17 @@ public class InventoryUITest : MonoBehaviour
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.black;
+
+            // Add DraggableItem only if in Loadout scene
+            if (isLoadoutScene)
+            {
+                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
+                draggableItem.parentAfterDrag = cardGrid;
+
+                // Add CardDisplay for additional functionality
+                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
+                cardDisplay.Initialize(card);
+            }
         }
     }
 }
