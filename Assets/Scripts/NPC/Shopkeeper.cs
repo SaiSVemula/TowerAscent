@@ -6,6 +6,7 @@ public class Shopkeeper : MonoBehaviour
     public GameObject shopMenu;     // Reference to the shop menu UI
     public float detectionRadius = 10f; // Radius for detecting the player
     private Transform player;       // Reference to the player's transform
+    private Rigidbody playerRigidbody; // Reference to the player's Rigidbody
 
     protected virtual void Start()
     {
@@ -13,7 +14,11 @@ public class Shopkeeper : MonoBehaviour
         if (shopMenu != null) shopMenu.SetActive(false);
 
         player = GameObject.FindWithTag("Player")?.transform;
-        if (player == null)
+        if (player != null)
+        {
+            playerRigidbody = player.GetComponent<Rigidbody>();
+        }
+        else
         {
             Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
         }
@@ -49,7 +54,14 @@ public class Shopkeeper : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Interact();
+            if (IsPlayerGrounded())
+            {
+                Interact();
+            }
+            else
+            {
+                Debug.Log("Cannot open shop while jumping.");
+            }
         }
     }
 
@@ -80,5 +92,11 @@ public class Shopkeeper : MonoBehaviour
             Time.timeScale = 1f;
             Debug.Log("Shop menu closed.");
         }
+    }
+
+    private bool IsPlayerGrounded()
+    {
+        // Check if the player's Rigidbody is grounded by evaluating the vertical velocity
+        return playerRigidbody != null && Mathf.Abs(playerRigidbody.velocity.y) < 0.01f;
     }
 }

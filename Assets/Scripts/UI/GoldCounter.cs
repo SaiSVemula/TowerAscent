@@ -20,7 +20,7 @@ public class GoldCounter : MonoBehaviour
         UpdateGoldText(); // Continuously update the coin count
     }
 
-    private void UpdateGoldText()
+    public void UpdateGoldText() // Changed from private to public
     {
         if (goldText != null && GameManager.Instance != null)
         {
