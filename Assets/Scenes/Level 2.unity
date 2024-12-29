@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.1730603, g: 0.2162926, b: 0.29829153, a: 1}
+  m_IndirectSpecularColor: {r: 0.17306009, g: 0.21629226, b: 0.2982909, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -650,7 +650,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-52372
+  m_Name: pb_Mesh53998
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1562,7 +1562,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-31202
+  m_Name: pb_Mesh54038
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1727,7 +1727,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-36380
+  m_Name: pb_Mesh53974
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1892,7 +1892,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh83826
+  m_Name: pb_Mesh53934
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -2633,7 +2633,6 @@ MonoBehaviour:
   PlayerMainCam: {fileID: 704768342}
   animator: {fileID: 601667935}
   CurrentPlayer: {fileID: 601667934}
-  Shield: {fileID: 0}
 --- !u!54 &1912641395
 Rigidbody:
   m_ObjectHideFlags: 0
