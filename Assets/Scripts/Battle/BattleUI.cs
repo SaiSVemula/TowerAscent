@@ -82,11 +82,11 @@ public class BattleUI : MonoBehaviour
         }
 
         gameInstructionText.text = "Battle Instructions:\n\n" +
-            "• Click cards to use them\n" +
-            "• Attack cards deal damage\n" +
-            "• Defense cards block damage\n" +
-            "• Healing cards restore health\n" +
-            "• Take turns with the enemy\n\n" +
+            "ï¿½ Click cards to use them\n" +
+            "ï¿½ Attack cards deal damage\n" +
+            "ï¿½ Defense cards block damage\n" +
+            "ï¿½ Healing cards restore health\n" +
+            "ï¿½ Take turns with the enemy\n\n" +
             "Click 'Start Battle' to begin!";
 
         startBattleButton.onClick.RemoveAllListeners();
@@ -430,22 +430,8 @@ public class BattleUI : MonoBehaviour
 
     private void BattleEndTransition()
     {
-        string nextScene;
-        string currentScene = SceneManager.GetActiveScene().name;
-        if (currentScene == "ExplorationScene")
-        {
-            nextScene = "Level 1";
-        }
-        else if (currentScene == "Level 1")
-        {
-            nextScene = "Level 2";
-        }
-        else
-        {
-            nextScene = "EndPage";
-        }
-
-        levelLoader.LoadScene(currentScene, nextScene);
+        string nextScene = GameManager.Instance.NextScene;
+        levelLoader.LoadScene("BattleScene", nextScene);
     }
 
     public void DisableCardInteractions()
