@@ -11,8 +11,16 @@ public class GameManager : MonoBehaviour
     private Player playerInstance;
 
     // Game state variables
+
+    // Scene management
     private string SavedScene;
-    private string NextScene; // New variable for the next scene
+    private string previousScene;
+    private string nextScene;
+    public string PreviousScene { get => previousScene; set => previousScene = value; }
+    public string NextScene { get => nextScene; set => nextScene = value; }
+
+
+
     private Vector3 PlayerCoord;
     private int CurrentHealth;
     private int CurrentCoins;
@@ -95,17 +103,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Methods to manage the next scene
-    public void SetNextScene(string sceneName)
-    {
-        NextScene = sceneName;
-    }
-
-    public string GetNextScene()
-    {
-        return NextScene;
-    }
-
     // Methods to get single variables, for other scripts
     public string GetCurrentScene() { return SavedScene; }
     public Vector3 GetPlayerLocation() { return PlayerCoord; }
@@ -167,20 +164,6 @@ public class GameManager : MonoBehaviour
     {
         SavePlayerState();
         SceneManager.LoadScene(nextScene);
-    }
-
-    // Load the next scene set in the GameManager
-    public void LoadNextScene()
-    {
-        if (!string.IsNullOrEmpty(NextScene))
-        {
-            SavePlayerState();
-            SceneManager.LoadScene(NextScene);
-        }
-        else
-        {
-            Debug.LogError("Next scene is not set!");
-        }
     }
 
     // Reset Game State (resets all variables)

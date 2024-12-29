@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour
@@ -425,16 +426,26 @@ public class BattleUI : MonoBehaviour
         }
 
         gameStatusText.gameObject.SetActive(false);
+    }
 
-        string nextScene = GameManager.Instance.GetNextScene();
-        if (!string.IsNullOrEmpty(nextScene))
+    private void BattleEndTransition()
+    {
+        string nextScene;
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene == "ExplorationScene")
         {
-            levelLoader.LoadScene("BattleScene", nextScene); // Load the next scene after the battle
+            nextScene = "Level 1";
+        }
+        else if (currentScene == "Level 1")
+        {
+            nextScene = "Level 2";
         }
         else
         {
-            Debug.LogError("Next scene is not set in GameManager.");
+            nextScene = "EndPage";
         }
+
+        levelLoader.LoadScene(currentScene, nextScene);
     }
 
     public void DisableCardInteractions()
