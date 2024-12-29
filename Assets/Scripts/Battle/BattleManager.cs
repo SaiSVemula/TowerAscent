@@ -12,7 +12,9 @@ public class BattleManager : MonoBehaviour
 
     public IEnumerator InitializeBattle()
     {
+        
         Debug.Log("Battle initialization started");
+        
 
         if (battleUI == null || playerBattle == null)
         {
