@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Pages/SettingsPage.unity
     guid: 670912cd87f22334388b783ddc668733
   - enabled: 1
+    path: Assets/Scenes/Pages/Loadout.unity
+    guid: 237a094e398341641860dbe8a0875844
+  - enabled: 1
     path: Assets/Scenes/Pages/EndPage.unity
     guid: 850b6171144119a438907575524fd9c5
   m_configObjects: {}
