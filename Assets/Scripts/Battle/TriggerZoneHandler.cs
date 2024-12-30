@@ -13,7 +13,6 @@ public class TriggerZoneHandler : MonoBehaviour
     public Button noButton;
     public Transform player;
     public Vector3 outsideBoxPosition;
-    public Animator animator;
 
     private bool isPromptActive = false;
     private bool isLoading = false;
@@ -56,7 +55,6 @@ public class TriggerZoneHandler : MonoBehaviour
         if (!isTriggered)
         {
             promptPanel.SetActive(true);
-            animator.SetTrigger("isInArea");
             promptMessage.SetText("Do you wish to enter battle?");
             isPromptActive = true;
 
