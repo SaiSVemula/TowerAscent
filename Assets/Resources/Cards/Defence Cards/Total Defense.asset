@@ -15,6 +15,7 @@ MonoBehaviour:
   name: Total Defense
   description: Combines physical and magical defence for reduced damage from all
     sources.
-  status: Legendary
+  type: 3
   cardSprite: {fileID: 0}
-  defence: 0
+  defence: 20
+  timer: 0

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Magic Barrier
   description: Lowers damage from magical attacks for one turn.
-  status: Epic
+  type: 1
   cardSprite: {fileID: 0}
-  defence: 0
+  defence: 15
+  timer: 0

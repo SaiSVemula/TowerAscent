@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Regen
   description: Heals a small amount of health for just you each turn for once turns.
-  status: Epic
+  type: 2
   cardSprite: {fileID: 0}
-  healing: 0
+  healing: 5
+  timer: 5
   canRevive: 0

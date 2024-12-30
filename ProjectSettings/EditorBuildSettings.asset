@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/ExplorationScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
+    path: Assets/Scenes/Pages/Loadout.unity
+    guid: 237a094e398341641860dbe8a0875844
+  - enabled: 1
     path: Assets/Scenes/BattleScene.unity
     guid: fec53ec1d9a5c6d49899d1d841e1386a
   - enabled: 1

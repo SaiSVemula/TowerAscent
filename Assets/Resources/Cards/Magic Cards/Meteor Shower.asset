@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Meteor Shower
   description: Heavy fire damage to all enemies Critical damage once charged up (like
     a set of turns).
-  status: Legendary
+  type: 3
   cardSprite: {fileID: 0}
-  damage: 0
+  damage: 40
   effect: 

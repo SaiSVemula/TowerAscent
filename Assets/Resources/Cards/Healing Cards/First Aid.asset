@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: First Aid
   description: Heals a small amount of health to an ally only.
-  status: Common
+  type: 0
   cardSprite: {fileID: 1213297231, guid: bfc3553f0088e0749970fa9893a30c93, type: 3}
-  healing: 0
+  healing: 10
+  timer: 0
   canRevive: 0

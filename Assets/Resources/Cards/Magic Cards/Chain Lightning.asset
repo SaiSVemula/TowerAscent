@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Chain Lightning
   description: Electric attack that jumps to multiple enemies.
-  status: Legendary
+  type: 2
   cardSprite: {fileID: 0}
-  damage: 0
+  damage: 35
   effect: 

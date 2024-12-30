@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Healing Potion
   description: Restores a moderate amount of health to the user.
-  status: Rare
+  type: 1
   cardSprite: {fileID: 0}
-  healing: 0
+  healing: 15
+  timer: 0
   canRevive: 0
