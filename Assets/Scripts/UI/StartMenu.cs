@@ -41,7 +41,7 @@ public class StartMenu : MonoBehaviour
         if (levelLoader != null)
         {
             GameManager.Instance.UpdateCurrentScene();
-            levelLoader.LoadScene("StartMenu", "SettingsPage"); // Transition to SettingsPage
+            levelLoader.LoadScene("StartPage", "SettingsPage"); // Transition to SettingsPage
         }
     }
 
@@ -49,7 +49,7 @@ public class StartMenu : MonoBehaviour
     {
         if (levelLoader != null)
         {
-            levelLoader.LoadScene("StartMenu", "EndPage"); // Transition to EndPage
+            levelLoader.LoadScene("StartPage", "EndPage"); // Transition to EndPage
         }
     }
 }
