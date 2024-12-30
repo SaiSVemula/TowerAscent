@@ -44,17 +44,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        // Ensure a single instance of Player
-        if (Instance == null)
-        {
-            Instance = this;
-            currentHealth = maxHealth;
-            DontDestroyOnLoad(gameObject); // Make this object persistent across scenes
-        }
-        else
-        {
-            Destroy(gameObject); // Destroy duplicate Player objects
-        }
+        currentHealth = maxHealth;
     }
 
     // Calculate Mini Battle Win/Loss Ratio
