@@ -4,13 +4,14 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Enemy2")]
 public class Enemy2 : EnemyBattle
 {
-    public override void Initialize(Difficulty difficulty)
+    protected override void SetupEnemyStatsAndCards()
     {
         switch (difficulty)
         {
             case Difficulty.Hard:
-                enemyMaxHealth = 200;
-                enemyCardLoadout = new List<Card>
+                EnemyName = "Dusk Herald";
+                maxHealth = 200;
+                cardLoadout = new List<Card>
                 {
                     Resources.Load<Card>("Cards/Hammer Smash"),
                     Resources.Load<Card>("Cards/Magic Block"),
@@ -18,27 +19,19 @@ public class Enemy2 : EnemyBattle
                 };
                 break;
             case Difficulty.Medium:
-                enemyMaxHealth = 150;
-                enemyCardLoadout = new List<Card>
+                EnemyName = "Twilight Regent";
+                maxHealth = 150;
+                cardLoadout = new List<Card>
                 {
                     Resources.Load<Card>("Cards/Spear Thrust"),
                     Resources.Load<Card>("Cards/Reflect")
                 };
                 break;
             case Difficulty.Easy:
-                enemyMaxHealth = 100;
-                enemyCardLoadout = new List<Card> { Resources.Load<Card>("Cards/Spear Thrust") };
+                EnemyName = "Midnight Emperor";
+                maxHealth = 100;
+                cardLoadout = new List<Card> { Resources.Load<Card>("Cards/Spear Thrust") };
                 break;
         }
-        enemyCurrentHealth = enemyMaxHealth;
-        UpdateHealthBar();
-        LogEnemyInfo();
     }
-
-    public override void AttackPlayer(PlayerBattle player)
-    {
-        Debug.Log($"{enemyName} attacks the player!");
-        // Implement specific attack logic here
-    }
-
 }

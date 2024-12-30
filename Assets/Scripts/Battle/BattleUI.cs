@@ -51,17 +51,11 @@ public class BattleUI : MonoBehaviour
     private bool isInitialized = false;
 
     // Reference to the LevelLoader instance in the scene
-    private LevelLoader levelLoader;
 
     private void Awake()
     {
         Debug.Log("BattleUI Awake");
         // Find the LevelLoader instance in the current scene
-        levelLoader = FindObjectOfType<LevelLoader>();
-        if (levelLoader == null)
-        {
-            Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
-        }
 
         // Initially show only instruction canvas
         instructionCanvas.enabled = true;
@@ -312,6 +306,19 @@ public class BattleUI : MonoBehaviour
         logContainer.sizeDelta = contentSize;
     }
 
+    // Set the active enemy for the battle based on the level
+    public void SetActiveEnemy(EnemyBattle enemy)
+    {
+        if (enemy == null)
+        {
+            Debug.LogError("Enemy reference is null!");
+            return;
+        }
+
+        enemyBattle = enemy; // Dynamically assign the active enemy
+        Debug.Log($"Active enemy set: {enemyBattle.name}");
+    }
+
     private IEnumerator ScrollToTop()
     {
         yield return new WaitForEndOfFrame();
@@ -428,12 +435,6 @@ public class BattleUI : MonoBehaviour
         gameStatusText.gameObject.SetActive(false);
     }
 
-    private void BattleEndTransition()
-    {
-        string nextScene = GameManager.Instance.NextScene;
-        levelLoader.LoadScene("BattleScene", nextScene);
-    }
-
     public void DisableCardInteractions()
     {
         battleCanvas.enabled = true;
@@ -454,7 +455,7 @@ public class BattleUI : MonoBehaviour
         if (cardPanel != null)
         {
             cardPanel.SetActive(true);
-            RenderCards(playerBattle.PlayerCardLoadout); // Refresh cards
+            RenderCards(playerBattle.CardLoadout); // Refresh cards
             Debug.Log("Card interactions enabled");
         }
         else

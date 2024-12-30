@@ -4,24 +4,26 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy/Enemy3")]
 public class Enemy3 : EnemyBattle
 {
-    public override void Initialize(Difficulty difficulty)
+    protected override void SetupEnemyStatsAndCards()
     {
         switch (difficulty)
         {
             case Difficulty.Hard:
-                enemyMaxHealth = 300;
-                enemyCardLoadout = new List<Card>
+                EnemyName = "The Eternal Verdict";
+                maxHealth = 300;
+                cardLoadout = new List<Card>
                 {
                     Resources.Load<Card>("Cards/Sword Slash"),
                     Resources.Load<Card>("Cards/Group Heal"),
                     Resources.Load<Card>("Cards/Magic Barrier"),
-                    Resources.Load<Card>("Cards/Meteor Shower") 
+                    Resources.Load<Card>("Cards/Meteor Shower")
                 };
                 // Companion logic can be added here.
                 break;
             case Difficulty.Medium:
-                enemyMaxHealth = 250;
-                enemyCardLoadout = new List<Card>
+                EnemyName = "The Shadowed Adjudicator";
+                maxHealth = 250;
+                cardLoadout = new List<Card>
                 {
                     Resources.Load<Card>("Cards/Sword Slash"),
                     Resources.Load<Card>("Cards/Group Heal"),
@@ -30,23 +32,14 @@ public class Enemy3 : EnemyBattle
                 };
                 break;
             case Difficulty.Easy:
-                enemyMaxHealth = 150;
-                enemyCardLoadout = new List<Card>
+                EnemyName = "The Silent Judge";
+                maxHealth = 150;
+                cardLoadout = new List<Card>
                 {
                     Resources.Load<Card>("Cards/Sword Slash"),
                     Resources.Load<Card>("Cards/Earthquake")
                 };
                 break;
         }
-        enemyCurrentHealth = enemyMaxHealth;
-        UpdateHealthBar();
-        LogEnemyInfo();
     }
-
-    public override void AttackPlayer(PlayerBattle player)
-    {
-        Debug.Log($"{enemyName} attacks the player!");
-        // Implement specific attack logic here
-    }
-
 }

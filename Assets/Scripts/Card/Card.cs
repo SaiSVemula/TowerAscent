@@ -9,6 +9,7 @@ public enum CardType
 }
 
 //abstract class for all cards to inherit 
+
 public abstract class Card : ScriptableObject
 {
     [SerializeField] private string name;
@@ -18,9 +19,9 @@ public abstract class Card : ScriptableObject
 
     public string Name => name;
     public string Description => description;
-    //public CardType Type => type;
     public CardType Type => type;
     public Sprite CardSprite => cardSprite;
 
-    public abstract string Use(PlayerBattle player, EnemyBattle enemy);
+    // Generalized Use method for both player and enemy
+    public abstract string Use(BattleEntity user, BattleEntity target);
 }

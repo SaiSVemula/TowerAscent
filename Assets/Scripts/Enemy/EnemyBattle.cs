@@ -1,47 +1,35 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public abstract class EnemyBattle : MonoBehaviour
+public abstract class EnemyBattle : BattleEntity
 {
-    [SerializeField] protected string enemyName = "Enemy";
-    [SerializeField] protected int enemyMaxHealth;
-    protected int enemyCurrentHealth;
+    [SerializeField] private List<Card> cardLoadoutForDifficulty = new List<Card>();
+    public string EnemyName { get; protected set; }
 
-    [SerializeField] protected List<Card> enemyCardLoadout = new List<Card>();
-    [SerializeField] private Slider enemyHealthBar;
+    protected Difficulty difficulty;
 
-    public string EnemyName => enemyName;
-    public int EnemyCurrentHealth => enemyCurrentHealth;
-
-    public void EnemyTakeDamage(int damageAmount)
+    public void Initialize(Difficulty gameDifficulty)
     {
-        enemyCurrentHealth = Mathf.Max(enemyCurrentHealth - damageAmount, 0);
-        UpdateHealthBar();
-        Debug.Log($"{enemyName} takes {damageAmount} damage. Current health: {enemyCurrentHealth}");
+        difficulty = gameDifficulty;
+        SetupEnemyStatsAndCards();
+        currentHealth = maxHealth; // Ensure health is set correctly
     }
 
-    public void UpdateHealthBar()
+    protected abstract void SetupEnemyStatsAndCards();
+
+    public override void UseCard(int cardIndex, BattleEntity target)
     {
-        if (enemyHealthBar != null)
+        if (cardIndex < 0 || cardIndex >= cardLoadout.Count)
         {
-            enemyHealthBar.maxValue = enemyMaxHealth;
-            enemyHealthBar.value = enemyCurrentHealth;
+            return;
         }
-    }
 
-    public abstract void AttackPlayer(PlayerBattle player);
-
-    public abstract void Initialize(Difficulty difficulty);
-
-    protected void LogEnemyInfo()
-    {
-        Debug.Log($"Initialized Enemy: {enemyName}");
-        Debug.Log($"Max Health: {enemyMaxHealth}");
-        Debug.Log($"Cards in Loadout:");
-        foreach (var card in enemyCardLoadout)
+        Card selectedCard = cardLoadout[cardIndex];
+        if (selectedCard != null)
         {
-            Debug.Log($"- {card.Name}");
+            Debug.Log($"{EnemyName} used {selectedCard.Name} on {target.name}");
+            //animator.SetTrigger("Attack");
+            Debug.Log(selectedCard.Use(this, target));
         }
     }
 }
