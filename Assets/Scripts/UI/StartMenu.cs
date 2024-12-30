@@ -40,6 +40,7 @@ public class StartMenu : MonoBehaviour
     {
         if (levelLoader != null)
         {
+            GameManager.Instance.UpdateCurrentScene();
             levelLoader.LoadScene("StartPage", "SettingsPage"); // Transition to SettingsPage
         }
     }
