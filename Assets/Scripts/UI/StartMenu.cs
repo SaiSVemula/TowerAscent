@@ -20,7 +20,7 @@ public class StartMenu : MonoBehaviour
         if (levelLoader != null)
         {
             GameManager.Instance.Clear();
-            levelLoader.LoadScene("StartMenu", "StartCutScene"); // Pass current and next scenes
+            levelLoader.LoadScene("StartPage", "StartCutScene"); // Pass current and next scenes
         }
     }
 
@@ -40,8 +40,7 @@ public class StartMenu : MonoBehaviour
     {
         if (levelLoader != null)
         {
-            GameManager.Instance.UpdateCurrentScene();
-            levelLoader.LoadScene("StartMenu", "SettingsPage"); // Transition to SettingsPage
+            levelLoader.LoadScene("StartPage", "SettingsPage"); // Transition to SettingsPage
         }
     }
 
@@ -49,7 +48,7 @@ public class StartMenu : MonoBehaviour
     {
         if (levelLoader != null)
         {
-            levelLoader.LoadScene("StartMenu", "EndPage"); // Transition to EndPage
+            levelLoader.LoadScene("StartPage", "EndPage"); // Transition to EndPage
         }
     }
 }

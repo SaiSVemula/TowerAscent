@@ -1,24 +1,35 @@
-// BattleManager.cs
 using System.Collections;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
     [SerializeField] private PlayerBattle playerBattle;
-    [SerializeField] private EnemyBattle enemyBattle;
+    private EnemyBattle enemyBattle;
     [SerializeField] private BattleUI battleUI;
-
     private bool isPlayerTurn = true;
+
+    private void Start()
+    {
+        StartCoroutine(InitializeBattle());
+    }
 
     public IEnumerator InitializeBattle()
     {
-        
-        Debug.Log("Battle initialization started");
-        
-
-        if (battleUI == null || playerBattle == null)
+        if (battleUI == null || playerBattle == null || GameManager.Instance == null)
         {
             Debug.LogError("Critical references missing!");
+            yield break;
+        }
+
+        Debug.Log("Battle initialization started");
+
+        LoadEnemyFromGameManager();
+
+
+
+        if (enemyBattle == null)
+        {
+            Debug.LogError("Enemy loading failed!");
             yield break;
         }
 
@@ -28,10 +39,36 @@ public class BattleManager : MonoBehaviour
 
         battleUI.RenderCards(playerBattle.PlayerCardLoadout);
         battleUI.EnableCardInteractions();
-        battleUI.AddBattleLog("Battle Start!");
+        battleUI.AddBattleLog($"Battle Start! Enemy: {enemyBattle.EnemyName} with {enemyBattle.EnemyCurrentHealth} HP");
         battleUI.UpdateTurnIndicator(true);
 
         Debug.Log("Battle initialization complete");
+    }
+
+    private void LoadEnemyFromGameManager()
+    {
+        string previousScene = GameManager.Instance.PreviousScene;
+        Difficulty difficulty = GameManager.Instance.GameDifficulty;
+
+        Debug.Log($"Loading enemy based on previous scene: {previousScene}, Difficulty: {difficulty}");
+
+        switch (previousScene)
+        {
+            case "ExplorationScene":
+                enemyBattle = Instantiate(Resources.Load<Enemy1>("Enemies/Enemy1"));
+                break;
+            case "Level 1":
+                enemyBattle = Instantiate(Resources.Load<Enemy2>("Enemies/Enemy2"));
+                break;
+            case "Level 2":
+                enemyBattle = Instantiate(Resources.Load<Enemy3>("Enemies/Enemy3"));
+                break;
+            default:
+                Debug.LogError("Invalid PreviousScene value in GameManager!");
+                return;
+        }
+
+        enemyBattle.Initialize(difficulty);
     }
 
     public void OnPlayerUseCard(int cardIndex)
@@ -56,9 +93,9 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator EnemyTurnWithDelay()
     {
-        yield return new WaitForSeconds(1f); // Wait before enemy action
+        yield return new WaitForSeconds(1f);
 
-        enemyBattle.EnemyAttackPlayer(playerBattle);
+        enemyBattle.AttackPlayer(playerBattle);
 
         if (playerBattle.PlayerCurrentHealth <= 0)
         {
@@ -77,8 +114,7 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log(playerWon ? "Player wins!" : "Enemy wins!");
         yield return StartCoroutine(battleUI.ShowBattleResult(playerWon));
-        isPlayerTurn = false;
 
-        //transition into next scene or back into the main scene
+        isPlayerTurn = false;
     }
 }

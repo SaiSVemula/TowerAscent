@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy3 : Enemy
+[CreateAssetMenu(menuName = "Enemy/Enemy3")]
+public class Enemy3 : EnemyBattle
 {
-    public override void Initialize(EnemyDifficulty difficulty)
+    public override void Initialize(Difficulty difficulty)
     {
         switch (difficulty)
         {
-            case EnemyDifficulty.Hard:
+            case Difficulty.Hard:
                 enemyMaxHealth = 300;
                 enemyCardLoadout = new List<Card>
                 {
@@ -18,7 +19,7 @@ public class Enemy3 : Enemy
                 };
                 // Companion logic can be added here.
                 break;
-            case EnemyDifficulty.Medium:
+            case Difficulty.Medium:
                 enemyMaxHealth = 250;
                 enemyCardLoadout = new List<Card>
                 {
@@ -28,7 +29,7 @@ public class Enemy3 : Enemy
                     Resources.Load<Card>("Cards/Earthquake")
                 };
                 break;
-            case EnemyDifficulty.Easy:
+            case Difficulty.Easy:
                 enemyMaxHealth = 150;
                 enemyCardLoadout = new List<Card>
                 {
@@ -38,5 +39,14 @@ public class Enemy3 : Enemy
                 break;
         }
         enemyCurrentHealth = enemyMaxHealth;
+        UpdateHealthBar();
+        LogEnemyInfo();
     }
+
+    public override void AttackPlayer(PlayerBattle player)
+    {
+        Debug.Log($"{enemyName} attacks the player!");
+        // Implement specific attack logic here
+    }
+
 }

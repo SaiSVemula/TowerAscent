@@ -8,8 +8,6 @@ public class LevelLoader : MonoBehaviour
 {
     [SerializeField] public Animator transition;
     [SerializeField] public float transitionTime = 1f;
-
-    // Start is called before the first frame update
     void Start()
     {
         
@@ -34,13 +32,17 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
+    //Helper method to load the next scene saving the previous scene in the GameManager
     public void LoadScene(string currentScene, string nextScene)
     {
-        GameManager.Instance.PreviousScene = currentScene;
+        if(currentScene != "Loadout")
+        {
+            GameManager.Instance.PreviousScene = currentScene;
+        }
         StartCoroutine(LoadLevel(nextScene));
     }
 
-
+    //Transition method that fades in and out of the scene
     IEnumerator LoadLevel(string nextScene)
     {
         Debug.Log("Loading scene: " + nextScene);
@@ -48,5 +50,4 @@ public class LevelLoader : MonoBehaviour
         yield return new WaitForSeconds(1);
         SceneManager.LoadScene(nextScene);
     }
-
 }

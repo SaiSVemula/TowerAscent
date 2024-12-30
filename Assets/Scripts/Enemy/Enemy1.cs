@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy1 : Enemy
+[CreateAssetMenu(menuName = "Enemy/Enemy1")]
+public class Enemy1 : EnemyBattle
 {
-    public override void Initialize(EnemyDifficulty difficulty)
+    public override void Initialize(Difficulty difficulty)
     {
         switch (difficulty)
         {
-            case EnemyDifficulty.Hard:
+            case Difficulty.Hard:
                 enemyMaxHealth = 100;
                 enemyCardLoadout = new List<Card>
                 {
@@ -16,15 +17,23 @@ public class Enemy1 : Enemy
                     Resources.Load<Card>("Cards/First Aid")
                 };
                 break;
-            case EnemyDifficulty.Medium:
+            case Difficulty.Medium:
                 enemyMaxHealth = 70;
                 enemyCardLoadout = new List<Card> { Resources.Load<Card>("Cards/Axe Chop") };
                 break;
-            case EnemyDifficulty.Easy:
+            case Difficulty.Easy:
                 enemyMaxHealth = 50;
                 enemyCardLoadout = new List<Card> { Resources.Load<Card>("Cards/Dagger Slash") };
                 break;
         }
         enemyCurrentHealth = enemyMaxHealth;
+        UpdateHealthBar();
+        LogEnemyInfo();
+    }
+
+    public override void AttackPlayer(PlayerBattle player)
+    {
+        Debug.Log($"{enemyName} attacks the player!");
+        // Implement specific attack logic here
     }
 }

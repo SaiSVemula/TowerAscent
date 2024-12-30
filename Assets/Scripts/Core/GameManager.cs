@@ -19,7 +19,8 @@ public class GameManager : MonoBehaviour
     public string PreviousScene { get => previousScene; set => previousScene = value; }
     public string NextScene { get => nextScene; set => nextScene = value; }
 
-
+    // Difficulty
+    public Difficulty GameDifficulty { get; set; }
 
     private Vector3 PlayerCoord;
     private int CurrentHealth;

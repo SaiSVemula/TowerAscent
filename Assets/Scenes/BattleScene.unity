@@ -1011,7 +1011,7 @@ MonoBehaviour:
   cardTemplate: {fileID: 1889334161}
   battleManager: {fileID: 1878899750}
   playerBattle: {fileID: 939437348}
-  enemyBattle: {fileID: 296553433}
+  enemyBattle: {fileID: 0}
   battleLogScrollRect: {fileID: 248294890}
   logEntryTemplate: {fileID: 1672093712}
   logContainer: {fileID: 1990189643}
@@ -1230,7 +1230,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 296553431}
-  - component: {fileID: 296553433}
   - component: {fileID: 296553430}
   - component: {fileID: 296553429}
   - component: {fileID: 296553428}
@@ -1358,22 +1357,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &296553433
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 296553427}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15f89f110dabbab4d8f84293456aca6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyName: Enemy
-  enemyMaxHealth: 50
-  enemyAttackDamage: 10
-  enemyHealthBar: {fileID: 1926379842}
 --- !u!1 &376277054
 GameObject:
   m_ObjectHideFlags: 0
@@ -5143,17 +5126,15 @@ MonoBehaviour:
     damage to the enemy.\nMagic Cards: You can use magic cards like Fire, Ice, or
     Storm to deal elemental damage to the enemy.\nDefense Cards: Use these cards
     to block some of the damage the enemy would deal to you or your companion. You
-    can use defense cards up to 2 times in a battle.\nCombine Cards: You can combine
-    one weapon card and one magic card to deal a powerful attack. You are limited
-    to combining cards twice per game.\nGameplay:\n\nOn your turn, select one card
-    to play. You can choose to attack with a weapon, use a magic spell, or defend
-    yourself.\nAlternatively, you can combine one weapon and one magic card for a
-    stronger attack.\nYour companion will also attack the enemy automatically during
-    the game.\nBattle Objective:\n\nThe goal is to reduce the enemy\u2019s health
-    to 0 before your health or your companion\u2019s health reaches 0.\nTurn Order:\n\nThe
-    game is turn-based. Once you play your card, your companion will take their turn,
-    followed by the enemy\u2019s attack.\n\nGood luck and have fun! Press 'Start
-    Battle' to begin!"
+    can use defense cards up to 2 times in a battle.\n\nGameplay:\nOn your turn,
+    select one card to play. You can choose to attack with a weapon, use a magic
+    spell, or defend yourself.\nAlternatively, you can combine one weapon and one
+    magic card for a stronger attack.\nYour companion will also attack the enemy
+    automatically during the game.\n\nBattle Objective:\nThe goal is to reduce the
+    enemy\u2019s health to 0 before your health or your companion\u2019s health reaches
+    0.\nTurn Order:\n\nThe game is turn-based. Once you play your card, your companion
+    (if you have one) will take their turn, followed by the enemy\u2019s attack then
+    back to you.\n\nGood luck and have fun! Press 'Start Battle' to begin!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5987,7 +5968,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerBattle: {fileID: 939437348}
-  enemyBattle: {fileID: 296553433}
   battleUI: {fileID: 219014136}
 --- !u!1 &1880434643
 GameObject:
@@ -6227,6 +6207,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0b575e5815e9e449a034ea3416c44ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardImage: {fileID: 0}
+  cardNameText: {fileID: 0}
 --- !u!1 &1901500484
 GameObject:
   m_ObjectHideFlags: 0

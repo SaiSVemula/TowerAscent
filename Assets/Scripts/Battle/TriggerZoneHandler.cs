@@ -140,6 +140,7 @@ public class TriggerZoneHandler : MonoBehaviour
         if (levelLoader != null)
         {
             GameManager.Instance.NextScene = nextScene;
+            Debug.Log($"Next scene set to: {nextScene}");
             levelLoader.LoadScene(currentScene, "Loadout");
         }
         else

@@ -2,12 +2,12 @@ public interface IEnemy
 {
     string EnemyName { get; }
     int EnemyCurrentHealth { get; }
-    void Initialize(EnemyDifficulty difficulty);
+    void Initialize(Difficulty difficulty);
     void TakeDamage(int damageAmount);
     void AttackPlayer(PlayerBattle player);
 }
 
-public enum EnemyDifficulty
+public enum Difficulty
 {
     Easy,
     Medium,
