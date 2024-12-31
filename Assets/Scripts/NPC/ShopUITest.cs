@@ -16,6 +16,7 @@ public class ShopUITest : MonoBehaviour
 
     void Start()
     {
+        // Validate required references
         if (cardGrid == null || messageText == null || goldCounter == null)
         {
             Debug.LogError("ShopUITest: One or more required references are missing in the Inspector!");
@@ -57,8 +58,18 @@ public class ShopUITest : MonoBehaviour
             img.sprite = card.CardSprite != null ? card.CardSprite : defaultCardSprite;
             img.color = Color.white;
 
+            // Add CardDisplay and initialize it
+            CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
+            cardDisplay.Initialize(card);
+
+            // Add a Button component for click handling
+            Button button = newCard.AddComponent<Button>();
+            button.onClick.AddListener(() => OnCardClicked(newCard));
+
+            Debug.Log($"Button listener added for card: {card.Name}");
+
             // Add a child for the card's name
-            AddCardText(newCard, "CardName", cardName, new Vector2(0, -75), 20);
+            AddCardText(newCard, "CardName", card.Name, new Vector2(0, -75), 20);
 
             // Add a child for the card's price
             int price = Random.Range(5, 31); // Random price between 5 and 30
@@ -66,10 +77,6 @@ public class ShopUITest : MonoBehaviour
 
             // Store the card price
             cardPrices[newCard] = price;
-
-            // Add a Button component for click handling
-            Button button = newCard.AddComponent<Button>();
-            button.onClick.AddListener(() => OnCardClicked(newCard));
         }
     }
 
@@ -93,23 +100,44 @@ public class ShopUITest : MonoBehaviour
 
     private void OnCardClicked(GameObject clickedCard)
     {
-        if (!cardPrices.ContainsKey(clickedCard)) return;
+        if (clickedCard == null)
+        {
+            Debug.LogError("OnCardClicked: clickedCard is null.");
+            return;
+        }
+
+        if (!cardPrices.ContainsKey(clickedCard))
+        {
+            Debug.LogError($"OnCardClicked: Card not found in cardPrices dictionary. Card name: {clickedCard.name}");
+            return;
+        }
+
+        CardDisplay cardDisplay = clickedCard.GetComponent<CardDisplay>();
+        if (cardDisplay == null || cardDisplay.CardData == null)
+        {
+            Debug.LogError("OnCardClicked: CardDisplay or CardData is null on clickedCard.");
+            return;
+        }
+
+        if (PlayerInventory.Instance == null)
+        {
+            Debug.LogError("OnCardClicked: PlayerInventory.Instance is null.");
+            return;
+        }
 
         int cardPrice = cardPrices[clickedCard];
 
         if (clickedCard == lastClickedCard)
         {
-            // Deduct gold and update the display
-            if (GameManager.Instance.GetPlayerCoinCount() >= cardPrice)
-            {
-                GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.GetPlayerCoinCount() - cardPrice);
-                goldCounter.UpdateGoldText();
-                messageText.text = $"You bought the card for {cardPrice} Gold!";
-            }
-            else
-            {
-                messageText.text = "Not enough Gold to buy this card.";
-            }
+            // Deduct gold (always allow purchase regardless of available gold for testing)
+            GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.GetPlayerCoinCount() - cardPrice);
+
+            // Add the card to the player's inventory
+            PlayerInventory.Instance.AddCard(cardDisplay.CardData);
+
+            // Update the gold counter and UI
+            goldCounter.UpdateGoldText();
+            messageText.text = $"You bought {cardDisplay.CardData.Name} for {cardPrice} Gold!";
 
             // Reset the last clicked card to prevent repeat buys without another click
             lastClickedCard = null;
@@ -117,7 +145,7 @@ public class ShopUITest : MonoBehaviour
         else
         {
             // Set the message to confirm purchase
-            messageText.text = $"Click again to buy for {cardPrice} Gold.";
+            messageText.text = $"Click again to buy {cardDisplay.CardData.Name} for {cardPrice} Gold.";
             lastClickedCard = clickedCard;
         }
     }
