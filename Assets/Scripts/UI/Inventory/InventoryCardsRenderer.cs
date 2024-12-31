@@ -60,32 +60,47 @@
 //}
 
 
+
+using UnityEngine.SceneManagement; // For scene management
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; // For scene management
 using System.Collections.Generic;
 
 public class InventoryUITest : MonoBehaviour
 {
     [SerializeField] private Transform cardGrid; // Reference to the CardGrid
     [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
-    [SerializeField] private List<Card> cards; // Serialized card list for Unity Inspector
 
-    // Add this variable to check the current scene
-    private bool isLoadoutScene;
-
-    void Start()
+    private void OnEnable()
     {
-        // Check if the current scene is "Loadout"
-        isLoadoutScene = SceneManager.GetActiveScene().name == "Loadout";
-
-        GenerateTestCards(); // Generate cards in UI
+        // Subscribe to the inventory updated event
+        if (PlayerInventory.Instance != null)
+        {
+            PlayerInventory.Instance.OnInventoryUpdated += RefreshInventoryUI;
+        }
     }
 
-    // Generate cards in the UI based on the serialized card list
-    void GenerateTestCards()
+    private void OnDisable()
     {
-        foreach (Card card in cards)
+        // Unsubscribe to avoid memory leaks
+        if (PlayerInventory.Instance != null)
+        {
+            PlayerInventory.Instance.OnInventoryUpdated -= RefreshInventoryUI;
+        }
+    }
+
+    private void Start()
+    {
+        RefreshInventoryUI(); // Display the initial inventory
+    }
+
+    private void RefreshInventoryUI()
+    {
+        ClearInventoryUI(); // Clear existing UI
+
+        List<Card> ownedCards = PlayerInventory.Instance.GetOwnedCards();
+
+        foreach (Card card in ownedCards)
         {
             if (card == null) continue;
 
@@ -93,7 +108,6 @@ public class InventoryUITest : MonoBehaviour
             GameObject newCard = new GameObject(card.Name, typeof(RectTransform), typeof(Image));
 
             // Set the parent to the CardGrid
-            newCard.AddComponent<BoxCollider>();
             newCard.transform.SetParent(cardGrid, false);
 
             // Configure RectTransform
@@ -122,17 +136,14 @@ public class InventoryUITest : MonoBehaviour
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.black;
+        }
+    }
 
-            // Add DraggableItem only if in Loadout scene
-            if (isLoadoutScene)
-            {
-                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
-                draggableItem.parentAfterDrag = cardGrid;
-
-                // Add CardDisplay for additional functionality
-                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
-                cardDisplay.Initialize(card);
-            }
+    private void ClearInventoryUI()
+    {
+        foreach (Transform child in cardGrid)
+        {
+            Destroy(child.gameObject);
         }
     }
 }
