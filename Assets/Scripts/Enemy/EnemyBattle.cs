@@ -67,12 +67,14 @@ using UnityEngine;
 
 public class EnemyBattle : BattleEntity
 {
+    private BattleUI battleUI;
     public string EnemyName { get; private set; }
     private Difficulty difficulty;
     private EnemyType enemyType;
 
     public void Initialize(Difficulty gameDifficulty, EnemyType enemyType)
     {
+        battleUI = FindObjectOfType<BattleUI>();
         difficulty = gameDifficulty;
 
         // Ensure card loadout is cleared and correctly initialized
@@ -228,14 +230,16 @@ public class EnemyBattle : BattleEntity
             Debug.LogWarning($"{EnemyName} has no cards to attack with!");
             return;
         }
-        Debug.Log($"{EnemyName} has {cardLoadout[0].name} cards to attack with.");
+        //Debug.Log($"{EnemyName} has {cardLoadout[0].name} cards to attack with.");
 
         int cardIndex = Random.Range(0, cardLoadout.Count);
         Card selectedCard = cardLoadout[cardIndex];
         if (selectedCard != null)
         {
             Debug.Log($"{EnemyName} uses {selectedCard.Name} against the player!");
-            selectedCard.Use(this, player);
+            string logMessage = selectedCard.Use(this, player);
+            //Debug.Log(logMessage);
+            battleUI.AddBattleLog(logMessage);
         }
         else
         {

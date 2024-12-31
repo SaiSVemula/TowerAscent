@@ -203,6 +203,7 @@
 //}
 
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -273,9 +274,9 @@ public class BattleManager : MonoBehaviour
             Destroy(activeEnemy.gameObject);
         }
 
-        // Instantiate the correct enemy
+        // Instantiate the correct enemy prefab
         GameObject enemyObject = Instantiate(enemyBattle.gameObject, enemySpawnPoint.position, Quaternion.identity);
-        enemyObject.SetActive(true); 
+        enemyObject.SetActive(true);
         activeEnemy = enemyObject.GetComponent<EnemyBattle>();
 
         if (activeEnemy == null)
@@ -284,9 +285,12 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Initialize enemy
+        // Initialize enemy with difficulty and type
         EnemyType enemyType = DetermineEnemyType();
         activeEnemy.Initialize(GameManager.Instance.GameDifficulty, enemyType);
+
+        // Set the name of the instantiated enemy to match the EnemyName
+        enemyObject.name = activeEnemy.EnemyName;
 
         // Set the enemy's rotation to face the player
         enemyObject.transform.LookAt(playerBattle.transform.position);
@@ -353,10 +357,10 @@ public class BattleManager : MonoBehaviour
         battleUI.UpdateEffectTimers();
         isPlayerTurn = false;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
-        StartCoroutine(EnemyTurnWithDelay());
+        StartCoroutine(EnemyTurnWithDelay(selectedCard));
     }
 
-    private IEnumerator EnemyTurnWithDelay()
+    private IEnumerator EnemyTurnWithDelay(Card selectedCard)
     {
         yield return new WaitForSeconds(1f); // Add a delay before enemy action
 
@@ -373,26 +377,63 @@ public class BattleManager : MonoBehaviour
             yield break;
         }
 
-        // Update player effects and UI for the next turn
-        playerBattle.DecrementEffectTimers();
-        battleUI.UpdateEffectTimers();
-
         // Enable player's turn
         isPlayerTurn = true;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
         battleUI.RenderCards(playerBattle.CardLoadout);
+
+        // Update player effects and UI for the next turn
+        playerBattle.DecrementEffectTimers();
+        battleUI.UpdateEffectTimers();
     }
 
     public IEnumerator EndBattle(bool playerWon)
     {
         Debug.Log(playerWon ? "Player wins!" : "Enemy wins!");
+
+        // Save battle results
+        SaveBattleResults(playerWon);
+
+        // Display the battle result
         yield return StartCoroutine(battleUI.ShowBattleResult(playerWon));
 
+        // Disable player interactions after the battle
         isPlayerTurn = false;
 
-        // Transition logic (e.g., load next scene or return to menu)
+        // Transition to the next scene
         Debug.Log("Transitioning to next scene...");
         string nextScene = GameManager.Instance.NextScene;
         levelLoader.LoadScene("BattleScene", nextScene);
     }
+
+
+    private void SaveBattleResults(bool playerWon)
+    {
+        // Update the player's statistics
+        if (playerWon)
+        {
+            GameManager.Instance.AddMiniBattleWin(); // Example: Increment mini-battle wins
+        }
+        else
+        {
+            GameManager.Instance.AddMiniBattleLoss(); // Increment mini-battle losses
+        }
+
+        // Save the player's coins
+        GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.CurrentCoins1 + 10); // adding only 10 for now but will have a varied way to develop it.
+
+        // Save the enemy's defeat
+        if (playerWon)
+        {
+            string defeatedEnemy = activeEnemy.EnemyName;
+            GameManager.Instance.CompleteObjective($"Defeated {defeatedEnemy}");
+        }
+
+        // Save any additional data, like if player unlocked a new card
+        //GameManager.Instance.UpdatePlayerCards(playerBattle.CardLoadout.Select(c => c.Name).ToArray());
+
+        // Log save operation
+        Debug.Log("Battle results saved to GameManager.");
+    }
+
 }

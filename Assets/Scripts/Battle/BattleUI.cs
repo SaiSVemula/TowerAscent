@@ -61,6 +61,7 @@ public class BattleUI : MonoBehaviour
         instructionCanvas.enabled = true;
         battleCanvas.enabled = false;
 
+        UpdateEffectTimers();
 
         SetupInstructions();
         isInitialized = true;

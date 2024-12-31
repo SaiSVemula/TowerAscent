@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class CardDisplay : MonoBehaviour
 {
-    public Card CardData { get; private set; } // Reference to the Card scriptable object
+    public Card CardData { get; set; } // Reference to the Card scriptable object
 
     [SerializeField] private Image cardImage; // UI Image to display the card's sprite
     [SerializeField] private Text cardNameText; // UI Text to display the card's name

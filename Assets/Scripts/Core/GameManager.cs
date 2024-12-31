@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
 
     // Difficulty
     public Difficulty GameDifficulty { get; set; }
+    public int CurrentCoins1 { get => CurrentCoins; set => CurrentCoins = value; }
 
     private Vector3 PlayerCoord;
     private int CurrentHealth;
@@ -186,4 +187,23 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Game state cleared.");
     }
+
+    // Updating playerstats when after a battle
+    public void AddMiniBattleWin()
+    {
+        minibattleWins++;
+        Debug.Log($"Mini battle win recorded. Total wins: {minibattleWins}");
+    }
+
+    public void AddMiniBattleLoss()
+    {
+        minibattleLosses++;
+        Debug.Log($"Mini battle loss recorded. Total losses: {minibattleLosses}");
+    }
+
+    public void CompleteObjective(string objectiveName)
+    {
+        // Implement objective completion logic here
+    }
+
 }

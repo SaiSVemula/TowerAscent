@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class InventoryCardRenderer : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class InventoryCardRenderer : MonoBehaviour
         ClearInventoryUI(); // Clear existing UI
 
         List<Card> ownedCards = PlayerInventory.Instance.GetOwnedCards();
+
 
         foreach (Card card in ownedCards)
         {
@@ -72,6 +74,15 @@ public class InventoryCardRenderer : MonoBehaviour
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.black;
+
+            // if this is rendering in loadout then add the DraggableItem.cs
+            if (SceneManager.GetActiveScene().name == "Loadout")
+            {
+                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
+                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
+                cardDisplay.CardData = card; // Assign the card data
+                draggableItem.parentAfterDrag = cardGrid; // Set the default parent
+            }
         }
     }
 

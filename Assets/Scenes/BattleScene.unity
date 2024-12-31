@@ -983,7 +983,7 @@ GameObject:
   - component: {fileID: 248294891}
   - component: {fileID: 248294890}
   m_Layer: 5
-  m_Name: Scroll View
+  m_Name: DamageFeed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7081,7 +7081,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1291135934929226804, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1934596949035953229, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
@@ -7166,7 +7167,8 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 3883f27460a7ea345910251d9fec8d1a, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2666551832000278341, guid: d025cc784c467154ab0b892b2d94f866, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2299771661253294133, guid: d025cc784c467154ab0b892b2d94f866, type: 3}
@@ -7259,7 +7261,8 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 0cae207ad4583cb4590d38250818a5f1, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4623769747753528709, guid: 41892561c81aa5347b9df07118317f57, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2701494996467105892, guid: 41892561c81aa5347b9df07118317f57, type: 3}
