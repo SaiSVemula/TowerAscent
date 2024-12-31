@@ -10,12 +10,11 @@ public class CompanionAI : MonoBehaviour
     private Animator animator;
 
     public float DefaultFollowDistance = 3f; // Distance to maintain from the player
-    public float FollowSpeed = 5f; // Walking speed
-    public float CatchUpSpeed = 8f; // Catch-up speed
-    public float CatchUpThreshold = 4.5f; // Distance threshold for catch-up speed
-    public float RunningSpeedMultiplier = 2.5f; // Speed multiplier when player is running
-    public float StoppingDistance = 1.8f; // Adjusted to prevent jittering
-    public float RotationSpeed = 5f; // Smoother rotation
+    public float FollowSpeed = 5f; // Normal walking speed
+    public float CatchUpSpeed = 8f; // Increased speed when the player is far away
+    public float FarDistanceThreshold = 6f; // Distance threshold for faster speed
+    public float StoppingDistance = 1.8f; // Stop distance to prevent jittering
+    public float RotationSpeed = 5f; // Smooth rotation speed
 
     void Start()
     {
@@ -44,23 +43,11 @@ public class CompanionAI : MonoBehaviour
 
     private void FollowPlayer()
     {
-        // Target position
-        Vector3 targetPosition = CurrentPlayer.position - CurrentPlayer.forward * DefaultFollowDistance;
-
-        // Align Y position to the ground using raycast
-        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out RaycastHit hitInfo, Mathf.Infinity))
-        {
-            if (hitInfo.collider.CompareTag("Floor"))
-            {
-                targetPosition.y = hitInfo.point.y + 0.1f; // Adjust height to ground level
-            }
-        }
-
-        // Calculate distance to the target
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+        // Calculate distance to the player
+        float distanceToPlayer = Vector3.Distance(transform.position, CurrentPlayer.position);
 
         // Stop moving when within the stopping distance
-        if (distanceToTarget <= StoppingDistance)
+        if (distanceToPlayer <= StoppingDistance)
         {
             CompanionRigidbody.velocity = Vector3.zero;
             animator.SetFloat("Speed", 0f); // Play idle animation
@@ -68,45 +55,27 @@ public class CompanionAI : MonoBehaviour
         }
 
         // Determine speed based on distance
-        float speed = FollowSpeed;
-        if (distanceToTarget > CatchUpThreshold)
-        {
-            speed = CatchUpSpeed;
-        }
-
-        // Apply running multiplier if the player is running
-        if (Input.GetKey(KeyCode.LeftShift) && IsPlayerMoving())
-        {
-            speed *= RunningSpeedMultiplier;
-        }
+        float speed = (distanceToPlayer > FarDistanceThreshold) ? CatchUpSpeed : FollowSpeed;
 
         // Movement direction
-        Vector3 direction = (targetPosition - transform.position).normalized;
+        Vector3 direction = (CurrentPlayer.position - transform.position).normalized;
 
-        // Smoothly rotate to face movement direction
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * RotationSpeed);
-        }
+        // Smoothly rotate to face the player
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * RotationSpeed);
 
-        // Move towards the target position
+        // Move towards the player
         Vector3 newPosition = transform.position + direction * speed * Time.deltaTime;
         CompanionRigidbody.MovePosition(newPosition);
 
         // Update the animator's Speed parameter for transitions
-        float animationSpeed = Mathf.Clamp(speed / CatchUpSpeed, 0.5f, 1f); // Normalize speed
-        animator.SetFloat("Speed", animationSpeed);
+        float normalizedSpeed = Mathf.Clamp(speed / CatchUpSpeed, 0f, 1f);
+        animator.SetFloat("Speed", normalizedSpeed); // Use RunForward animation
     }
 
     public void Befriend()
     {
         floatingText.SetActive(false);
         isBefriended = true;
-    }
-
-    private bool IsPlayerMoving()
-    {
-        return Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D);
     }
 }
