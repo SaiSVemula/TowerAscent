@@ -220,9 +220,9 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.PreviousScene = "ExplorationScene";
-        GameManager.Instance.NextScene = "Level 1";
-        GameManager.Instance.GameDifficulty = Difficulty.Hard;
+        //GameManager.Instance.PreviousScene = "ExplorationScene";
+        //GameManager.Instance.NextScene = "Level 1";
+        //GameManager.Instance.GameDifficulty = Difficulty.Hard;
         levelLoader = FindObjectOfType<LevelLoader>();
 
         if (levelLoader == null)
