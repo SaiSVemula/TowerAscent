@@ -67,6 +67,39 @@ public class BattleUI : MonoBehaviour
         Debug.Log("BattleUI Initialized");
     }
 
+    public bool IsBattleReady { get; private set; } = false;
+
+    private void OnStartBattleClick()
+    {
+        if (!isInitialized)
+        {
+            Debug.LogError("BattleUI not initialized!");
+            return;
+        }
+
+        Debug.Log("Start Battle button clicked");
+
+        // Disable instruction canvas
+        instructionCanvas.enabled = false;
+
+        // Signal that the battle is ready to begin
+        IsBattleReady = true;
+
+        // Enable game status text
+        gameStatusText.enabled = true;
+
+        // Start battle initialization
+        if (battleManager != null)
+        {
+            StartCoroutine(battleManager.InitializeBattle());
+        }
+        else
+        {
+            Debug.LogError("BattleManager reference missing!");
+        }
+    }
+
+
     private void SetupInstructions()
     {
         if (startBattleButton == null || gameInstructionText == null)
@@ -85,33 +118,6 @@ public class BattleUI : MonoBehaviour
 
         startBattleButton.onClick.RemoveAllListeners();
         startBattleButton.onClick.AddListener(OnStartBattleClick);
-    }
-
-    // Start battle button click event
-    private void OnStartBattleClick()
-    {
-        if (!isInitialized)
-        {
-            Debug.LogError("BattleUI not initialized!");
-            return;
-        }
-
-        Debug.Log("Start Battle clicked");
-
-        // First disable instruction canvas
-        instructionCanvas.enabled = false;
-
-        gameStatusText.enabled = true;
-
-        // Start battle initialization
-        if (battleManager != null)
-        {
-            StartCoroutine(battleManager.InitializeBattle());
-        }
-        else
-        {
-            Debug.LogError("BattleManager reference missing!");
-        }
     }
 
     private void Start()

@@ -160,6 +160,8 @@ public class PlayerBattle : BattleEntity
     [SerializeField] private Slider healthBar;
     protected override void Awake()
     {
+        animator = GetComponent<Animator>();
+        //animator.SetBool("InBattle", true);
         base.Awake();
         healthBar.maxValue = maxHealth;
         UpdateHealthBar();
@@ -179,21 +181,6 @@ public class PlayerBattle : BattleEntity
         if (healthBar != null)
         {
             healthBar.value = currentHealth;
-        }
-    }
-
-    public override void UseCard(int cardIndex, BattleEntity target)
-    {
-        if (cardIndex < 0 || cardIndex >= cardLoadout.Count)
-        {
-            return;
-        }
-
-        Card selectedCard = cardLoadout[cardIndex];
-        if (selectedCard != null)
-        {
-            Debug.Log(selectedCard.Use(this, target));
-            //animator.SetTrigger("Attack");
         }
     }
 

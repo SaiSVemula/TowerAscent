@@ -4,7 +4,8 @@ using UnityEngine;
 
 public abstract class BattleEntity : MonoBehaviour
 {
-    //protected Animator animator;
+    protected Animator animator;
+    //public Animator Animator => animator;
 
     [SerializeField] protected int maxHealth;
     protected int currentHealth;
@@ -25,12 +26,9 @@ public abstract class BattleEntity : MonoBehaviour
 
     protected virtual void Awake()
     {
-        //animator.SetBool("InBattle", true);
         currentHealth = maxHealth;
         currentDefence = baseDefence;
     }
-
-    public abstract void UseCard(int cardIndex, BattleEntity target);
 
     public void TakeDamage(int damageAmount)
     {

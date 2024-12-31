@@ -136,7 +136,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2299771661253294133}
-  - component: {fileID: 2565256597617516176}
+  - component: {fileID: 6697442847461947802}
   - component: {fileID: 1040282781916139717}
   - component: {fileID: 6709723601480938429}
   - component: {fileID: 3409542956321639254}
@@ -164,7 +164,7 @@ Transform:
   - {fileID: 1799262809875396259}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 184.131, z: 0}
---- !u!114 &2565256597617516176
+--- !u!114 &6697442847461947802
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -173,11 +173,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2009643313600865662}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7cac46ac59a7f94cab4c3dee7844ef4, type: 3}
+  m_Script: {fileID: 11500000, guid: 627e0f2fa3fd6d14b8a99a69c43e4b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Enemy2
-  enemyHealthBar: {fileID: 6436282672099979797}
+  maxHealth: 0
+  baseDefence: 0
 --- !u!33 &1040282781916139717
 MeshFilter:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ using UnityEngine;
 
 public abstract class BattleEntity : MonoBehaviour
 {
-    protected Animator animator;
+    //protected Animator animator;
 
     [SerializeField] protected int maxHealth;
     protected int currentHealth;
@@ -29,7 +29,7 @@ public abstract class BattleEntity : MonoBehaviour
 
     protected virtual void Awake()
     {
-        animator.SetBool("InBattle", true);
+        //animator.SetBool("InBattle", true);
         currentHealth = maxHealth;
         currentDefence = baseDefence;
     }
@@ -40,7 +40,7 @@ public abstract class BattleEntity : MonoBehaviour
     {
         int netDamage = Mathf.Max(damageAmount - currentDefence, 0);
         currentHealth = Mathf.Max(currentHealth - netDamage, 0);
-        animator.SetTrigger("GetHit");
+        //animator.SetTrigger("GetHit");
         Debug.Log($"{name} takes {netDamage} damage. Current health: {currentHealth}");
     }
 
@@ -132,6 +132,8 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.PreviousScene = "ExplorationScene";
+        GameManager.Instance.NextScene = "Level 1";
         levelLoader = FindObjectOfType<LevelLoader>();
 
         if (levelLoader == null)
@@ -175,34 +177,46 @@ public class BattleManager : MonoBehaviour
     private void SpawnCorrectEnemy()
     {
         string previousScene = GameManager.Instance.PreviousScene;
-
-        Debug.Log($"Spawning enemy based on previous scene: {previousScene}");
+        EnemyBattle spawnedEnemy = null;
 
         switch (previousScene)
         {
             case "ExplorationScene":
-                activeEnemy = Instantiate(enemy1Prefab, enemySpawnPoint.position, Quaternion.identity);
+                spawnedEnemy = Instantiate(enemy1Prefab, enemySpawnPoint.position, Quaternion.identity);
                 break;
             case "Level 1":
-                activeEnemy = Instantiate(enemy2Prefab, enemySpawnPoint.position, Quaternion.identity);
+                spawnedEnemy = Instantiate(enemy2Prefab, enemySpawnPoint.position, Quaternion.identity);
                 break;
             case "Level 2":
-                activeEnemy = Instantiate(enemy3Prefab, enemySpawnPoint.position, Quaternion.identity);
+                spawnedEnemy = Instantiate(enemy3Prefab, enemySpawnPoint.position, Quaternion.identity);
                 break;
             default:
                 Debug.LogError("Invalid PreviousScene value!");
                 return;
         }
 
-        if (activeEnemy != null)
+        if (spawnedEnemy != null)
         {
+            activeEnemy = spawnedEnemy; // Set the active enemy in BattleManager
             activeEnemy.Initialize(GameManager.Instance.GameDifficulty);
+
+            // Notify BattleUI of the active enemy
+            if (battleUI != null)
+            {
+                battleUI.SetActiveEnemy(activeEnemy);
+            }
+            else
+            {
+                Debug.LogError("BattleUI reference missing!");
+            }
         }
         else
         {
             Debug.LogError("Failed to spawn enemy!");
         }
     }
+
+
     public void OnPlayerUseCard(int cardIndex)
     {
         if (!isPlayerTurn)
@@ -592,6 +606,19 @@ public class BattleUI : MonoBehaviour
         Vector2 contentSize = logContainer.sizeDelta;
         contentSize.y = Mathf.Abs(currentY);
         logContainer.sizeDelta = contentSize;
+    }
+
+    // Set the active enemy for the battle based on the level
+    public void SetActiveEnemy(EnemyBattle enemy)
+    {
+        if (enemy == null)
+        {
+            Debug.LogError("Enemy reference is null!");
+            return;
+        }
+
+        enemyBattle = enemy; // Dynamically assign the active enemy
+        Debug.Log($"Active enemy set: {enemyBattle.name}");
     }
 
     private IEnumerator ScrollToTop()
@@ -1469,6 +1496,7 @@ public abstract class EnemyBattle : BattleEntity
         if (selectedCard != null)
         {
             Debug.Log($"{EnemyName} used {selectedCard.Name} on {target.name}");
+            //animator.SetTrigger("Attack");
             Debug.Log(selectedCard.Use(this, target));
         }
     }
@@ -1668,6 +1696,160 @@ public class Player : MonoBehaviour
 ### **Player\PlayerBattle.cs**
 
 ```csharp
+
+//using System.Collections;
+//using System.Collections.Generic;
+//using System.Linq;
+//using UnityEngine;
+//using UnityEngine.UI;
+
+//public class PlayerBattle : MonoBehaviour
+//{
+//    [SerializeField] private int playerMaxHealth = 100;
+//    private int playerCurrentHealth;
+
+//    [SerializeField] private int playerBaseDefence = 0;
+//    private int playerCurrentDefence;
+
+//    [SerializeField] private List<Card> playerCardLoadout;
+
+//    [SerializeField] private Slider playerHealthBar; // Player-specific health bar
+
+//    // Temporary defense and healing effects stored as (value, timer) tuples
+//    private List<(int value, int timer)> temporaryDefenses = new List<(int, int)>();
+//    private List<(int value, int timer)> temporaryHeals = new List<(int, int)>();
+
+//    public List<(int value, int timer)> TemporaryDefences => temporaryDefenses;
+//    public List<(int value, int timer)> TemporaryHeals => temporaryHeals;
+
+//    public bool HasActiveDefense => temporaryDefenses.Count > 0;
+//    public bool HasActiveHealing => temporaryHeals.Count > 0;
+
+
+//    public int PlayerCurrentHealth => playerCurrentHealth;
+//    public int PlayerCurrentDefence => playerCurrentDefence;
+//    public List<Card> PlayerCardLoadout => playerCardLoadout;
+
+//    public Animator animator;
+
+//    private void Awake()
+//    {
+//        playerCurrentHealth = playerMaxHealth;
+//        playerCurrentDefence = playerBaseDefence;
+
+//        playerHealthBar.maxValue = playerMaxHealth;
+//        UpdatePlayerHealthBar();
+
+//        playerCardLoadout = new List<Card>
+//        {
+//            Resources.Load<Card>("Cards/Axe Chop"),
+//            Resources.Load<Card>("Cards/Fireball"),
+//            Resources.Load<Card>("Cards/Dodge"),
+//            Resources.Load<Card>("Cards/First Aid")
+//        };
+
+//        animator.SetBool("InBattle", true);
+
+//    }
+
+//    private void UpdatePlayerHealthBar()
+//    {
+//        if (playerHealthBar != null)
+//        {
+//            playerHealthBar.value = playerCurrentHealth;
+//        }
+//    }
+
+//    public void PlayerTakeDamage(int damageAmount)
+//    {
+//        int netDamage = Mathf.Max(damageAmount - playerCurrentDefence, 0);
+//        playerCurrentHealth = Mathf.Max(playerCurrentHealth - netDamage, 0);
+//        UpdatePlayerHealthBar();
+//        Debug.Log($"Player takes {netDamage} damage. Current health: {playerCurrentHealth}");
+//        animator.SetTrigger("GetHit");
+//    }
+
+//    public void PlayerAddDefence(int defenceAmount)
+//    {
+//        playerCurrentDefence += defenceAmount;
+//        Debug.Log($"Player defence increased by {defenceAmount}. Current defence: {playerCurrentDefence}");
+//    }
+
+//    public void PlayerHeal(int healAmount)
+//    {
+//        playerCurrentHealth = Mathf.Min(playerCurrentHealth + healAmount, playerMaxHealth);
+//        Debug.Log($"Player heals {healAmount}. Current health: {playerCurrentHealth}");
+//    }
+
+//    public void PlayerResetDefence()
+//    {
+//        playerCurrentDefence = playerBaseDefence;
+//        Debug.Log("Player defence reset to base.");
+//    }
+
+//    public void UsePlayerCard(int cardIndex, EnemyBattle targetEnemy)
+//    {
+//        if (cardIndex < 0 || cardIndex >= playerCardLoadout.Count) return;
+
+//        Card selectedCard = playerCardLoadout[cardIndex];
+//        if (selectedCard != null)
+//        {
+//            selectedCard.Use(this, targetEnemy);
+//            animator.SetTrigger("Attack");
+//        }
+
+//    }
+
+//    public void AddTemporaryDefence(int value, int timer)
+//    {
+//        Debug.Log($"Adding defense: Value = {value}, Timer = {timer}");
+//        temporaryDefenses.Add((value, timer));
+//        UpdateCurrentDefence();
+
+//    }
+
+//    public void AddTemporaryHealing(int value, int timer)
+//    {
+//        Debug.Log($"Adding healing: Value = {value}, Timer = {timer}");
+//        temporaryHeals.Add((value, timer));
+//    }
+
+//    // Update current defense based on active temporary defenses
+//    private void UpdateCurrentDefence()
+//    {
+//        playerCurrentDefence = playerBaseDefence + temporaryDefenses.Sum(d => d.value);
+//        Debug.Log($"Player defense updated. Current defense: {playerCurrentDefence}");
+//    }
+
+//    // Decrement all effect timers and remove expired effects
+//    public void DecrementEffectTimers()
+//    {
+//        // Defense timers
+//        for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
+//        {
+//            temporaryDefenses[i] = (temporaryDefenses[i].value, temporaryDefenses[i].timer - 1);
+//            if (temporaryDefenses[i].timer <= 0)
+//            {
+//                temporaryDefenses.RemoveAt(i);
+//            }
+//        }
+//        UpdateCurrentDefence();
+
+//        // Healing timers
+//        for (int i = temporaryHeals.Count - 1; i >= 0; i--)
+//        {
+//            // Apply healing before decrementing timer
+//            PlayerHeal(temporaryHeals[i].value);
+//            temporaryHeals[i] = (temporaryHeals[i].value, temporaryHeals[i].timer - 1);
+//            if (temporaryHeals[i].timer <= 0)
+//            {
+//                temporaryHeals.RemoveAt(i);
+//            }
+//        }
+//    }
+//}
+
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -1710,7 +1892,7 @@ public class PlayerBattle : BattleEntity
         if (selectedCard != null)
         {
             Debug.Log(selectedCard.Use(this, target));
-            animator.SetTrigger("Attack");
+            //animator.SetTrigger("Attack");
         }
     }
 
