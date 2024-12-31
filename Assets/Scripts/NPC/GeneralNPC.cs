@@ -1,55 +1,71 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using TMPro;
+
+[System.Serializable]
+public class DialogueNode
+{
+    public string NPCDialogue;
+    public List<PlayerResponse> PlayerResponses; // Player response options
+    public DialogueNode NextNode; // Allow serialization for branching
+}
+
+[System.Serializable]
+public class PlayerResponse
+{
+    public string ResponseText; // The text of the player response
+    public DialogueNode NextNode; // Allow serialization for branching
+}
 
 public class GeneralNPC : MonoBehaviour
 {
-
     public Animator animator;
 
     [Header("Floating Text and Dialogue")]
-    public GameObject floatingText; // Text to display when the player is near
-    public GameObject dialogueUI; // Reference to the dialogue UI
-    public Text dialogueText; // Reference to the Text component in the dialogue UI
+    public string npcName = "NPC1"; // Name of the NPC
+    public GameObject floatingText;
+    public GameObject dialogueUI;
+    public Text dialogueText;
+    public Transform responsePanel;
+    public GameObject responseButtonPrefab;
 
     [Header("Detection Settings")]
-    public float detectionRadius = 10f; // Radius for detecting the player
-    private Transform player; // Reference to the player's transform
+    public float detectionRadius = 10f;
+    private Transform player;
 
-    [Header("Subtitle Settings")]
-    public string[] dialogueLines; // Dialogue lines for the NPC
-    public float subtitleDisplayDuration = 3f; // Duration to display each subtitle
-    private bool isInteracting = false; // Is the player currently interacting
+    [Header("Dialogue Settings")]
+    public List<DialogueNode> dialogueNodes;
+    private DialogueNode currentDialogueNode;
+    private bool isInteracting = false;
+    private bool awaitingPlayerResponse = false;
+
+    public float subtitleDisplayDuration = 3f;
 
     protected virtual void Start()
     {
-        // Disable floating text and dialogue UI at the start
-        if (floatingText != null)
+        if (floatingText != null) floatingText.SetActive(false);
+        if (dialogueUI != null) dialogueUI.SetActive(false);
+
+        // Clear any leftover buttons or objects in the ResponsePanel
+        if (responsePanel != null)
         {
-            floatingText.SetActive(false);
+            foreach (Transform child in responsePanel)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
-        if (dialogueUI != null)
-        {
-            dialogueUI.SetActive(false);
-        }
-
-        // Locate the player by tag
         player = GameObject.FindWithTag("Player")?.transform;
-
-        if (player == null)
-        {
-            Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
-        }
+        if (player == null) Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
     }
 
     void Update()
     {
         if (player == null || isInteracting) return;
 
-        // Calculate the distance to the player
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // Handle interactions based on distance
         if (distanceToPlayer <= detectionRadius)
         {
             OnPlayerInRange();
@@ -62,16 +78,10 @@ public class GeneralNPC : MonoBehaviour
 
     protected virtual void OnPlayerInRange()
     {
-        // Enable floating text when in range
-        if (floatingText != null && !floatingText.activeSelf)
-        {
-            floatingText.SetActive(true);
-        }
+        if (floatingText != null && !floatingText.activeSelf) floatingText.SetActive(true);
 
-        // Face the player
         FacePlayer();
 
-        // Detect interaction input
         if (Input.GetKeyDown(KeyCode.E))
         {
             StartInteraction();
@@ -80,22 +90,14 @@ public class GeneralNPC : MonoBehaviour
 
     protected virtual void OnPlayerOutOfRange()
     {
-        // Disable floating text and end interaction when out of range
-        if (floatingText != null && floatingText.activeSelf)
-        {
-            floatingText.SetActive(false);
-        }
-        if (isInteracting)
-        {
-            EndInteraction();
-        }
+        if (floatingText != null && floatingText.activeSelf) floatingText.SetActive(false);
+        if (isInteracting) EndInteraction();
     }
 
     private void FacePlayer()
     {
-        // Make the NPC face the player
         Vector3 direction = (player.position - transform.position).normalized;
-        direction.y = 0; // Keep the rotation horizontal
+        direction.y = 0;
         if (direction != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(direction);
@@ -105,59 +107,133 @@ public class GeneralNPC : MonoBehaviour
     public virtual void StartInteraction()
     {
         isInteracting = true;
-
-        // Disable floating text
-        if (floatingText != null)
-        {
-            floatingText.SetActive(false);
-        }
-
-        // Enable dialogue UI
-        if (dialogueUI != null)
-        {
-            dialogueUI.SetActive(true);
-        }
+        if (floatingText != null) floatingText.SetActive(false);
+        if (dialogueUI != null) dialogueUI.SetActive(true);
 
         animator.SetTrigger("WaveTrigger");
 
-        // Display a random dialogue line
-        DisplayRandomDialogueLine();
+        if (dialogueNodes.Count > 0)
+        {
+            currentDialogueNode = dialogueNodes[0];
+            DisplayDialogueNode(currentDialogueNode);
+        }
+        else
+        {
+            Debug.LogWarning("No dialogue nodes assigned to this NPC.");
+            EndInteraction();
+        }
     }
 
     public virtual void EndInteraction()
     {
         isInteracting = false;
+        awaitingPlayerResponse = false;
+        if (dialogueUI != null) dialogueUI.SetActive(false);
 
-        // Disable dialogue UI
-        if (dialogueUI != null)
-        {
-            dialogueUI.SetActive(false);
-        }
+        ClearResponsePanel();
     }
 
-    private void DisplayRandomDialogueLine()
+    private void DisplayDialogueNode(DialogueNode node)
     {
-        if (dialogueLines.Length > 0)
+        if (node == null) return;
+
+        if (dialogueText != null) dialogueText.text = $"{npcName}: {node.NPCDialogue}";
+
+        awaitingPlayerResponse = node.PlayerResponses.Count > 0;
+
+        if (awaitingPlayerResponse)
         {
-            // Pick a random dialogue line
-            int randomIndex = Random.Range(0, dialogueLines.Length);
-            string randomDialogue = dialogueLines[randomIndex];
-
-            Debug.Log($"NPC Dialogue: {randomDialogue}");
-
-            // Display dialogue in the UI
-            if (dialogueText != null)
-            {
-                dialogueText.text = randomDialogue;
-            }
-
-            // Schedule the end of interaction after displaying the dialogue
-            Invoke(nameof(EndInteraction), subtitleDisplayDuration);
+            Invoke(nameof(DisplayPlayerResponses), subtitleDisplayDuration); // Delay before showing buttons
         }
         else
         {
-            Debug.LogWarning("No dialogue lines assigned to this NPC.");
+            Invoke(nameof(ProceedToNextDialogue), subtitleDisplayDuration);
+        }
+    }
+
+    private void ProceedToNextDialogue()
+    {
+        if (currentDialogueNode != null && currentDialogueNode.NextNode != null)
+        {
+            currentDialogueNode = currentDialogueNode.NextNode;
+            DisplayDialogueNode(currentDialogueNode);
+        }
+        else
+        {
             EndInteraction();
         }
+    }
+
+    private void DisplayPlayerResponses()
+    {
+        if (dialogueText != null) dialogueText.text = ""; // Hide NPC dialogue
+
+        ClearResponsePanel();
+
+        foreach (PlayerResponse response in currentDialogueNode.PlayerResponses)
+        {
+            if (responseButtonPrefab == null)
+            {
+                Debug.LogError("ResponseButtonPrefab is not assigned.");
+                continue;
+            }
+
+            GameObject button = Instantiate(responseButtonPrefab, responsePanel);
+            button.SetActive(true);
+
+            var tmpText = button.GetComponentInChildren<TMP_Text>();
+            var uiText = button.GetComponentInChildren<Text>();
+
+            if (tmpText != null)
+            {
+                tmpText.text = response.ResponseText;
+            }
+            else if (uiText != null)
+            {
+                uiText.text = response.ResponseText;
+            }
+            else
+            {
+                Debug.LogError("ResponseButton is missing a Text or TMP_Text component!");
+            }
+
+            Button buttonComponent = button.GetComponent<Button>();
+            buttonComponent.onClick.AddListener(() => HandlePlayerResponse(response));
+        }
+
+        responsePanel.gameObject.SetActive(true);
+    }
+
+    private void ClearResponsePanel()
+    {
+        // Clear the response panel without triggering excessive layout updates
+        foreach (Transform child in responsePanel)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    public void HandlePlayerResponse(PlayerResponse response)
+    {
+        if (response != null)
+        {
+            responsePanel.gameObject.SetActive(false);
+            ClearResponsePanel();
+
+            if (dialogueText != null) dialogueText.text = $"YOU: {response.ResponseText}";
+
+            Invoke(nameof(DisplayNextNPCDialogue), subtitleDisplayDuration);
+
+            currentDialogueNode = response.NextNode;
+        }
+        else
+        {
+            EndInteraction();
+        }
+    }
+
+    private void DisplayNextNPCDialogue()
+    {
+        DisplayDialogueNode(currentDialogueNode);
     }
 }
