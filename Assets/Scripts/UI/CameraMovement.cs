@@ -20,9 +20,11 @@ public class CameraMovement : MonoBehaviour
 
     void Start() // enables the input script when starting the code
     {
+
         playerControls = new PlayerControls();
         playerControls.Player.Enable(); // Enable input actions
         isThirdPerson = GameManager.Instance.GetPOV();
+        rotationSpeed = GameManager.Instance.GetCamSensitivity();
     }
 
     void Update()
