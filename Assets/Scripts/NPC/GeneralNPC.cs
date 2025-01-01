@@ -220,7 +220,7 @@ public class GeneralNPC : MonoBehaviour
             responsePanel.gameObject.SetActive(false);
             ClearResponsePanel();
 
-            if (dialogueText != null) dialogueText.text = $"YOU: {response.ResponseText}";
+            if (dialogueText != null) dialogueText.text = $"You: {response.ResponseText}";
 
             Invoke(nameof(DisplayNextNPCDialogue), subtitleDisplayDuration);
 
