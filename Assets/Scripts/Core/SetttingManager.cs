@@ -3,6 +3,13 @@ using UnityEngine.UI;
 
 public class SettingsManager : MonoBehaviour
 {
+
+    [Header("Settings Panels")]
+    [SerializeField] private GameObject generalPanel;
+    [SerializeField] private GameObject audioPanel;
+    [SerializeField] private GameObject videoPanel;
+
+
     public Button[] difficultyButtons;
     public Button[] shadowButtons;
     public Button[] particleButtons;
@@ -54,6 +61,45 @@ public class SettingsManager : MonoBehaviour
         RestoreSettings();
     }
 
+    public void GeneralSettings()
+    {
+        showpanel(generalPanel);
+    }
+
+    public void AudioSettings()
+    {
+        showpanel(audioPanel);
+    }
+
+    public void VideoSettings()
+    {
+        showpanel(videoPanel);
+    }
+
+    private void showpanel(GameObject panelToShow)
+    {
+        // Deactivate all panels
+        generalPanel.SetActive(false);
+        audioPanel.SetActive(false);
+        videoPanel.SetActive(false);
+
+        // Activate the settings panel and the selected panel
+        panelToShow.SetActive(true);
+    }
+
+    public void exit()
+    {
+        // Load the previous scene when exiting the settings menu
+        if (!string.IsNullOrEmpty(GameManager.Instance.PreviousScene))
+        {
+            GameManager.Instance.LoadScene(GameManager.Instance.PreviousScene);
+        }
+        else
+        {
+            Debug.LogError("Previous scene not set!");
+        }
+    }
+
     private void AssignButtonGroup(Button[] buttons, System.Action<int> onClickAction)
     {
         for (int i = 0; i < buttons.Length; i++)
@@ -92,7 +138,8 @@ public class SettingsManager : MonoBehaviour
 
     private void SetShadows(bool shadowsOn)
     {
-        PlayerPrefs.SetInt("ShadowsEnabled", shadowsOn ? 1 : 0); 
+        PlayerPrefs.SetInt("ShadowsEnabled", shadowsOn ? 1 : 0);
+        QualitySettings.shadows = shadowsOn ? ShadowQuality.All : ShadowQuality.Disable;
         Debug.Log($"Shadows set to: {shadowsOn}");
     }
 
@@ -110,9 +157,19 @@ public class SettingsManager : MonoBehaviour
 
     private void SetViewMode(bool isThirdPerson)
     {
+        // Save the view mode to PlayerPrefs
         PlayerPrefs.SetInt("IsThirdPerson", isThirdPerson ? 1 : 0);
+        
+        // Determine the POV as 1 for first-person or 3 for third-person
+        int POV = isThirdPerson ? 3 : 1;
+        
+        // Update the POV in the GameManager
+        GameManager.Instance.UpdatePOV(POV);
+        
+        // Output to the debug log
         Debug.Log($"View mode set to: {(isThirdPerson ? "3rd Person" : "1st Person")}");
     }
+
 
     private void SetPanel(int index)
     {
