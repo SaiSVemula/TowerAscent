@@ -7,6 +7,8 @@ TagManager:
   - Floor
   - PromptZone
   - ForcedZone
+  - Item
+  - disappear1
   layers:
   - Default
   - TransparentFX
