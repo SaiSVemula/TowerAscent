@@ -130,45 +130,38 @@ public class SettingsManager : MonoBehaviour
         }
     }
 
-    private void SetDifficulty(int index)
+    private void SetDifficulty(int index) // NOT DONE (SANDEEP)
     {
         PlayerPrefs.SetInt("SelectedDifficulty", index);
         Debug.Log($"Difficulty set to: {index}");
     }
 
-    private void SetShadows(bool shadowsOn)
+    private void SetShadows(bool shadowsOn) //  DONE
     {
         PlayerPrefs.SetInt("ShadowsEnabled", shadowsOn ? 1 : 0);
         QualitySettings.shadows = shadowsOn ? ShadowQuality.All : ShadowQuality.Disable;
         Debug.Log($"Shadows set to: {shadowsOn}");
     }
 
-    private void SetParticles(bool particlesOn)
+    private void SetParticles(bool particlesOn) // NOT DONE
     {
         PlayerPrefs.SetInt("ParticlesEnabled", particlesOn ? 1 : 0); 
         Debug.Log($"Particles set to: {particlesOn}");
     }
 
-    private void SetEffects(bool effectsOn)
+    private void SetEffects(bool effectsOn) // NOT DONE
     {
         PlayerPrefs.SetInt("EffectsEnabled", effectsOn ? 1 : 0); 
         Debug.Log($"Effects set to: {effectsOn}");
     }
 
-    private void SetViewMode(bool isThirdPerson)
+    private void SetViewMode(bool isThirdPerson) // DONE
     {
-        // Save the view mode to PlayerPrefs
         PlayerPrefs.SetInt("IsThirdPerson", isThirdPerson ? 1 : 0);
-        
-        // Determine the POV as 1 for first-person or 3 for third-person
-        int POV = isThirdPerson ? 3 : 1;
-        
-        // Update the POV in the GameManager
-        GameManager.Instance.UpdatePOV(POV);
-        
-        // Output to the debug log
+        GameManager.Instance.UpdatePOV(isThirdPerson); // Pass the bool directly
         Debug.Log($"View mode set to: {(isThirdPerson ? "3rd Person" : "1st Person")}");
     }
+
 
 
     private void SetPanel(int index)

@@ -22,6 +22,7 @@ public class CameraMovement : MonoBehaviour
     {
         playerControls = new PlayerControls();
         playerControls.Player.Enable(); // Enable input actions
+        isThirdPerson = GameManager.Instance.GetPOV();
     }
 
     void Update()

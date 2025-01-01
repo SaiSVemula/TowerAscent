@@ -6732,8 +6732,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingMenu, Assembly-CSharp
+      - m_Target: {fileID: 145859969}
+        m_TargetAssemblyTypeName: SettingsManager, Assembly-CSharp
         m_MethodName: exit
         m_Mode: 1
         m_Arguments:

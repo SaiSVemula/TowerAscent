@@ -31,8 +31,7 @@ public class GameManager : MonoBehaviour
     private int minibattleLosses;
     private int bigbattleWins;
     private int bigbattleLosses;
-
-    private int POV;
+    private bool thirdperson;
 
     private void Awake()
     {
@@ -116,7 +115,7 @@ public class GameManager : MonoBehaviour
     public int GetMinibattleLosses() { return minibattleLosses; }
     public int GetBigbattleWins() { return bigbattleWins; }
     public int GetBigbattleLosses() { return bigbattleLosses; }
-    public int GetPOV() { return POV; }
+    public bool GetPOV() { return thirdperson; } // Getter for PlayerName
 
     // Methods to set values on the GameManager
     public void UpdateCurrentScene() { SavedScene = SceneManager.GetActiveScene().name; }
@@ -129,7 +128,7 @@ public class GameManager : MonoBehaviour
     public void UpdateMinibattleLosses(int losses) { minibattleLosses = losses; }
     public void UpdateBigbattleWins(int wins) { bigbattleWins = wins; }
     public void UpdateBigbattleLosses(int losses) { bigbattleLosses = losses; }
-    public void UpdatePOV(int pov) { POV = pov; }
+    public void UpdatePOV(bool thirdprs) { thirdperson = thirdprs; }
 
     // Full get method, used when saving a game to perfs
     public (string, Vector3, int, int, string[], string, int, int, int, int) GetFullGameState()
@@ -180,7 +179,6 @@ public class GameManager : MonoBehaviour
         SavedScene = "";
         NextScene = "";
         PlayerName = "";
-        POV = 3;
 
         if (playerInstance != null)
         {
