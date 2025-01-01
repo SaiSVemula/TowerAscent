@@ -7,6 +7,21 @@ public class BagUIManager : MonoBehaviour
     public Rigidbody playerRigidbody; // Reference to the player's Rigidbody
     private Vector3 savedVelocity; // To save player's velocity when paused
     private bool wasKinematic; // To save the Rigidbody's kinematic state
+    public GameObject uiCanvas; // Reference to the UI_Canvas
+
+    void Start()
+    {
+        // Automatically disable and enable the canvas to fix button issues
+        if (uiCanvas != null)
+        {
+            uiCanvas.SetActive(false); // Temporarily disable the canvas
+            uiCanvas.SetActive(true); // Re-enable it to refresh EventSystem
+        }
+        else
+        {
+            Debug.LogWarning("UI_Canvas not assigned in the inspector.");
+        }
+    }
 
     void Update()
     {
