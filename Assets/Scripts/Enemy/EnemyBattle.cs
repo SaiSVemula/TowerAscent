@@ -64,48 +64,77 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum EnemyType
+{
+    Enemy1,
+    Enemy2,
+    Enemy3
+}
 
 public class EnemyBattle : BattleEntity
 {
+    [SerializeField] private Slider EnemyHealthBar;
     private BattleUI battleUI;
     public string EnemyName { get; private set; }
     private Difficulty difficulty;
     private EnemyType enemyType;
 
-    public void Initialize(Difficulty gameDifficulty, EnemyType enemyType)
+    public EnemyBattle Initialize(Difficulty gameDifficulty, EnemyType enemyType)
     {
-        battleUI = FindObjectOfType<BattleUI>();
-        difficulty = gameDifficulty;
+        Debug.Log($"Initializing Enemy with Difficulty: {gameDifficulty}, Type: {enemyType}");
 
-        // Ensure card loadout is cleared and correctly initialized
-        cardLoadout.Clear();
+        this.difficulty = gameDifficulty;
+        this.enemyType = enemyType;
+
+        if (EnemyHealthBar == null)
+        {
+            Debug.LogError("Enemy health bar is not assigned!");
+            return null;
+        }
+
         SetupEnemyStatsAndCards();
 
+        if (maxHealth <= 0)
+        {
+            Debug.LogError($"maxHealth not set! Ensure ConfigureEnemyX methods are executed. Current Enemy: {EnemyName}");
+        }
+
+        healthBar = EnemyHealthBar;
         currentHealth = maxHealth;
-        Debug.Log($"{EnemyName} initialized with {currentHealth} HP and {cardLoadout.Count} cards.");
+        healthBar.maxValue = maxHealth;
+
+        Debug.Log($"Enemy initialized: Name={EnemyName}, MaxHealth={maxHealth}, Cards={cardLoadout.Count}");
+        UpdateHealthBar();
+
+        return this;
     }
 
 
     private void SetupEnemyStatsAndCards()
     {
+        Debug.Log($"Configuring {enemyType} for difficulty: {difficulty}");
         switch (enemyType)
         {
             case EnemyType.Enemy1:
-                ConfigureEnemy1();
+                ConfigureEnemyType1();
                 break;
             case EnemyType.Enemy2:
-                ConfigureEnemy2();
+                ConfigureEnemyType2();
                 break;
             case EnemyType.Enemy3:
-                ConfigureEnemy3();
+                ConfigureEnemyType3();
                 break;
             default:
                 Debug.LogError("Invalid enemy type!");
-                break;
+                return;
         }
+        Debug.Log($"Configuration complete for {EnemyName}: Max Health: {maxHealth}, Cards: {cardLoadout.Count}");
     }
 
-    private void ConfigureEnemy1()
+
+    private void ConfigureEnemyType1()
     {
         switch (difficulty)
         {
@@ -113,34 +142,33 @@ public class EnemyBattle : BattleEntity
                 EnemyName = "Warden of Ash";
                 maxHealth = 100;
                 cardLoadout = new List<Card>
-            {
-                LoadCard("Cards/Spear Thrust"),
-                LoadCard("Cards/Dodge"),
-                LoadCard("Cards/First Aid")
-            };
+                {
+                Resources.Load<Card>("Cards/Spear Thrust"),
+                Resources.Load<Card>("Cards/Dodge"),
+                Resources.Load<Card>("Cards/First Aid")
+                };
                 break;
             case Difficulty.Medium:
                 EnemyName = "Warden of Cinders";
                 maxHealth = 70;
                 cardLoadout = new List<Card>
-            {
-                LoadCard("Cards/Axe Chop")
-            };
+                {
+                Resources.Load<Card>("Cards/Axe Chop")
+                };
                 break;
             case Difficulty.Easy:
                 EnemyName = "Warden of Infernos";
                 maxHealth = 50;
                 cardLoadout = new List<Card>
-            {
-                LoadCard("Cards/Dagger Slash")
-            };
+                {
+                Resources.Load<Card>("Cards/Dagger Slash")
+                };
                 break;
         }
         Debug.Log($"{EnemyName} configured with {cardLoadout.Count} cards.");
     }
 
-
-    private void ConfigureEnemy2()
+    private void ConfigureEnemyType2()
     {
         switch (difficulty)
         {
@@ -174,7 +202,7 @@ public class EnemyBattle : BattleEntity
         }
     }
 
-    private void ConfigureEnemy3()
+    private void ConfigureEnemyType3()
     {
         switch (difficulty)
         {
@@ -212,45 +240,61 @@ public class EnemyBattle : BattleEntity
         }
     }
 
-    private Card LoadCard(string path)
-    {
-        Card card = Resources.Load<Card>(path);
-        if (card == null)
-        {
-            Debug.LogError($"Failed to load card at path: {path}");
-        }
-        return card;
-    }
+    //public void AttackPlayer(PlayerBattle player, EnemyBattle enemy)
+    //{
+    //    if (cardLoadout.Count == 0)//should not happen as each enemy instance loads with atleast one card.
+    //    {
+    //        Debug.LogWarning($"{EnemyName} has no cards to attack with!");
+    //        return;
+    //    }
 
+    //    // Enemy plays the cards based on a random number.
+    //    int cardIndex = Random.Range(0, cardLoadout.Count);
+    //    Card selectedCard = cardLoadout[cardIndex];
+    //    if (selectedCard != null)
+    //    {
+    //        if (selectedCard == null || player == null || enemy == null)
+    //        {
+    //            Debug.LogError("Either selectedCard or player is null in EnemyBattle.AttackPlayer.");
+    //            return;
+    //        }
+
+    //        Debug.Log($"{EnemyName} uses {selectedCard.Name} against {player.name}!");
+    //        string log = selectedCard.Use(enemy, player);
+    //        battleUI.AddBattleLog(log);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError($"{EnemyName} tried to use an invalid card.");
+    //    }
+    //    UpdateHealthBar();
+    //}
 
     public void AttackPlayer(PlayerBattle player)
     {
-        if (cardLoadout.Count == 0)
+        if (player == null)
         {
-            Debug.LogWarning($"{EnemyName} has no cards to attack with!");
+            Debug.LogError("Player reference is null in EnemyBattle.AttackPlayer!");
             return;
         }
-        //Debug.Log($"{EnemyName} has {cardLoadout[0].name} cards to attack with.");
+
+        if (cardLoadout == null || cardLoadout.Count == 0)
+        {
+            Debug.LogError($"{EnemyName} has no cards in its card loadout!");
+            return;
+        }
 
         int cardIndex = Random.Range(0, cardLoadout.Count);
         Card selectedCard = cardLoadout[cardIndex];
-        if (selectedCard != null)
-        {
-            Debug.Log($"{EnemyName} uses {selectedCard.Name} against the player!");
-            string logMessage = selectedCard.Use(this, player);
-            //Debug.Log(logMessage);
-            battleUI.AddBattleLog(logMessage);
-        }
-        else
-        {
-            Debug.LogError($"{EnemyName} tried to use an invalid card.");
-        }
-    }
-}
 
-public enum EnemyType
-{
-    Enemy1,
-    Enemy2,
-    Enemy3
+        if (selectedCard == null)
+        {
+            Debug.LogError($"Selected card is null for {EnemyName}!");
+            return;
+        }
+
+        Debug.Log($"{EnemyName} uses {selectedCard.Name} on {player.name}.");
+        selectedCard.Use(this, player);
+    }
+
 }

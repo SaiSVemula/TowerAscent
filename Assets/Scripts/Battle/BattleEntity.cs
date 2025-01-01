@@ -1,17 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class BattleEntity : MonoBehaviour
 {
     protected Animator animator;
     //public Animator Animator => animator;
 
-    [SerializeField] protected int maxHealth;
+    protected int maxHealth;
     protected int currentHealth;
 
-    [SerializeField] protected int baseDefence = 0;
+    protected int baseDefence = 0;
     protected int currentDefence;
+
+    protected Slider healthBar;
 
     protected List<Card> cardLoadout = new List<Card>();
     protected List<(int value, int timer)> temporaryDefenses = new List<(int, int)>();
@@ -28,21 +31,38 @@ public abstract class BattleEntity : MonoBehaviour
     {
         currentHealth = maxHealth;
         currentDefence = baseDefence;
+        //healthBar = GetComponent<Slider>();
+
+        if(healthBar != null)
+        {
+            healthBar.maxValue = maxHealth;
+            UpdateHealthBar();
+        }
     }
 
     public void TakeDamage(int damageAmount)
     {
         int netDamage = Mathf.Max(damageAmount - currentDefence, 0);
         currentHealth = Mathf.Max(currentHealth - netDamage, 0);
-        //animator.SetTrigger("GetHit");
-        Debug.Log($"{name} takes {netDamage} damage. Current health: {currentHealth}");
+
+        Debug.Log($"{name}: Damage Taken: {damageAmount}, Current Health: {currentHealth}, Defence: {currentDefence}");
+
+        UpdateHealthBar();
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
     }
 
     public void Heal(int healAmount)
     {
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
-        Debug.Log($"{name} heals {healAmount} HP. Current health: {currentHealth}");
+        Debug.Log($"Player healed by {healAmount}, Current Health: {currentHealth}");
+        UpdateHealthBar(); 
     }
+
+
 
     public void AddDefence(int defenceAmount)
     {
@@ -96,4 +116,20 @@ public abstract class BattleEntity : MonoBehaviour
             }
         }
     }
+
+    // Updates the health of the entity
+    protected void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.value = currentHealth;
+        }
+    }
+
+    protected virtual void Die()
+    {
+        Debug.Log($"{name} has been defeated.");
+        // Add death logic here, e.g., animations or scene transitions
+    }
+
 }

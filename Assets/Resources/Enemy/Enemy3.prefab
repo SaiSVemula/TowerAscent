@@ -127,14 +127,14 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2711986092951391064}
-  m_LocalRotation: {x: 0.15432516, y: -0.041870486, z: 0.0065460424, w: 0.98711085}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 241.72}
   m_LocalScale: {x: 0.06893957, y: 0.06893957, z: 0.06893957}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3606997409187026377}
   m_Father: {fileID: 6338733011557974449}
-  m_LocalEulerAnglesHint: {x: 17.771, y: -4.858, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -947.09, y: -19.16}
@@ -207,7 +207,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2954063368411650915}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.99935025, z: -0, w: -0.036043994}
+  m_LocalRotation: {x: 0, y: 0.9993503, z: -0, w: -0.036041863}
   m_LocalPosition: {x: -15.4, y: 7.200001, z: 164.9}
   m_LocalScale: {x: 2.7, y: 3, z: 2}
   m_ConstrainProportionsScale: 0
@@ -229,6 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 0
   baseDefence: 0
+  EnemyHealthBar: {fileID: 278873880705413064}
 --- !u!33 &9020065338682760078
 MeshFilter:
   m_ObjectHideFlags: 0

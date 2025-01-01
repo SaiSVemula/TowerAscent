@@ -208,104 +208,121 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    [SerializeField] private PlayerBattle playerBattle;
-    private EnemyBattle activeEnemy; // The actual enemy used in battle
-    [SerializeField] private Transform enemySpawnPoint; // Assign the position where the enemy will spawn
-    [SerializeField] private EnemyBattle enemyBattle; // Single prefab for EnemyBattle
+    [SerializeField] private PlayerBattle playerPrefab;
+    [SerializeField] private EnemyBattle enemyPrefab;
+    [SerializeField] private Transform playerSpawnPoint;
+    [SerializeField] private Transform enemySpawnPoint;
     [SerializeField] private BattleUI battleUI;
 
+    private PlayerBattle playerInstance;
+    private EnemyBattle enemyInstance;
     private bool isPlayerTurn = true;
 
     private LevelLoader levelLoader;
+    //private EnemyBattle activeEnemy;
 
     private void Start()
     {
-        //GameManager.Instance.PreviousScene = "ExplorationScene";
-        //GameManager.Instance.NextScene = "Level 1";
-        //GameManager.Instance.GameDifficulty = Difficulty.Hard;
+        Testing();//run only during development
+
         levelLoader = FindObjectOfType<LevelLoader>();
 
         if (levelLoader == null)
         {
             Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
         }
+
+        battleUI.OnStartBattle += HandleStartBattle;
+    }
+
+    private void Testing()
+    {
+        GameManager.Instance.PreviousScene = "ExplorationScene";
+        GameManager.Instance.NextScene = "Level 1";
+        GameManager.Instance.GameDifficulty = Difficulty.Hard;
+        GameManager.Instance.UpdatePlayerHealth(100);
+    }
+
+    private void HandleStartBattle()
+    {
+        // Spawn player and enemy only after clicking "Start Battle"
+        SpawnEntities();
+
+        // Initialize the battle after entities spawn
         StartCoroutine(InitializeBattle());
     }
 
+    private void SpawnEntities()
+    {
+        // Spawn player
+        playerInstance = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
+        playerInstance.name = "Player";
+
+
+        if (playerInstance == null)
+        {
+            Debug.LogError("Player instance failed to spawn!");
+            return;
+        }
+
+        // Spawn and initialize the enemy
+        SpawnCorrectEnemy();
+    }
+
+
     public IEnumerator InitializeBattle()
     {
-        if (battleUI == null || playerBattle == null)
+        if (battleUI == null || enemyPrefab == null || playerPrefab == null || playerSpawnPoint == null || enemySpawnPoint == null)
         {
-            Debug.LogError("Critical references missing!");
+            Debug.LogError("Critical references missing in BattleManager!");
             yield break;
         }
 
-        Debug.Log("Waiting for instructions to start battle...");
+        Debug.Log("Initializing battle...");
+        playerInstance.gameObject.SetActive(true);
+        enemyInstance.gameObject.SetActive(true);
 
-        // Wait for instruction canvas to be completed
-        yield return new WaitUntil(() => battleUI.IsBattleReady);
-
-        Debug.Log("Instruction canvas completed, starting battle initialization...");
-
-        // Spawn the correct enemy
-        SpawnCorrectEnemy();
-
-        if (activeEnemy == null)
-        {
-            Debug.LogError("Enemy spawning failed!");
-            yield break;
-        }
+        // Update UI before the countdown starts
+        battleUI.UpdateEffectTimers();
 
         yield return StartCoroutine(battleUI.ShowCountdown());
 
-        battleUI.RenderCards(playerBattle.CardLoadout);
         battleUI.EnableCardInteractions();
-        battleUI.AddBattleLog($"Battle Start! Enemy: {activeEnemy.EnemyName} with {activeEnemy.CurrentHealth} HP");
-        battleUI.UpdateTurnIndicator(true);
+        battleUI.RenderCards(playerInstance.CardLoadout);
+        battleUI.AddBattleLog($"Battle Start! Enemy: {enemyInstance.EnemyName} with {enemyInstance.CurrentHealth} HP");
+        battleUI.UpdateTurnIndicator(isPlayerTurn);
 
-        Debug.Log("Battle initialization complete");
+        Debug.Log("Battle initialization complete.");
     }
+
 
     private void SpawnCorrectEnemy()
     {
-        // Destroy any existing enemy in the scene
-        if (activeEnemy != null)
+        // Destroy any existing enemy
+        if (enemyInstance != null)
         {
-            Destroy(activeEnemy.gameObject);
+            Destroy(enemyInstance.gameObject);
         }
 
-        // Instantiate the correct enemy prefab
-        GameObject enemyObject = Instantiate(enemyBattle.gameObject, enemySpawnPoint.position, Quaternion.identity);
-        enemyObject.SetActive(true);
-        activeEnemy = enemyObject.GetComponent<EnemyBattle>();
+        // Instantiate the enemy prefab
+        GameObject enemyObject = Instantiate(enemyPrefab.gameObject, enemySpawnPoint.position, Quaternion.identity);
 
-        if (activeEnemy == null)
+        // Get the EnemyBattle component
+        enemyInstance = enemyObject.GetComponent<EnemyBattle>();
+        if (enemyInstance == null)
         {
             Debug.LogError("Enemy prefab does not have an EnemyBattle component!");
             return;
         }
 
-        // Initialize enemy with difficulty and type
+        // Initialize the enemy
         EnemyType enemyType = DetermineEnemyType();
-        activeEnemy.Initialize(GameManager.Instance.GameDifficulty, enemyType);
+        enemyInstance.Initialize(GameManager.Instance.GameDifficulty, enemyType);
 
-        // Set the name of the instantiated enemy to match the EnemyName
-        enemyObject.name = activeEnemy.EnemyName;
+        // Set the GameObject's name to the enemy's name
+        enemyObject.name = enemyInstance.EnemyName;
 
-        // Set the enemy's rotation to face the player
-        enemyObject.transform.LookAt(playerBattle.transform.position);
-
-        // Notify the UI
-        if (battleUI != null)
-        {
-            battleUI.SetActiveEnemy(activeEnemy);
-        }
-        else
-        {
-            Debug.LogError("BattleUI reference is missing!");
-        }
-
-        Debug.Log($"Enemy {activeEnemy.EnemyName} activated for battle.");
+        Debug.Log($"Enemy spawned: {enemyObject.name} with {enemyInstance.MaxHealth} HP.");
     }
 
     private EnemyType DetermineEnemyType()
@@ -332,29 +349,33 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (cardIndex < 0 || cardIndex >= playerBattle.CardLoadout.Count)
+        if (cardIndex < 0 || cardIndex >= playerInstance.CardLoadout.Count)
         {
             Debug.LogError("Invalid card index!");
             return;
         }
 
-        Card selectedCard = playerBattle.CardLoadout[cardIndex];
+        Card selectedCard = playerInstance.CardLoadout[cardIndex];
         if (selectedCard == null)
         {
             Debug.LogError("Selected card is null!");
             return;
         }
 
-        string logMessage = selectedCard.Use(playerBattle, activeEnemy);
+        string logMessage = selectedCard.Use(playerInstance, enemyInstance);
         battleUI.AddBattleLog(logMessage);
 
-        if (activeEnemy.CurrentHealth <= 0)
+        // Update effect timers after card usage
+        playerInstance.DecrementEffectTimers();
+        battleUI.UpdateEffectTimers();
+
+        if (enemyInstance.CurrentHealth <= 0)
         {
+            Debug.Log("Enemy defeated!");
             StartCoroutine(EndBattle(true));
             return;
         }
 
-        battleUI.UpdateEffectTimers();
         isPlayerTurn = false;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
         StartCoroutine(EnemyTurnWithDelay(selectedCard));
@@ -362,16 +383,29 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator EnemyTurnWithDelay(Card selectedCard)
     {
-        yield return new WaitForSeconds(1f); // Add a delay before enemy action
+        yield return new WaitForSeconds(1f);
 
-        // Let the enemy attack the player
-        if (activeEnemy != null)
+        if (enemyInstance == null)
         {
-            activeEnemy.AttackPlayer(playerBattle);
+            Debug.LogError("enemyInstance is null in EnemyTurnWithDelay!");
+            yield break;
         }
 
+        if (playerInstance == null)
+        {
+            Debug.LogError("playerInstance is null in EnemyTurnWithDelay!");
+            yield break;
+        }
+
+        // Enemy uses a card or action
+        enemyInstance.AttackPlayer(playerInstance);
+
+        // Update effect timers for the player after the enemy's turn
+        playerInstance.DecrementEffectTimers();
+        battleUI.UpdateEffectTimers();
+
         // Check if the player is defeated
-        if (playerBattle.CurrentHealth <= 0)
+        if (playerInstance.CurrentHealth <= 0)
         {
             StartCoroutine(EndBattle(false));
             yield break;
@@ -380,12 +414,9 @@ public class BattleManager : MonoBehaviour
         // Enable player's turn
         isPlayerTurn = true;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
-        battleUI.RenderCards(playerBattle.CardLoadout);
-
-        // Update player effects and UI for the next turn
-        playerBattle.DecrementEffectTimers();
-        battleUI.UpdateEffectTimers();
+        battleUI.RenderCards(playerInstance.CardLoadout);
     }
+
 
     public IEnumerator EndBattle(bool playerWon)
     {
@@ -402,7 +433,16 @@ public class BattleManager : MonoBehaviour
 
         // Transition to the next scene
         Debug.Log("Transitioning to next scene...");
-        string nextScene = GameManager.Instance.NextScene;
+        string nextScene = "";
+        if (playerWon)
+        {
+            nextScene = GameManager.Instance.NextScene;
+        }
+        else
+        {
+            // lost so back to scene.
+            nextScene = GameManager.Instance.PreviousScene;
+        }
         levelLoader.LoadScene("BattleScene", nextScene);
     }
 
@@ -425,12 +465,12 @@ public class BattleManager : MonoBehaviour
         // Save the enemy's defeat
         if (playerWon)
         {
-            string defeatedEnemy = activeEnemy.EnemyName;
+            string defeatedEnemy = enemyInstance.EnemyName;
             GameManager.Instance.CompleteObjective($"Defeated {defeatedEnemy}");
         }
 
         // Save any additional data, like if player unlocked a new card
-        //GameManager.Instance.UpdatePlayerCards(playerBattle.CardLoadout.Select(c => c.Name).ToArray());
+        GameManager.Instance.UpdatePlayerCards(playerInstance.CardLoadout.Select(c => c.Name).ToArray());
 
         // Log save operation
         Debug.Log("Battle results saved to GameManager.");
