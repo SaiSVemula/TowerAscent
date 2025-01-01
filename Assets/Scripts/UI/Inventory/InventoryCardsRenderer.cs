@@ -40,10 +40,10 @@ public class InventoryCardRenderer : MonoBehaviour
 
         foreach (Card card in ownedCards)
         {
-            if (card == null) continue;
+            if (groupedCard.Card == null) continue;
 
             // Create a new card GameObject
-            GameObject newCard = new GameObject(card.Name, typeof(RectTransform), typeof(Image));
+            GameObject newCard = new GameObject(groupedCard.Card.Name, typeof(RectTransform), typeof(Image));
 
             // Set the parent to the CardGrid
             newCard.transform.SetParent(cardGrid, false);
@@ -57,7 +57,7 @@ public class InventoryCardRenderer : MonoBehaviour
 
             // Add and configure Image component
             Image img = newCard.GetComponent<Image>();
-            img.sprite = card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
+            img.sprite = groupedCard.Card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
             img.color = Color.white;
 
             // Add a child for the card's text
@@ -69,7 +69,7 @@ public class InventoryCardRenderer : MonoBehaviour
 
             // Configure the Text component
             Text text = textObj.GetComponent<Text>();
-            text.text = card.Name; // Use the card's name
+            text.text = $"{groupedCard.Card.Name} x{groupedCard.Count}"; // Display card name with quantity
             text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;

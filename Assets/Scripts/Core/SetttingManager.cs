@@ -3,6 +3,13 @@ using UnityEngine.UI;
 
 public class SettingsManager : MonoBehaviour
 {
+
+    [Header("Settings Panels")]
+    [SerializeField] private GameObject generalPanel;
+    [SerializeField] private GameObject audioPanel;
+    [SerializeField] private GameObject videoPanel;
+
+
     public Button[] difficultyButtons;
     public Button[] shadowButtons;
     public Button[] particleButtons;
@@ -54,6 +61,45 @@ public class SettingsManager : MonoBehaviour
         RestoreSettings();
     }
 
+    public void GeneralSettings()
+    {
+        showpanel(generalPanel);
+    }
+
+    public void AudioSettings()
+    {
+        showpanel(audioPanel);
+    }
+
+    public void VideoSettings()
+    {
+        showpanel(videoPanel);
+    }
+
+    private void showpanel(GameObject panelToShow)
+    {
+        // Deactivate all panels
+        generalPanel.SetActive(false);
+        audioPanel.SetActive(false);
+        videoPanel.SetActive(false);
+
+        // Activate the settings panel and the selected panel
+        panelToShow.SetActive(true);
+    }
+
+    public void exit()
+    {
+        // Load the previous scene when exiting the settings menu
+        if (!string.IsNullOrEmpty(GameManager.Instance.PreviousScene))
+        {
+            GameManager.Instance.LoadScene(GameManager.Instance.PreviousScene);
+        }
+        else
+        {
+            Debug.LogError("Previous scene not set!");
+        }
+    }
+
     private void AssignButtonGroup(Button[] buttons, System.Action<int> onClickAction)
     {
         for (int i = 0; i < buttons.Length; i++)
@@ -84,7 +130,7 @@ public class SettingsManager : MonoBehaviour
         }
     }
 
-    private void SetDifficulty(int index)
+    private void SetDifficulty(int index) // NOT DONE (SANDEEP)
     {
         GameManager.Instance.GameDifficulty = (Difficulty)index;
         Debug.Log($"Difficulty set to: {GameManager.Instance.GameDifficulty}");
@@ -92,29 +138,33 @@ public class SettingsManager : MonoBehaviour
         //Debug.Log($"Difficulty set to: {index}");
     }
 
-    private void SetShadows(bool shadowsOn)
+    private void SetShadows(bool shadowsOn) //  DONE
     {
-        PlayerPrefs.SetInt("ShadowsEnabled", shadowsOn ? 1 : 0); 
+        PlayerPrefs.SetInt("ShadowsEnabled", shadowsOn ? 1 : 0);
+        QualitySettings.shadows = shadowsOn ? ShadowQuality.All : ShadowQuality.Disable;
         Debug.Log($"Shadows set to: {shadowsOn}");
     }
 
-    private void SetParticles(bool particlesOn)
+    private void SetParticles(bool particlesOn) // NOT DONE
     {
         PlayerPrefs.SetInt("ParticlesEnabled", particlesOn ? 1 : 0); 
         Debug.Log($"Particles set to: {particlesOn}");
     }
 
-    private void SetEffects(bool effectsOn)
+    private void SetEffects(bool effectsOn) // NOT DONE
     {
         PlayerPrefs.SetInt("EffectsEnabled", effectsOn ? 1 : 0); 
         Debug.Log($"Effects set to: {effectsOn}");
     }
 
-    private void SetViewMode(bool isThirdPerson)
+    private void SetViewMode(bool isThirdPerson) // DONE
     {
         PlayerPrefs.SetInt("IsThirdPerson", isThirdPerson ? 1 : 0);
+        GameManager.Instance.UpdatePOV(isThirdPerson); // Pass the bool directly
         Debug.Log($"View mode set to: {(isThirdPerson ? "3rd Person" : "1st Person")}");
     }
+
+
 
     private void SetPanel(int index)
     {
