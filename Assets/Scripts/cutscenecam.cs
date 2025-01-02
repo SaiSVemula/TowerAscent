@@ -19,8 +19,6 @@ public class DollyCartController : MonoBehaviour
     private float trackLength;
 
     // New light for scene transition (this will only be enabled before loading the scene)
-    public Light transitionDirectionalLight; // Assign this new light in the Inspector for the scene transition.
-
     void Start()
     {
         // Find the LevelLoader instance in the current scene
@@ -85,12 +83,6 @@ public class DollyCartController : MonoBehaviour
             // Check if the dolly cart has reached the end of the track
             if (dollyCart.m_Position >= trackLength * trackEndThreshold)
             {
-                // Enable the separate directional light for the scene transition
-                if (transitionDirectionalLight != null)
-                {
-                    transitionDirectionalLight.enabled = true; // Turn on the transition directional light
-                }
-
                 // Load the "ExplorationScene" scene
                 LoadNextScene();
             }
