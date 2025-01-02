@@ -4800,6 +4800,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentPlayer: {fileID: 939437347}
   rotationSpeed: 0.1
+  isThirdPerson: 1
+  thirdPersonDistance: 12
+  thirdPersonHeightOffset: 5
+  firstPersonHeightOffset: 1.6
+  firstPersonForwardOffset: 0.5
+  RPGHeroPBR: {fileID: 0}
 --- !u!81 &1626827279
 AudioListener:
   m_ObjectHideFlags: 0
@@ -4875,7 +4881,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1627917462
 MonoBehaviour:
   m_ObjectHideFlags: 0

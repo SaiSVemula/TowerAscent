@@ -19,7 +19,7 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        Testing();//run only during development
+        //Testing();//run only during development
 
         levelLoader = FindObjectOfType<LevelLoader>();
 

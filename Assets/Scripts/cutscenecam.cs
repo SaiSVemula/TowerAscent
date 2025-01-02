@@ -104,6 +104,9 @@ public class DollyCartController : MonoBehaviour
 
         switch (previousScene)
         {
+            case "StartPage":
+                nextScene = "ExplorationScene";
+                break;
             case "ExplorationScene":
                 nextScene = "Level 1";
                 break;
