@@ -35,7 +35,9 @@ public class GameManager : MonoBehaviour
     private int minibattleLosses;
     private int bigbattleWins;
     private int bigbattleLosses;
+
     private bool thirdperson;
+    private float camsensitivity;
 
     private void Awake()
     {
@@ -120,6 +122,7 @@ public class GameManager : MonoBehaviour
     public int GetBigbattleWins() { return bigbattleWins; }
     public int GetBigbattleLosses() { return bigbattleLosses; }
     public bool GetPOV() { return thirdperson; } // Getter for PlayerName
+    public float GetCamSensitivity() {return camsensitivity;}
 
     // Methods to set values on the GameManager
     public void UpdateCurrentScene() { SavedScene = SceneManager.GetActiveScene().name; }
@@ -133,6 +136,7 @@ public class GameManager : MonoBehaviour
     public void UpdateBigbattleWins(int wins) { bigbattleWins = wins; }
     public void UpdateBigbattleLosses(int losses) { bigbattleLosses = losses; }
     public void UpdatePOV(bool thirdprs) { thirdperson = thirdprs; }
+    public void UpdateCamSensitivity(float sensitivity) {camsensitivity = sensitivity;}
 
     // Full get method, used when saving a game to perfs
     public (string, Vector3, int, int, string[], string, int, int, int, int) GetFullGameState()
