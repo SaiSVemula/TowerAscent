@@ -14,10 +14,10 @@ public class EnemyBattle : BattleEntity
     [SerializeField] private Slider EnemyHealthBar;
     private BattleUI battleUI;
     public string EnemyName { get; private set; }
-    private Difficulty difficulty;
+    private int difficulty;
     private EnemyType enemyType;
 
-    public EnemyBattle Initialize(Difficulty gameDifficulty, EnemyType enemyType)
+    public EnemyBattle Initialize(int gameDifficulty, EnemyType enemyType)
     {
         Debug.Log($"Initializing Enemy with Difficulty: {gameDifficulty}, Type: {enemyType}");
 
@@ -74,7 +74,7 @@ public class EnemyBattle : BattleEntity
     {
         switch (difficulty)
         {
-            case Difficulty.Hard:
+            case 2:
                 EnemyName = "Warden of Ash";
                 maxHealth = 100;
                 cardLoadout = new List<Card>
@@ -84,7 +84,7 @@ public class EnemyBattle : BattleEntity
                 Resources.Load<Card>("Cards/Healing Cards/First Aid")
                 };
                 break;
-            case Difficulty.Medium:
+            case 1:
                 EnemyName = "Warden of Cinders";
                 maxHealth = 70;
                 cardLoadout = new List<Card>
@@ -92,7 +92,7 @@ public class EnemyBattle : BattleEntity
                 Resources.Load<Card>("Cards/Weapon Cards/Axe Chop")
                 };
                 break;
-            case Difficulty.Easy:
+            case 0:
                 EnemyName = "Warden of Infernos";
                 maxHealth = 50;
                 cardLoadout = new List<Card>
@@ -108,10 +108,9 @@ public class EnemyBattle : BattleEntity
     {
         switch (difficulty)
         {
-            case Difficulty.Hard:
+            case 2:
                 EnemyName = "Dusk Herald";
                 maxHealth = 200;
-                //cardLoadout = AddCardToList(new string[] { "Hammer Smash", "Magic Block", "Healing Potion" });
                 cardLoadout = new List<Card>
                 {
                     Resources.Load<Card>("Cards/Weapon Cards/Hammer Smash"),
@@ -119,7 +118,7 @@ public class EnemyBattle : BattleEntity
                     Resources.Load<Card>("Cards/Healing Cards/Healing Potion")
                 };
                 break;
-            case Difficulty.Medium:
+            case 1:
                 EnemyName = "Twilight Regent";
                 maxHealth = 150;
                 cardLoadout = new List<Card>
@@ -128,7 +127,7 @@ public class EnemyBattle : BattleEntity
                     Resources.Load<Card>("Cards/Defence Cards/Reflect")
                 };
                 break;
-            case Difficulty.Easy:
+            case 0:
                 EnemyName = "Midnight Emperor";
                 maxHealth = 100;
                 cardLoadout = new List<Card>
@@ -143,7 +142,7 @@ public class EnemyBattle : BattleEntity
     {
         switch (difficulty)
         {
-            case Difficulty.Hard:
+            case 2:
                 EnemyName = "The Eternal Verdict";
                 maxHealth = 300;
                 cardLoadout = new List<Card>
@@ -154,7 +153,7 @@ public class EnemyBattle : BattleEntity
                     Resources.Load<Card>("Cards/Healing Cards/Group Heal")
                 };
                 break;
-            case Difficulty.Medium:
+            case 1:
                 EnemyName = "The Shadowed Adjudicator";
                 maxHealth = 250;
                 cardLoadout = new List<Card>
@@ -165,7 +164,7 @@ public class EnemyBattle : BattleEntity
                     Resources.Load<Card>("Cards/Healing Cards/Group Heal")
                 };
                 break;
-            case Difficulty.Easy:
+            case 0:
                 EnemyName = "The Silent Judge";
                 maxHealth = 150;
                 cardLoadout = new List<Card>
