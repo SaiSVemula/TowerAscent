@@ -184,25 +184,26 @@ public class SettingsManager : MonoBehaviour
         }
     }
 
-    private void SetCameraSensitivity(float sensitivity)
+    private void SetCameraSensitivity(float sensitivity) // DONE
     {
         PlayerPrefs.SetFloat("CameraSensitivity", sensitivity);
+        GameManager.Instance.UpdateCamSensitivity(sensitivity);
         Debug.Log($"Camera sensitivity set to: {sensitivity}");
     }
 
-    private void SetMasterVolume(float volume)
+    private void SetMasterVolume(float volume) // NOT DONE
     {
         PlayerPrefs.SetFloat("MasterVolume", volume);
         Debug.Log($"Master volume set to: {volume}");
     }
 
-    private void SetMusicVolume(float volume)
+    private void SetMusicVolume(float volume) // NOT DONE
     {
         PlayerPrefs.SetFloat("MusicVolume", volume);
         Debug.Log($"Music volume set to: {volume}");
     }
 
-    private void SetSFXVolume(float volume)
+    private void SetSFXVolume(float volume) // NOT DONE
     {
         PlayerPrefs.SetFloat("SFXVolume", volume);
         Debug.Log($"SFX volume set to: {volume}");
