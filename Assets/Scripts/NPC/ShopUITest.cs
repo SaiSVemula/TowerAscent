@@ -13,6 +13,7 @@ public class ShopUITest : MonoBehaviour
 
     private Dictionary<GameObject, int> cardPrices = new Dictionary<GameObject, int>(); // Store card prices
     private GameObject lastClickedCard; // Track the last clicked card
+    private float messageDuration = 5f; // Duration for messages to display
 
     void Start()
     {
@@ -23,6 +24,7 @@ public class ShopUITest : MonoBehaviour
             return;
         }
 
+        messageText.gameObject.SetActive(false); // Ensure MessageText starts disabled
         GenerateShopCards(); // Generate cards in the shop UI
     }
 
@@ -37,57 +39,42 @@ public class ShopUITest : MonoBehaviour
                 continue;
             }
 
-            // Ensure required properties have valid values
             string cardName = string.IsNullOrEmpty(card.Name) ? "Unnamed Card" : card.Name;
 
-            // Create a new card GameObject
             GameObject newCard = new GameObject(cardName, typeof(RectTransform), typeof(Image));
-
-            // Set the parent to the CardGrid
             newCard.transform.SetParent(cardGrid, false);
 
-            // Configure RectTransform
             RectTransform rect = newCard.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(150, 200); // Card size
+            rect.sizeDelta = new Vector2(150, 200);
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
 
-            // Add and configure Image component
             Image img = newCard.GetComponent<Image>();
             img.sprite = card.CardSprite != null ? card.CardSprite : defaultCardSprite;
             img.color = Color.white;
 
-            // Add CardDisplay and initialize it
             CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
             cardDisplay.Initialize(card);
 
-            // Add a Button component for click handling
             Button button = newCard.AddComponent<Button>();
             button.onClick.AddListener(() => OnCardClicked(newCard));
 
-            Debug.Log($"Button listener added for card: {card.Name}");
-
-            // Add a child for the card's name
             AddCardText(newCard, "CardName", card.Name, new Vector2(0, -75), 20);
-
-            // Add a child for the card's price
-            int price = Random.Range(5, 31); // Random price between 5 and 30
+            int price = Random.Range(5, 31);
             AddCardText(newCard, "CardPrice", $"Price: {price} Gold", new Vector2(0, -110), 18);
 
-            // Store the card price
             cardPrices[newCard] = price;
         }
     }
 
-    // Helper function to add text to a card
     private void AddCardText(GameObject parent, string objName, string textContent, Vector2 anchoredPosition, int fontSize)
     {
         GameObject textObj = new GameObject(objName, typeof(RectTransform), typeof(Text));
         textObj.transform.SetParent(parent.transform, false);
 
         RectTransform rect = textObj.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(150, 30); // Text size
+        rect.sizeDelta = new Vector2(150, 30);
         rect.anchoredPosition = anchoredPosition;
 
         Text text = textObj.GetComponent<Text>();
@@ -100,28 +87,16 @@ public class ShopUITest : MonoBehaviour
 
     private void OnCardClicked(GameObject clickedCard)
     {
-        if (clickedCard == null)
+        if (clickedCard == null || !cardPrices.ContainsKey(clickedCard))
         {
-            Debug.LogError("OnCardClicked: clickedCard is null.");
-            return;
-        }
-
-        if (!cardPrices.ContainsKey(clickedCard))
-        {
-            Debug.LogError($"OnCardClicked: Card not found in cardPrices dictionary. Card name: {clickedCard.name}");
+            Debug.LogError("Invalid card clicked.");
             return;
         }
 
         CardDisplay cardDisplay = clickedCard.GetComponent<CardDisplay>();
-        if (cardDisplay == null || cardDisplay.CardData == null)
+        if (cardDisplay == null || cardDisplay.CardData == null || PlayerInventory.Instance == null)
         {
-            Debug.LogError("OnCardClicked: CardDisplay or CardData is null on clickedCard.");
-            return;
-        }
-
-        if (PlayerInventory.Instance == null)
-        {
-            Debug.LogError("OnCardClicked: PlayerInventory.Instance is null.");
+            Debug.LogError("Missing card data or inventory reference.");
             return;
         }
 
@@ -129,24 +104,53 @@ public class ShopUITest : MonoBehaviour
 
         if (clickedCard == lastClickedCard)
         {
-            // Deduct gold (always allow purchase regardless of available gold for testing)
             GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.GetPlayerCoinCount() - cardPrice);
-
-            // Add the card to the player's inventory
             PlayerInventory.Instance.AddCard(cardDisplay.CardData);
 
-            // Update the gold counter and UI
             goldCounter.UpdateGoldText();
-            messageText.text = $"You bought {cardDisplay.CardData.Name} for {cardPrice} Gold!";
+            ShowMessage($"You bought {cardDisplay.CardData.Name} for {cardPrice} Gold!");
 
-            // Reset the last clicked card to prevent repeat buys without another click
             lastClickedCard = null;
         }
         else
         {
-            // Set the message to confirm purchase
-            messageText.text = $"Click again to buy {cardDisplay.CardData.Name} for {cardPrice} Gold.";
+            ShowMessage($"Click again to buy {cardDisplay.CardData.Name} for {cardPrice} Gold.");
             lastClickedCard = clickedCard;
         }
+    }
+
+    private void ShowMessage(string text)
+    {
+        if (messageText != null)
+        {
+            messageText.gameObject.SetActive(true);
+            messageText.text = text;
+
+            CancelInvoke(nameof(HideMessage)); // Reset timer if a new message is displayed
+            Invoke(nameof(HideMessage), messageDuration);
+        }
+    }
+
+    private void HideMessage()
+    {
+        if (messageText != null && messageText.gameObject.activeSelf)
+        {
+            messageText.text = "";
+            messageText.gameObject.SetActive(false);
+        }
+    }
+
+    public void ResetUI()
+    {
+        // Hide MessageText when UI is closed
+        if (messageText != null)
+        {
+            messageText.text = "";
+            messageText.gameObject.SetActive(false);
+        }
+
+        // Reset last clicked card
+        lastClickedCard = null;
+        CancelInvoke(nameof(HideMessage)); // Cancel any pending HideMessage invokes
     }
 }

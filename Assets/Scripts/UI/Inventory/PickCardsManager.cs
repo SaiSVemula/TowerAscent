@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems; // Ensure EventSystem namespace is imported
 
 public class PickCardsManager : MonoBehaviour
 {
@@ -14,10 +15,18 @@ public class PickCardsManager : MonoBehaviour
     private bool isPickingActive = false; // Determines if picking mode is active
 
     private int maxCardsToPick = 4;
-    private Coroutine messageCoroutine; // For handling message timeout
+    private float pickingTimeout = 12f; // Timeout for card picking
+    private float messageDuration = 5f; // Duration for messages to display
+    private int currentMessageID = 0; // Tracks the current message ID
 
     void Start()
     {
+        // Ensure the message text starts disabled
+        if (messageText != null)
+        {
+            messageText.gameObject.SetActive(false);
+        }
+
         // Add a listener to the button
         if (SceneManager.GetActiveScene().name != "Loadout")
         {
@@ -25,9 +34,28 @@ public class PickCardsManager : MonoBehaviour
         }
     }
 
+    public void ClearMessageTextOnUIOpen()
+    {
+        if (messageText != null)
+        {
+            messageText.text = ""; // Clear any lingering text
+            messageText.gameObject.SetActive(false); // Ensure it is hidden
+        }
+
+        // Reset the button if UI is closed while picking is active
+        if (isPickingActive)
+        {
+            isPickingActive = false;
+            pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle";
+            ResetCardHighlights();
+            CancelInvoke(nameof(CancelPickingDueToTimeout));
+        }
+    }
+
     void ToggleCardPicking()
     {
         isPickingActive = !isPickingActive; // Toggle picking mode
+
         if (isPickingActive)
         {
             // Change button text
@@ -38,15 +66,14 @@ public class PickCardsManager : MonoBehaviour
             selectedCards.Clear();
 
             // Set message text
-            SetMessage("Click on 4 cards to pick for battle.");
+            ShowMessage("Click on 4 cards to pick for battle.");
+
+            // Start timeout for picking
+            Invoke(nameof(CancelPickingDueToTimeout), pickingTimeout);
         }
         else
         {
-            // Change button text back
-            pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle";
-
-            // Set cancelled message
-            SetMessage("Picking cancelled.");
+            CancelPicking("Picking cancelled.");
         }
     }
 
@@ -57,14 +84,14 @@ public class PickCardsManager : MonoBehaviour
             if (Input.GetMouseButtonDown(0)) // Detect left mouse click
             {
                 // Detect the clicked UI object
-                UnityEngine.EventSystems.PointerEventData pointerData =
-                    new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current)
+                PointerEventData pointerData =
+                    new PointerEventData(EventSystem.current)
                     {
                         position = Input.mousePosition
                     };
 
-                List<UnityEngine.EventSystems.RaycastResult> results = new List<UnityEngine.EventSystems.RaycastResult>();
-                UnityEngine.EventSystems.EventSystem.current.RaycastAll(pointerData, results);
+                List<RaycastResult> results = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(pointerData, results);
 
                 foreach (var result in results)
                 {
@@ -85,9 +112,7 @@ public class PickCardsManager : MonoBehaviour
                         // Check if 4 cards are selected
                         if (selectedCards.Count == maxCardsToPick)
                         {
-                            isPickingActive = false; // Stop picking
-                            DisplayPickedCards(); // Show the picked cards
-                            pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle"; // Reset button text
+                            CompletePicking();
                         }
 
                         break;
@@ -95,6 +120,34 @@ public class PickCardsManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    void CompletePicking()
+    {
+        isPickingActive = false; // Stop picking
+        DisplayPickedCards(); // Show the picked cards
+        pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle"; // Reset button text
+
+        // Cancel any pending timeout
+        CancelInvoke(nameof(CancelPickingDueToTimeout));
+    }
+
+    void CancelPickingDueToTimeout()
+    {
+        if (isPickingActive)
+        {
+            CancelPicking("Picking cancelled due to timeout.");
+        }
+    }
+
+    void CancelPicking(string cancelMessage)
+    {
+        isPickingActive = false; // Stop picking
+        pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle"; // Reset button text
+
+        // Reset highlights and set cancellation message
+        ResetCardHighlights();
+        ShowMessage(cancelMessage);
     }
 
     void DisplayPickedCards()
@@ -105,32 +158,38 @@ public class PickCardsManager : MonoBehaviour
             pickedCardsText += card.name + ", ";
         }
 
-        SetMessage(pickedCardsText.TrimEnd(',', ' ')); // Update message text
+        ShowMessage(pickedCardsText.TrimEnd(',', ' '));
     }
 
-    void SetMessage(string text)
+    void ShowMessage(string text)
     {
-        // Stop any existing coroutine
-        if (messageCoroutine != null)
+        if (messageText != null)
         {
-            StopCoroutine(messageCoroutine);
+            currentMessageID++; // Increment the message ID for this new message
+            int messageID = currentMessageID;
+
+            // Enable and update the message text
+            messageText.gameObject.SetActive(true);
+            messageText.text = text;
+
+            // Use a coroutine for delayed message hiding
+            StartCoroutine(HideMessageAfterDelay(messageID));
         }
-
-        // Update message text
-        messageText.text = text;
-
-        // Start coroutine to clear the message after 5 seconds
-        messageCoroutine = StartCoroutine(ClearMessageAfterDelay(5f));
+        else
+        {
+            Debug.LogWarning("MessageText is not assigned in the inspector.");
+        }
     }
 
-    System.Collections.IEnumerator ClearMessageAfterDelay(float delay)
+    System.Collections.IEnumerator HideMessageAfterDelay(int messageID)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(messageDuration);
 
-        // Check if the message being cleared is still the current message
-        if (messageText.text != "")
+        // Ensure only the latest message is cleared
+        if (messageID == currentMessageID && messageText != null && messageText.gameObject.activeSelf)
         {
-            messageText.text = "";
+            messageText.text = ""; // Clear the text
+            messageText.gameObject.SetActive(false); // Properly hide the text
         }
     }
 
