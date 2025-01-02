@@ -5,16 +5,11 @@ public class MagicCard : Card
 {
     [SerializeField] private int damage;
 
-    // Serialized to allow effects like "Sleep" or "Reduce Attack"
-    [SerializeField] private string effect; // not implemented yet
-
     public int Damage => damage;
-    public string Effect => effect;// not implemented yet
 
-    public override string Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
+    public override string Use(BattleEntity user, BattleEntity target)
     {
-        enemyBattle.EnemyTakeDamage(Damage);
-        string effectText = !string.IsNullOrEmpty(Effect) ? $" with {Effect} effect" : "";
-        return $"Player cast {Name} dealing {Damage} magic damage{effectText}!";
+        target.TakeDamage(damage);
+        return $"{user.name} cast {Name}, dealing {damage} magic damage to {target.name}!";
     }
 }

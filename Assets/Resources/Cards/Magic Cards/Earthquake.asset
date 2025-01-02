@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Earthquake
   description: Damages all enemies
-  status: Epic
+  type: 2
   cardSprite: {fileID: 0}
-  damage: 0
+  damage: 20
   effect: 

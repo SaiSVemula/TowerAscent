@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Dagger Slash
   description: Deals minor damage
-  status: Common
+  type: 0
   cardSprite: {fileID: 0}
-  damage: 0
+  damage: 10

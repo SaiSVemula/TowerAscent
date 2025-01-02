@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Reflect
   description: Reflects a portion of magic damage at the attacker. (Only magic damage)
-  status: Epic
+  type: 2
   cardSprite: {fileID: 0}
-  defence: 0
+  defence: 15
+  timer: 0

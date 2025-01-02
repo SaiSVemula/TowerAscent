@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Group Heal
   description: Restores health to all allies only once.
-  status: Legendary
+  type: 3
   cardSprite: {fileID: 0}
-  healing: 0
-  canRevive: 0
+  healing: 30
+  timer: 0
+  canRevive: 1

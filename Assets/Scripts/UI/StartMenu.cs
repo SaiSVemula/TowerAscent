@@ -20,7 +20,7 @@ public class StartMenu : MonoBehaviour
         if (levelLoader != null)
         {
             GameManager.Instance.Clear();
-            levelLoader.LoadScene("StartMenu", "StartCutScene"); // Pass current and next scenes
+            levelLoader.LoadScene("StartPage", "StartCutScene"); // Pass current and next scenes
         }
     }
 

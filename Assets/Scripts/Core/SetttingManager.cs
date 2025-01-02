@@ -132,8 +132,10 @@ public class SettingsManager : MonoBehaviour
 
     private void SetDifficulty(int index) // NOT DONE (SANDEEP)
     {
+        GameManager.Instance.GameDifficulty = (Difficulty)index;
+        Debug.Log($"Difficulty set to: {GameManager.Instance.GameDifficulty}");
         PlayerPrefs.SetInt("SelectedDifficulty", index);
-        Debug.Log($"Difficulty set to: {index}");
+        //Debug.Log($"Difficulty set to: {index}");
     }
 
     private void SetShadows(bool shadowsOn) //  DONE

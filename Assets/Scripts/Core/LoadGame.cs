@@ -10,13 +10,17 @@ public class LoadManager : MonoBehaviour
         {
             // Load the saved scene
             string savedScene = PlayerPrefs.GetString("SavedScene");
-            SceneManager.LoadScene(savedScene);
+            LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+            levelLoader.LoadScene("StartPage", savedScene);
+
 
             // Start a coroutine to wait until the scene is fully loaded before adjusting the player's position
             GameManager.Instance.StartCoroutine(WaitForSceneLoad());
         }
         else
         {
+            LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
+            levelLoader.LoadScene("StartPage", "StartPage");
             Debug.LogWarning("No saved scene found in PlayerPrefs.");
         }
     }

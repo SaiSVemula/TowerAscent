@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Shield Block
   description: Reduces incoming physical damage for one turn.
-  status: Rare
+  type: 1
   cardSprite: {fileID: 0}
-  defence: 0
+  defence: 10
+  timer: 0

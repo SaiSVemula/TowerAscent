@@ -1,7 +1,7 @@
-using UnityEngine.SceneManagement; // For scene management
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement; // For scene management
 using System.Linq; // Required for grouping functionality
 
 public class InventoryUITest : MonoBehaviour
@@ -66,6 +66,15 @@ public class InventoryUITest : MonoBehaviour
             img.sprite = groupedCard.Card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
             img.color = Color.white;
 
+            if (SceneManager.GetActiveScene().name == "Loadout")
+            {
+                // Add DraggableItem component
+                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
+                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
+                // Initialize the card display
+                cardDisplay.Initialize(groupedCard.Card);
+            }
+
             // Add a child for the card's text
             GameObject textObj = new GameObject("CardText", typeof(RectTransform), typeof(Text));
             textObj.transform.SetParent(newCard.transform, false);
@@ -80,6 +89,8 @@ public class InventoryUITest : MonoBehaviour
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.black;
+
+
         }
     }
 

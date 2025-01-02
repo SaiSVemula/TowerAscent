@@ -1,19 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour
 {
-
     [Header("UI Canvases")]
     [SerializeField] private Canvas instructionCanvas;
     [SerializeField] private Canvas battleCanvas;
-
-    [Header("Instructions")]
-    [SerializeField] private TextMeshProUGUI gameInstructionText;
     [SerializeField] private Button startBattleButton;
 
     [Header("Card System")]
@@ -48,82 +45,51 @@ public class BattleUI : MonoBehaviour
 
     [Header("Game Status")]
     [SerializeField] private TextMeshProUGUI gameStatusText;
-    private bool isInitialized = false;
 
-    // Reference to the LevelLoader instance in the scene
-    private LevelLoader levelLoader;
+    public event Action OnStartBattle;
 
-    private void Awake()
-    {
-        Debug.Log("BattleUI Awake");
-        // Find the LevelLoader instance in the current scene
-        levelLoader = FindObjectOfType<LevelLoader>();
-        if (levelLoader == null)
-        {
-            Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
-        }
-
-        // Initially show only instruction canvas
-        instructionCanvas.enabled = true;
-        battleCanvas.enabled = false;
-
-
-        SetupInstructions();
-        isInitialized = true;
-        Debug.Log("BattleUI Initialized");
-    }
-
-    private void SetupInstructions()
-    {
-        if (startBattleButton == null || gameInstructionText == null)
-        {
-            Debug.LogError("Missing critical references!");
-            return;
-        }
-
-        gameInstructionText.text = "Battle Instructions:\n\n" +
-            "� Click cards to use them\n" +
-            "� Attack cards deal damage\n" +
-            "� Defense cards block damage\n" +
-            "� Healing cards restore health\n" +
-            "� Take turns with the enemy\n\n" +
-            "Click 'Start Battle' to begin!";
-
-        startBattleButton.onClick.RemoveAllListeners();
-        startBattleButton.onClick.AddListener(OnStartBattleClick);
-    }
-
-    // Start battle button click event
-    private void OnStartBattleClick()
-    {
-        if (!isInitialized)
-        {
-            Debug.LogError("BattleUI not initialized!");
-            return;
-        }
-
-        Debug.Log("Start Battle clicked");
-
-        // First disable instruction canvas
-        instructionCanvas.enabled = false;
-
-        gameStatusText.enabled = true;
-
-        // Start battle initialization
-        if (battleManager != null)
-        {
-            StartCoroutine(battleManager.InitializeBattle());
-        }
-        else
-        {
-            Debug.LogError("BattleManager reference missing!");
-        }
-    }
+    private bool isBattleReady = false;
 
     private void Start()
     {
         SetupScrollView();
         InitializeLogPool();
+    }
+
+    private void Awake()
+    {
+        Debug.Log("BattleUI Awake");
+        // Initially show only instruction canvas
+        instructionCanvas.enabled = true;
+        battleCanvas.enabled = false;
+
+        UpdateEffectTimers();
+
+        if (startBattleButton != null)
+        {
+            startBattleButton.onClick.AddListener(OnStartBattleClick);
+        }
+        Debug.Log("BattleUI Initialized");
+    }
+
+    private void OnStartBattleClick()
+    {
+        if (isBattleReady)
+        {
+            Debug.LogWarning("Battle is already ready.");
+            return;
+        }
+
+        Debug.Log("Start Battle button clicked.");
+
+        // Disable instructions and enable the battle canvas
+        instructionCanvas.enabled = false;
+        battleCanvas.enabled = true;
+
+        isBattleReady = true;
+
+        // Notify the BattleManager to start the battle
+        OnStartBattle?.Invoke();
     }
 
     private void SetupScrollView()
@@ -210,11 +176,11 @@ public class BattleUI : MonoBehaviour
                 bool isDisabled = false;
 
                 // Check if card should be disabled
-                if (currentCard is DefenceCard && playerBattle.TemporaryDefences.Count > 0)
+                if (currentCard is DefenceCard && playerBattle.TemporaryDefences.Any(d => d.timer > 0))
                 {
                     isDisabled = true;
                 }
-                else if (currentCard is HealingCard && playerBattle.TemporaryHeals.Count > 0)
+                else if (currentCard is HealingCard && playerBattle.TemporaryHeals.Any(h => h.timer > 0))
                 {
                     isDisabled = true;
                 }
@@ -225,13 +191,14 @@ public class BattleUI : MonoBehaviour
                 // Visual feedback for disabled state
                 if (isDisabled)
                 {
-                    cardImage.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+                    cardImage.color = new Color(0.5f, 0.5f, 0.5f, 1f); // Greyed out
                 }
                 else
                 {
-                    cardImage.color = Color.white;
+                    cardImage.color = Color.white; // Normal
                 }
 
+                cardButton.onClick.RemoveAllListeners();
                 cardButton.onClick.AddListener(() => battleManager.OnPlayerUseCard(index));
             }
 
@@ -243,21 +210,24 @@ public class BattleUI : MonoBehaviour
     {
         if (defenceTimerText == null || healingTimerText == null)
         {
-            Debug.LogError("Timer Text references are not assigned.");//not assigned in unity.
+            Debug.LogError("Timer Text references are not assigned.");
             return;
         }
 
+        // Update defence timer text
         defenceTimerText.text = playerBattle.TemporaryDefences.Count == 0
-            ? "Current Defence: 0"
-            : $"Current Defense: {string.Join(" ", playerBattle.TemporaryDefences.ConvertAll(d => d.value.ToString()))}";
+            ? "No Active Defence"
+            : $"Defence: {string.Join(", ", playerBattle.TemporaryDefences.Select(d => $"{d.value} ({d.timer} turns)"))}";
 
+        // Update healing timer text
         healingTimerText.text = playerBattle.TemporaryHeals.Count == 0
-            ? "Current Healing: 0"
-            : $"Current Healing: {string.Join(" ", playerBattle.TemporaryHeals.ConvertAll(h => h.value.ToString()))}";
+            ? "No Active Healing"
+            : $"Healing: {string.Join(", ", playerBattle.TemporaryHeals.Select(h => $"{h.value} ({h.timer} turns)"))}";
 
         defenceTimerText.gameObject.SetActive(true);
         healingTimerText.gameObject.SetActive(true);
     }
+
 
     public void AddBattleLog(string message)
     {
@@ -310,6 +280,19 @@ public class BattleUI : MonoBehaviour
         Vector2 contentSize = logContainer.sizeDelta;
         contentSize.y = Mathf.Abs(currentY);
         logContainer.sizeDelta = contentSize;
+    }
+
+    // Set the active enemy for the battle based on the level
+    public void SetActiveEnemy(EnemyBattle enemy)
+    {
+        if (enemy == null)
+        {
+            Debug.LogError("Enemy reference is null!");
+            return;
+        }
+
+        enemyBattle = enemy; // Dynamically assign the active enemy
+        Debug.Log($"Active enemy set: {enemyBattle.name}");
     }
 
     private IEnumerator ScrollToTop()
@@ -373,10 +356,6 @@ public class BattleUI : MonoBehaviour
         // Prepare message
         gameStatusText.text = "Prepare for Battle!";
         gameStatusText.color = Color.white;
-        yield return new WaitForSeconds(2f);
-
-        // Begin countdown
-        gameStatusText.text = "Begin in...";
         yield return new WaitForSeconds(1f);
 
         // Numbers countdown
@@ -388,7 +367,7 @@ public class BattleUI : MonoBehaviour
 
         // Fight message
         gameStatusText.text = "Fight!";
-        yield return new WaitForSeconds(1f);
+        //yield return new WaitForSeconds(1f);
 
         // Then enable battle canvas
         battleCanvas.gameObject.SetActive(true);
@@ -428,12 +407,6 @@ public class BattleUI : MonoBehaviour
         gameStatusText.gameObject.SetActive(false);
     }
 
-    private void BattleEndTransition()
-    {
-        string nextScene = GameManager.Instance.NextScene;
-        levelLoader.LoadScene("BattleScene", nextScene);
-    }
-
     public void DisableCardInteractions()
     {
         battleCanvas.enabled = true;
@@ -454,7 +427,7 @@ public class BattleUI : MonoBehaviour
         if (cardPanel != null)
         {
             cardPanel.SetActive(true);
-            RenderCards(playerBattle.PlayerCardLoadout); // Refresh cards
+            RenderCards(playerBattle.CardLoadout); // Refresh cards
             Debug.Log("Card interactions enabled");
         }
         else

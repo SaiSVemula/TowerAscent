@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Lightning Bolt
   description: Strikes an enemy with electricity
-  status: Rare
+  type: 1
   cardSprite: {fileID: 0}
-  damage: 0
+  damage: 20
   effect: 

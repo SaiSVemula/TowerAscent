@@ -92,16 +92,41 @@ public class DollyCartController : MonoBehaviour
                 }
 
                 // Load the "ExplorationScene" scene
-                LoadExplorationScene();
+                LoadNextScene();
             }
         }
     }
 
-    void LoadExplorationScene()
+    void LoadNextScene()
     {
+        string previousScene = GameManager.Instance.PreviousScene;
+        string nextScene;
+
+        switch (previousScene)
+        {
+            case "ExplorationScene":
+                nextScene = "Level 1";
+                break;
+            case "Level 1":
+                nextScene = "Level 2";
+                break;
+            case "Level 2":
+                nextScene = "EndPage";
+                break;
+            default:
+                Debug.LogWarning($"Current scene {previousScene} does not have a defined next scene.");
+                return; // Exit if there's no defined next scene
+        }
+
+        Debug.Log($"Transitioning from LevelTransitionCutScene to {nextScene}.");
+
         if (levelLoader != null)
         {
-            levelLoader.LoadScene("StartCutScene", "ExplorationScene"); // Pass current and next scenes
+            levelLoader.LoadScene("LevelTransitionCutScene", nextScene);
+        }
+        else
+        {
+            Debug.LogError("LevelLoader is not assigned.");
         }
     }
 }

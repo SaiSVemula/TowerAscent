@@ -7,9 +7,9 @@ public class WeaponCard : Card
 
     public int Damage => damage;
 
-    public override string Use(PlayerBattle playerBattle, EnemyBattle enemyBattle)
+    public override string Use(BattleEntity user, BattleEntity target)
     {
-        enemyBattle.EnemyTakeDamage(Damage);
-        return $"Player used {Name} dealing {Damage} physical damage!";
+        target.TakeDamage(damage);
+        return $"{user.name} used {Name}, dealing {damage} damage to {target.name}!";
     }
 }
