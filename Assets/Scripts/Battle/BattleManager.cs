@@ -120,7 +120,9 @@ public class BattleManager : MonoBehaviour
 
         // Initialize the enemy
         EnemyType enemyType = DetermineEnemyType();
-        enemyInstance.Initialize(GameManager.Instance.GameDifficulty, enemyType);
+        //enemyInstance.Initialize(GameManager.Instance.GameDifficulty, enemyType);
+        int difficulty = PlayerPrefs.GetInt("PlayersGameDifficulty", 0);
+        enemyInstance.Initialize(difficulty, enemyType);
 
         // Set the GameObject's name to the enemy's name
         enemyObject.name = enemyInstance.EnemyName;
@@ -182,42 +184,6 @@ public class BattleManager : MonoBehaviour
         battleUI.UpdateTurnIndicator(isPlayerTurn);
         StartCoroutine(EnemyTurnWithDelay(selectedCard));
     }
-
-    //private IEnumerator EnemyTurnWithDelay(Card selectedCard)
-    //{
-    //    yield return new WaitForSeconds(1f);
-
-    //    if (enemyInstance == null)
-    //    {
-    //        Debug.LogError("enemyInstance is null in EnemyTurnWithDelay!");
-    //        yield break;
-    //    }
-
-    //    if (playerInstance == null)
-    //    {
-    //        Debug.LogError("playerInstance is null in EnemyTurnWithDelay!");
-    //        yield break;
-    //    }
-
-    //    // Enemy uses a card or action
-    //    enemyInstance.AttackPlayer(playerInstance);
-
-    //    // Update effect timers for the player after the enemy's turn
-    //    playerInstance.DecrementEffectTimers();
-    //    battleUI.UpdateEffectTimers();
-
-    //    // Check if the player is defeated
-    //    if (playerInstance.CurrentHealth <= 0)
-    //    {
-    //        StartCoroutine(EndBattle(false));
-    //        yield break;
-    //    }
-
-    //    // Enable player's turn
-    //    isPlayerTurn = true;
-    //    battleUI.UpdateTurnIndicator(isPlayerTurn);
-    //    battleUI.RenderCards(playerInstance.CardLoadout);
-    //}
 
     private IEnumerator EnemyTurnWithDelay(Card selectedCard)
     {
