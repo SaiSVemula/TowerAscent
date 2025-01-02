@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement; // For scene management
+using System.Linq; // Required for grouping functionality
 
-public class InventoryCardRenderer : MonoBehaviour
+public class InventoryUITest : MonoBehaviour
 {
     [SerializeField] private Transform cardGrid; // Reference to the CardGrid
     [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
@@ -37,8 +38,13 @@ public class InventoryCardRenderer : MonoBehaviour
 
         List<Card> ownedCards = PlayerInventory.Instance.GetOwnedCards();
 
+        // Group cards by name and count the quantities
+        var groupedCards = ownedCards
+            .GroupBy(card => card.Name)
+            .Select(group => new { Card = group.First(), Count = group.Count() })
+            .ToList();
 
-        foreach (Card card in ownedCards)
+        foreach (var groupedCard in groupedCards)
         {
             if (groupedCard.Card == null) continue;
 
@@ -60,6 +66,15 @@ public class InventoryCardRenderer : MonoBehaviour
             img.sprite = groupedCard.Card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
             img.color = Color.white;
 
+            if (SceneManager.GetActiveScene().name == "Loadout")
+            {
+                // Add DraggableItem component
+                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
+                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
+                // Initialize the card display
+                cardDisplay.Initialize(groupedCard.Card);
+            }
+
             // Add a child for the card's text
             GameObject textObj = new GameObject("CardText", typeof(RectTransform), typeof(Text));
             textObj.transform.SetParent(newCard.transform, false);
@@ -75,14 +90,7 @@ public class InventoryCardRenderer : MonoBehaviour
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.black;
 
-            // if this is rendering in loadout then add the DraggableItem.cs
-            if (SceneManager.GetActiveScene().name == "Loadout")
-            {
-                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
-                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
-                cardDisplay.CardData = card; // Assign the card data
-                draggableItem.parentAfterDrag = cardGrid; // Set the default parent
-            }
+
         }
     }
 

@@ -805,7 +805,7 @@ MonoBehaviour:
   cardTemplate: {fileID: 1889334161}
   battleManager: {fileID: 1878899750}
   playerBattle: {fileID: 939437348}
-  enemyBattle: {fileID: 0}
+  enemyBattle: {fileID: 4380342793915871327}
   battleLogScrollRect: {fileID: 248294890}
   logEntryTemplate: {fileID: 1672093712}
   logContainer: {fileID: 1990189643}
@@ -3104,8 +3104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95acc9c98aefea7459553bcea067eaef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  baseDefence: 0
   PlayerHealthBar: {fileID: 601537078}
 --- !u!1 &957900050
 GameObject:
@@ -6995,6 +6993,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2954063368411650915, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4520770853797541344, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
+      propertyPath: maxHealth
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8993677845989733425, guid: 20d237685291d30469b5acad2cd986f8, type: 3}

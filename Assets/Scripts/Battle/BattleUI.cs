@@ -356,10 +356,6 @@ public class BattleUI : MonoBehaviour
         // Prepare message
         gameStatusText.text = "Prepare for Battle!";
         gameStatusText.color = Color.white;
-        yield return new WaitForSeconds(2f);
-
-        // Begin countdown
-        gameStatusText.text = "Begin in...";
         yield return new WaitForSeconds(1f);
 
         // Numbers countdown

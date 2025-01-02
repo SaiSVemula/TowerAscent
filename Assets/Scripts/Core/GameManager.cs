@@ -22,12 +22,14 @@ public class GameManager : MonoBehaviour
     // Difficulty
     public Difficulty GameDifficulty { get; set; }
     public int CurrentCoins1 { get => CurrentCoins; set => CurrentCoins = value; }
+    public List<Card> CurrentCardLoadout { get => cardLoadout; set => cardLoadout = value; }
 
     private Vector3 PlayerCoord;
     private int CurrentHealth;
     private int CurrentCoins;
     private string[] CardsInInventory;
     private string PlayerName;
+    private List<Card> cardLoadout;
 
     private int minibattleWins;
     private int minibattleLosses;

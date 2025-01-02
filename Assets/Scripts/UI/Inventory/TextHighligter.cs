@@ -35,11 +35,12 @@ public class TextHighlighter : MonoBehaviour
 
     private void SubscribeToSlotEvents()
     {
-        weaponSlot.OnCardChanged += () => UpdateSlotTextColor(weaponSlot, weaponSlotText);
-        magicSlot.OnCardChanged += () => UpdateSlotTextColor(magicSlot, magicSlotText);
-        defenceSlot.OnCardChanged += () => UpdateSlotTextColor(defenceSlot, defenceSlotText);
-        healingSlot.OnCardChanged += () => UpdateSlotTextColor(healingSlot, healingSlotText);
+        if (weaponSlot != null) weaponSlot.OnCardChanged += () => UpdateSlotTextColor(weaponSlot, weaponSlotText);
+        if (magicSlot != null) magicSlot.OnCardChanged += () => UpdateSlotTextColor(magicSlot, magicSlotText);
+        if (defenceSlot != null) defenceSlot.OnCardChanged += () => UpdateSlotTextColor(defenceSlot, defenceSlotText);
+        if (healingSlot != null) healingSlot.OnCardChanged += () => UpdateSlotTextColor(healingSlot, healingSlotText);
     }
+
 
     private void UnsubscribeFromSlotEvents()
     {
@@ -51,7 +52,7 @@ public class TextHighlighter : MonoBehaviour
 
     private void UpdateSlotTextColor(InventorySlot slot, TextMeshProUGUI slotText)
     {
-        if (slot.IsOccupied && slot.IsValidCard())
+        if (slot.IsValidCard())
         {
             slotText.color = validCardColor; // Valid card in slot
             Debug.Log($"Slot text for {slot.name} updated to valid color.");

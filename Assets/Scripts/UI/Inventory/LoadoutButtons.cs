@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 public class LoadoutButtons : MonoBehaviour
 {
     [SerializeField] private LevelLoader levelLoader; // Reference to LevelLoader
     [SerializeField] private Transform inventoryGrid; // Reference to the inventory grid
     [SerializeField] private Transform[] loadoutSlots; // Array of the right-hand slots
     private List<string> validLoadout; // Stores the card names of the valid loadout
+    private List<Card> validLoadoutCards; // Stores the Card objects of the valid loadout
 
     public void ClearSlots()
     {
@@ -27,6 +26,7 @@ public class LoadoutButtons : MonoBehaviour
     public void SaveLoadout()
     {
         validLoadout = new List<string>();
+        validLoadoutCards = new List<Card>();   
 
         foreach (Transform slot in loadoutSlots)
         {
@@ -36,6 +36,7 @@ public class LoadoutButtons : MonoBehaviour
                 if (cardDisplay != null && cardDisplay.CardData != null)
                 {
                     validLoadout.Add(cardDisplay.CardData.Name); // Add the card name to the valid loadout
+                    validLoadoutCards.Add(cardDisplay.CardData); // Add the card object to the valid loadout
                 }
                 else
                 {
@@ -59,6 +60,7 @@ public class LoadoutButtons : MonoBehaviour
         // Transition to the battle scene using LevelLoader
         if (levelLoader != null)
         {
+            GameManager.Instance.CurrentCardLoadout = validLoadoutCards; // Save the valid loadout
             levelLoader.LoadScene("Loadout", "BattleScene"); // Replace "BattleScene" with the actual scene name
         }
         else
