@@ -7,15 +7,15 @@ using TMPro;
 public class DialogueNode
 {
     public string NPCDialogue;
-    public List<PlayerResponse> PlayerResponses; // Player response options
-    public DialogueNode NextNode; // Allow serialization for branching
+    public List<PlayerResponse> PlayerResponses;
+    public DialogueNode NextNode;
 }
 
 [System.Serializable]
 public class PlayerResponse
 {
-    public string ResponseText; // The text of the player response
-    public DialogueNode NextNode; // Allow serialization for branching
+    public string ResponseText;
+    public DialogueNode NextNode;
 }
 
 public class GeneralNPC : MonoBehaviour
@@ -42,6 +42,8 @@ public class GeneralNPC : MonoBehaviour
 
     public float subtitleDisplayDuration = 3f;
 
+    private ObjectiveManager objectiveManager; // Reference to the ObjectiveManager
+
     protected virtual void Start()
     {
         if (floatingText != null) floatingText.SetActive(false);
@@ -58,6 +60,13 @@ public class GeneralNPC : MonoBehaviour
 
         player = GameObject.FindWithTag("Player")?.transform;
         if (player == null) Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
+
+        // Find the ObjectiveManager in the scene
+        objectiveManager = FindObjectOfType<ObjectiveManager>();
+        if (objectiveManager == null)
+        {
+            Debug.LogError("ObjectiveManager not found in the scene!");
+        }
     }
 
     void Update()
@@ -116,6 +125,12 @@ public class GeneralNPC : MonoBehaviour
         {
             currentDialogueNode = dialogueNodes[0];
             DisplayDialogueNode(currentDialogueNode);
+
+            // Mark the objective as complete if this is NPC1
+            if (npcName == "NPC1" && objectiveManager != null)
+            {
+                objectiveManager.CompleteCurrentObjective();
+            }
         }
         else
         {
@@ -143,7 +158,7 @@ public class GeneralNPC : MonoBehaviour
 
         if (awaitingPlayerResponse)
         {
-            Invoke(nameof(DisplayPlayerResponses), subtitleDisplayDuration); // Delay before showing buttons
+            Invoke(nameof(DisplayPlayerResponses), subtitleDisplayDuration);
         }
         else
         {
@@ -166,7 +181,7 @@ public class GeneralNPC : MonoBehaviour
 
     private void DisplayPlayerResponses()
     {
-        if (dialogueText != null) dialogueText.text = ""; // Hide NPC dialogue
+        if (dialogueText != null) dialogueText.text = "";
 
         ClearResponsePanel();
 
@@ -206,7 +221,6 @@ public class GeneralNPC : MonoBehaviour
 
     private void ClearResponsePanel()
     {
-        // Clear the response panel without triggering excessive layout updates
         foreach (Transform child in responsePanel)
         {
             Destroy(child.gameObject);

@@ -8,6 +8,7 @@ public class BagUIManager : MonoBehaviour
     private Vector3 savedVelocity; // To save player's velocity when paused
     private bool wasKinematic; // To save the Rigidbody's kinematic state
     public GameObject uiCanvas; // Reference to the UI_Canvas
+    private PickCardsManager pickCardsManager; // Reference to the PickCardsManager script
 
     void Start()
     {
@@ -20,6 +21,13 @@ public class BagUIManager : MonoBehaviour
         else
         {
             Debug.LogWarning("UI_Canvas not assigned in the inspector.");
+        }
+
+        // Automatically grab reference to PickCardsManager
+        pickCardsManager = GetComponent<PickCardsManager>();
+        if (pickCardsManager == null)
+        {
+            Debug.LogWarning("PickCardsManager not found on the same GameObject!");
         }
     }
 
@@ -42,6 +50,10 @@ public class BagUIManager : MonoBehaviour
         {
             PausePlayerMovement(); // Freeze the player when inventory opens
             Time.timeScale = 0f;   // Pause the game
+
+            // Clear the message text if the UI is opened
+            pickCardsManager?.ClearMessageTextOnUIOpen();
+
             Debug.Log("Inventory opened.");
         }
         else
