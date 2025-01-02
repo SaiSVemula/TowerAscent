@@ -23,8 +23,8 @@ public class CameraMovement : MonoBehaviour
 
         playerControls = new PlayerControls();
         playerControls.Player.Enable(); // Enable input actions
-        isThirdPerson = GameManager.Instance.GetPOV();
-        rotationSpeed = GameManager.Instance.GetCamSensitivity();
+        isThirdPerson = PlayerPrefs.GetInt("IsInThirdPerson", 1) == 1;
+        rotationSpeed = PlayerPrefs.GetFloat("MovementCamSensitivity", 0.1f);
     }
 
     void Update()

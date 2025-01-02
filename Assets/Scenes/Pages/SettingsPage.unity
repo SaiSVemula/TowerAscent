@@ -573,31 +573,31 @@ MonoBehaviour:
   generalPanel: {fileID: 2101236782}
   audioPanel: {fileID: 1996200265}
   videoPanel: {fileID: 974630351}
-  difficultyButtons:
+  BattleDifficultyModes:
   - {fileID: 1747213567}
   - {fileID: 1891282876}
   - {fileID: 785699352}
-  shadowButtons:
+  ShadowToggler:
   - {fileID: 1635973848}
   - {fileID: 1497016215}
-  particleButtons:
+  ParticleToggler:
   - {fileID: 24687632}
   - {fileID: 313789797}
-  effectButtons:
+  EffectToggler:
   - {fileID: 1200460399}
   - {fileID: 2131134668}
-  viewModeButtons:
+  CameraPOVModes:
   - {fileID: 1037820575}
   - {fileID: 203064944}
-  panelButtons:
+  MenuModeButtons:
   - {fileID: 486268591}
   - {fileID: 1848071842}
   - {fileID: 1352488867}
-  cameraSensitivitySlider: {fileID: 1381519133}
-  masterVolumeSlider: {fileID: 803600084}
-  musicVolumeSlider: {fileID: 1320682851}
-  sfxVolumeSlider: {fileID: 1796132255}
-  fullscreenButton: {fileID: 1331275840}
+  CameraMovementSensitivity: {fileID: 1381519133}
+  MasterVol: {fileID: 803600084}
+  MusicVol: {fileID: 1320682851}
+  sfxVol: {fileID: 1796132255}
+  WEBGLfullscreen: {fileID: 1331275840}
   selectedColor: {r: 1, g: 1, b: 1, a: 1}
   unselectedColor: {r: 0.42352942, g: 0.42352942, b: 0.42352942, a: 1}
 --- !u!4 &145859970
