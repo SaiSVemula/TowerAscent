@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/BattleScene.unity
     guid: fec53ec1d9a5c6d49899d1d841e1386a
   - enabled: 1
+    path: Assets/Scenes/LevelTransitionCutScene.unity
+    guid: 1e030796c531b5746aeaa989006a10a2
+  - enabled: 1
     path: Assets/Scenes/Level 1.unity
     guid: 1ffb5f4e23a84be45aff1ab56b70def3
   - enabled: 1
