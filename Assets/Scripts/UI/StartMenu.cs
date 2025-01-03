@@ -67,6 +67,8 @@ public class StartMenu : MonoBehaviour
                     break;
 
                 default:
+
+                    PlayerPrefs.DeleteAll();
                     // If not in SettingsPage, load default values and start the game
                     PlayerPrefs.SetInt("PlayersGameDifficulty", 1);
                     PlayerPrefs.SetInt("AreShadowsOn", 1);

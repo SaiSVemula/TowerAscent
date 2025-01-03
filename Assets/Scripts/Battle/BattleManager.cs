@@ -33,7 +33,7 @@ public class BattleManager : MonoBehaviour
 
     private void Testing()
     {
-        GameManager.Instance.PreviousScene = "ExplorationScene";
+        GameManager.Instance.PreviousScene = "Level 0";
         GameManager.Instance.NextScene = "Level 1";
         GameManager.Instance.GameDifficulty = Difficulty.Easy;
         GameManager.Instance.UpdatePlayerHealth(100);
@@ -134,7 +134,7 @@ public class BattleManager : MonoBehaviour
     {
         switch (GameManager.Instance.PreviousScene)
         {
-            case "ExplorationScene":
+            case "Level 0":
                 return EnemyType.Enemy1;
             case "Level 1":
                 return EnemyType.Enemy2;

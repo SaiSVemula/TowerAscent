@@ -182,9 +182,6 @@ public class GameManager : MonoBehaviour
     // Used when clicking out of a menu mid gameplay
     public void LoadGameState()
     {
-        // Perform game state loading logic here
-        SceneManager.LoadScene(SavedScene);
-
         if (playerInstance != null)
         {
             playerInstance.transform.position = PlayerCoord;
