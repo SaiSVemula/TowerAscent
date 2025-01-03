@@ -19,6 +19,12 @@ public class LevelLoader : MonoBehaviour
         //check if the scene needs to be changed
     }
 
+    public void LoadSettingsPanel()
+    {
+        GameManager.Instance.PreviousScene = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene("SettingsPage");
+    }
+
     //called after the battle is over to transition to the next scene depending on the result of the battle.
     public void AfterBattleTransition(string result)
     {

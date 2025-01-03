@@ -257,14 +257,14 @@ public class BattleManager : MonoBehaviour
     private void SaveBattleResults(bool playerWon)
     {
         // Update the player's statistics
-        if (playerWon)
-        {
-            GameManager.Instance.AddMiniBattleWin(); // Example: Increment mini-battle wins
-        }
-        else
-        {
-            GameManager.Instance.AddMiniBattleLoss(); // Increment mini-battle losses
-        }
+        //if (playerWon)
+        //{
+        //    GameManager.Instance.AddMiniBattleWin(); 
+        //}
+        //else
+        //{
+        //    GameManager.Instance.AddMiniBattleLoss();
+        //}
 
         // Save the player's coins
         GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.CurrentCoins1 + 10); // adding only 10 for now but will have a varied way to develop it.

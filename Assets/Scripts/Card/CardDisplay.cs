@@ -24,4 +24,9 @@ public class CardDisplay : MonoBehaviour
             cardNameText.text = card.Name; // Display the card's name
         }
     }
+
+    public Card GetCard()
+    {
+        return CardData;
+    }
 }

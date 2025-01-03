@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,6 +25,16 @@ public class GameManager : MonoBehaviour
     public int CurrentCoins1 { get => CurrentCoins; set => CurrentCoins = value; }
     public List<Card> CurrentCardLoadout { get => cardLoadout; set => cardLoadout = value; }
 
+    // Mini-battle card pool
+    private List<Card> miniBattleCardPool = new List<Card>();
+
+    // Track defeated spiders
+    private HashSet<string> defeatedSpiders = new HashSet<string>();
+    public HashSet<string> DefeatedSpiders => defeatedSpiders;
+
+    private bool hasGameStateLoaded = false;
+    public bool HasGameStateLoaded => hasGameStateLoaded;
+
     private Vector3 PlayerCoord;
     private int CurrentHealth;
     private int CurrentCoins;
@@ -47,6 +58,7 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persist GameManager across scenes
+            LoadSpiderStates();
         }
     }
 
@@ -102,6 +114,7 @@ public class GameManager : MonoBehaviour
             playerInstance.Gold = CurrentCoins;
             playerInstance.Inventory = new List<string>(CardsInInventory);
             playerInstance.PlayerName = PlayerName;
+            LoadMiniBattleCardPoolFromPrefs();
 
             Debug.Log("Player state loaded.");
         }
@@ -131,6 +144,19 @@ public class GameManager : MonoBehaviour
     public void UpdateBigbattleWins(int wins) { bigbattleWins = wins; }
     public void UpdateBigbattleLosses(int losses) { bigbattleLosses = losses; }
 
+    // Check if a spider has been defeated
+    public bool IsSpiderDefeated(string spiderID) { return defeatedSpiders.Contains(spiderID); }
+
+    // Mark a spider as defeated
+    public void MarkSpiderDefeated(string spiderID)
+    {
+        if (!defeatedSpiders.Contains(spiderID))
+        {
+            defeatedSpiders.Add(spiderID);
+            Debug.Log($"Spider with ID {spiderID} marked as defeated.");
+        }
+    }
+
     // Full get method, used when saving a game to perfs
     public (string, Vector3, int, int, string[], string, int, int, int, int) GetFullGameState()
     {
@@ -156,11 +182,22 @@ public class GameManager : MonoBehaviour
     // Used when clicking out of a menu mid gameplay
     public void LoadGameState()
     {
+        // Perform game state loading logic here
         SceneManager.LoadScene(SavedScene);
+
         if (playerInstance != null)
         {
             playerInstance.transform.position = PlayerCoord;
+            CurrentHealth = PlayerPrefs.GetInt("CurrentHealth", 100);
+            playerInstance.Gold = CurrentCoins;
+            playerInstance.Inventory = new List<string>(CardsInInventory);
+            playerInstance.PlayerName = PlayerName;
+
+            Debug.Log("Game state loaded.");
         }
+
+        // Mark the game state as loaded
+        hasGameStateLoaded = true;
     }
 
     // Loads a new scene and saves the current state
@@ -170,7 +207,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(nextScene);
     }
 
-    // Reset Game State (resets all variables)
+    // Clears the game state
     public void Clear()
     {
         PlayerCoord = Vector3.zero;
@@ -187,25 +224,120 @@ public class GameManager : MonoBehaviour
             playerInstance = null;
         }
 
+        defeatedSpiders.Clear(); // Reset spider states
+        PlayerPrefs.DeleteKey("DefeatedSpiders"); // Clear saved spider states
         Debug.Log("Game state cleared.");
     }
 
-    // Updating playerstats when after a battle
-    public void AddMiniBattleWin()
+
+    // Post Mini Battle logic.
+    public void RewardMiniBattleGold(int rewardAmount)
+    {
+        UpdatePlayerCoinCount(CurrentCoins1 + rewardAmount);
+        Debug.Log($"Player rewarded with {rewardAmount} gold for mini-battle victory. Total coins: {CurrentCoins1}");
+    }
+
+    public void AddMiniBattleWin(string spiderID, int rewardAmount)
     {
         minibattleWins++;
-        Debug.Log($"Mini battle win recorded. Total wins: {minibattleWins}");
+        RewardMiniBattleGold(rewardAmount);
+        MarkSpiderDefeated(spiderID); // Ensure spider is marked as defeated
+        Debug.Log($"Mini-battle win recorded. Spider defeated: {spiderID}. Total wins: {minibattleWins}");
     }
 
     public void AddMiniBattleLoss()
     {
         minibattleLosses++;
-        Debug.Log($"Mini battle loss recorded. Total losses: {minibattleLosses}");
+        Debug.Log($"Mini-battle loss recorded. Total losses: {minibattleLosses}");
+    }
+
+    // Save spider state to PlayerPrefs
+    public void SaveSpiderStates()
+    {
+        string savedSpiders = string.Join(",", defeatedSpiders);
+        PlayerPrefs.SetString("DefeatedSpiders", savedSpiders);
+        PlayerPrefs.Save();
+        Debug.Log("Spider defeat states saved.");
+    }
+
+    // Load spider state from PlayerPrefs
+    public void LoadSpiderStates()
+    {
+        string savedSpiders = PlayerPrefs.GetString("DefeatedSpiders", "");
+        if (!string.IsNullOrEmpty(savedSpiders))
+        {
+            string[] spiderIDs = savedSpiders.Split(',');
+            defeatedSpiders = new HashSet<string>(spiderIDs);
+        }
+        Debug.Log("Spider defeat states loaded.");
+    }
+
+    // Mini-battle card pool management
+
+    public List<Card> GetMiniBattleCardPool()
+    {
+        if (miniBattleCardPool == null)
+        {
+            miniBattleCardPool = new List<Card>();
+            Debug.LogWarning("MiniBattleCardPool was null. Initialized with an empty list.");
+        }
+        return miniBattleCardPool;
+    }
+
+    public void UpdateMiniBattleCardPool(List<Card> newPool)
+    {
+        miniBattleCardPool = newPool;
+        SaveMiniBattleCardPoolToPrefs();
+        Debug.Log("Mini-battle card pool updated and saved.");
+    }
+
+    public void AddDefaultCardIfPoolEmpty()
+    {
+        if (miniBattleCardPool == null || miniBattleCardPool.Count == 0)
+        {
+            Debug.LogWarning("MiniBattleCardPool is empty. Adding default card.");
+            var defaultCard = Resources.Load<Card>("Cards/Weapon Cards/Axe Chop");
+            if (defaultCard != null)
+            {
+                miniBattleCardPool.Add(defaultCard);
+                Debug.Log("Default card (Axe Chop) added to MiniBattleCardPool.");
+            }
+            else
+            {
+                Debug.LogError("Default weapon card (Axe Chop) not found in Resources.");
+            }
+        }
+    }
+
+    public void SaveMiniBattleCardPoolToPrefs()
+    {
+        List<string> cardNames = miniBattleCardPool.Select(card => card.Name).ToList();
+        string serializedPool = string.Join(",", cardNames);
+        PlayerPrefs.SetString("MiniBattleCardPool", serializedPool);
+        PlayerPrefs.Save();
+        Debug.Log("Mini-battle card pool saved to PlayerPrefs.");
+    }
+
+    public void LoadMiniBattleCardPoolFromPrefs()
+    {
+        string serializedPool = PlayerPrefs.GetString("MiniBattleCardPool", "");
+        if (!string.IsNullOrEmpty(serializedPool))
+        {
+            string[] cardNames = serializedPool.Split(',');
+            miniBattleCardPool = cardNames
+                .Select(cardName => Resources.Load<Card>($"Cards/{cardName}"))
+                .Where(card => card != null)
+                .ToList();
+            Debug.Log("Mini-battle card pool loaded from PlayerPrefs.");
+        }
+        else
+        {
+            Debug.LogWarning("No saved mini-battle card pool found in PlayerPrefs.");
+        }
     }
 
     public void CompleteObjective(string objectiveName)
     {
         // Implement objective completion logic here
     }
-
 }

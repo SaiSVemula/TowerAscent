@@ -20,9 +20,9 @@ public class StartMenu : MonoBehaviour
         if (levelLoader != null)
         {
             string previousScene = GameManager.Instance.PreviousScene;
-             Debug.Log($"Previous Scene: {previousScene}");
+            Debug.Log($"Previous Scene: {previousScene}");
 
-
+            GameManager.Instance.Clear();
             switch (previousScene)
             {
                 case "SettingsPage":

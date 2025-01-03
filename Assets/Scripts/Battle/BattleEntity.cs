@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public abstract class BattleEntity : MonoBehaviour
@@ -43,6 +44,11 @@ public abstract class BattleEntity : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         int netDamage = Mathf.Max(damageAmount - currentDefence, 0);
+        if(SceneManager.GetActiveScene().name != "BattleScene")
+        {
+            // reduce the damage by any card to atleast a half in mini battles.
+            netDamage /= 2;
+        }
         currentHealth = Mathf.Max(currentHealth - netDamage, 0);
 
         Debug.Log($"{name}: Damage Taken: {damageAmount}, Current Health: {currentHealth}, Defence: {currentDefence}");

@@ -3,176 +3,149 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems; // Ensure EventSystem namespace is imported
+using UnityEngine.EventSystems;
+using System.Linq;
 
 public class PickCardsManager : MonoBehaviour
 {
-    public Button pickCardsButton; // Reference to the button
-    public Transform cardGrid; // Reference to the CardGrid
-    public TMP_Text messageText; // Reference to the message text (for the picked cards)
+    public Button pickCardsButton; // Button to enable card picking mode
+    public Button saveCardPoolButton; // Button to save the selected cards
+    public Transform cardGrid; // Parent object containing all card UI elements
+    public TMP_Text messageText; // Text element for showing messages
 
-    private List<GameObject> selectedCards = new List<GameObject>(); // Stores selected cards
-    private bool isPickingActive = false; // Determines if picking mode is active
+    private List<GameObject> selectedCards = new List<GameObject>(); // List to track selected cards
+    private bool isPickingActive = false; // Is the player currently in picking mode?
 
-    private int maxCardsToPick = 4;
-    private float pickingTimeout = 12f; // Timeout for card picking
-    private float messageDuration = 5f; // Duration for messages to display
-    private int currentMessageID = 0; // Tracks the current message ID
+    private int maxCardsToPick = 4; // Max cards the player can select
+    private float messageDuration = 5f; // How long messages are displayed for
+    private int currentMessageID = 0; // Tracks the current message's ID
+
+    private InventoryCardsRenderer inventoryCardsRenderer; // Handles rendering of the cards in the inventory UI
 
     void Start()
     {
-        // Ensure the message text starts disabled
+        inventoryCardsRenderer = GetComponent<InventoryCardsRenderer>();
+
+        // Initialize message text as hidden
         if (messageText != null)
         {
             messageText.gameObject.SetActive(false);
         }
 
-        // Add a listener to the button
-        if (SceneManager.GetActiveScene().name != "Loadout")
-        {
-            pickCardsButton.onClick.AddListener(ToggleCardPicking);
-        }
+        // Configure button listeners
+        pickCardsButton.onClick.AddListener(StartPickingMode);
+        saveCardPoolButton.onClick.AddListener(SaveSelectedCards);
+
+        // Initially hide the save button
+        saveCardPoolButton.gameObject.SetActive(false);
     }
 
-    public void ClearMessageTextOnUIOpen()
+    public void StartPickingMode()
     {
-        if (messageText != null)
-        {
-            messageText.text = ""; // Clear any lingering text
-            messageText.gameObject.SetActive(false); // Ensure it is hidden
-        }
+        isPickingActive = true;
 
-        // Reset the button if UI is closed while picking is active
-        if (isPickingActive)
-        {
-            isPickingActive = false;
-            pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle";
-            ResetCardHighlights();
-            CancelInvoke(nameof(CancelPickingDueToTimeout));
-        }
+        // Display only weapon cards for selection
+        inventoryCardsRenderer.isPickingWeaponCards = true;
+        inventoryCardsRenderer.RefreshInventoryUI();
+
+        // Show the Save Card button and hide the Pick Cards button
+        pickCardsButton.gameObject.SetActive(false);
+        saveCardPoolButton.gameObject.SetActive(true);
+
+        // Clear previous selections and highlights
+        ResetCardHighlights();
+        selectedCards.Clear();
+
+        // Display an instructional message
+        ShowMessage("Click on up to 4 weapon cards to pick for battle.");
     }
 
-    void ToggleCardPicking()
+    public void SaveSelectedCards()
     {
-        isPickingActive = !isPickingActive; // Toggle picking mode
-
-        if (isPickingActive)
+        if (selectedCards.Count < 1)
         {
-            // Change button text
-            pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Cancel Pick";
-
-            // Clear any previously selected cards
-            ResetCardHighlights();
-            selectedCards.Clear();
-
-            // Set message text
-            ShowMessage("Click on 4 cards to pick for battle.");
-
-            // Start timeout for picking
-            Invoke(nameof(CancelPickingDueToTimeout), pickingTimeout);
+            ShowMessage("You must select at least one card to save.");
+            return;
         }
-        else
-        {
-            CancelPicking("Picking cancelled.");
-        }
+
+        // Save selected cards to the GameManager
+        SaveSelectedCardsToGameManager();
+
+        // Exit picking mode and reset the UI
+        isPickingActive = false;
+        pickCardsButton.gameObject.SetActive(true);
+        saveCardPoolButton.gameObject.SetActive(false);
+
+        // Restore the full inventory view
+        inventoryCardsRenderer.isPickingWeaponCards = false;
+        inventoryCardsRenderer.RefreshInventoryUI();
+
+        // Show a success message
+        ShowMessage("Cards saved successfully.");
     }
 
     void Update()
     {
-        if (isPickingActive)
+        if (isPickingActive && Input.GetMouseButtonDown(0)) // Detect mouse click
         {
-            if (Input.GetMouseButtonDown(0)) // Detect left mouse click
+            PointerEventData pointerData = new PointerEventData(EventSystem.current)
             {
-                // Detect the clicked UI object
-                PointerEventData pointerData =
-                    new PointerEventData(EventSystem.current)
-                    {
-                        position = Input.mousePosition
-                    };
+                position = Input.mousePosition
+            };
 
-                List<RaycastResult> results = new List<RaycastResult>();
-                EventSystem.current.RaycastAll(pointerData, results);
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
 
-                foreach (var result in results)
+            foreach (var result in results)
+            {
+                GameObject clickedObject = result.gameObject;
+
+                // Check if the clicked object is a card in the card grid
+                if (clickedObject.transform.parent == cardGrid && !selectedCards.Contains(clickedObject))
                 {
-                    GameObject clickedObject = result.gameObject;
+                    selectedCards.Add(clickedObject);
 
-                    // Check if the clicked object is a card
-                    if (clickedObject.transform.parent == cardGrid && !selectedCards.Contains(clickedObject))
+                    // Highlight the selected card
+                    Image cardImage = clickedObject.GetComponent<Image>();
+                    if (cardImage != null)
                     {
-                        selectedCards.Add(clickedObject);
-
-                        // Highlight selected card (e.g., change its color or add an outline)
-                        Image cardImage = clickedObject.GetComponent<Image>();
-                        if (cardImage != null)
-                        {
-                            cardImage.color = Color.green; // Example: Change the color to green
-                        }
-
-                        // Check if 4 cards are selected
-                        if (selectedCards.Count == maxCardsToPick)
-                        {
-                            CompletePicking();
-                        }
-
-                        break;
+                        cardImage.color = Color.green; // Example highlight: green color
                     }
+
+                    // Ensure the player doesn't select more than the max allowed cards
+                    if (selectedCards.Count == maxCardsToPick)
+                    {
+                        ShowMessage("Maximum cards selected.");
+                    }
+
+                    break;
                 }
             }
         }
     }
 
-    void CompletePicking()
+    void SaveSelectedCardsToGameManager()
     {
-        isPickingActive = false; // Stop picking
-        DisplayPickedCards(); // Show the picked cards
-        pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle"; // Reset button text
+        List<Card> selectedCardObjects = selectedCards
+            .Select(card => card.GetComponent<CardDisplay>().GetCard())
+            .ToList();
 
-        // Cancel any pending timeout
-        CancelInvoke(nameof(CancelPickingDueToTimeout));
+        GameManager.Instance.UpdateMiniBattleCardPool(selectedCardObjects);
+
+        Debug.Log($"Saved {selectedCardObjects.Count} cards to MiniBattleCardPool.");
     }
 
-    void CancelPickingDueToTimeout()
-    {
-        if (isPickingActive)
-        {
-            CancelPicking("Picking cancelled due to timeout.");
-        }
-    }
-
-    void CancelPicking(string cancelMessage)
-    {
-        isPickingActive = false; // Stop picking
-        pickCardsButton.GetComponentInChildren<TMP_Text>().text = "Pick Cards for Battle"; // Reset button text
-
-        // Reset highlights and set cancellation message
-        ResetCardHighlights();
-        ShowMessage(cancelMessage);
-    }
-
-    void DisplayPickedCards()
-    {
-        string pickedCardsText = "Cards picked for battle: ";
-        foreach (GameObject card in selectedCards)
-        {
-            pickedCardsText += card.name + ", ";
-        }
-
-        ShowMessage(pickedCardsText.TrimEnd(',', ' '));
-    }
 
     void ShowMessage(string text)
     {
         if (messageText != null)
         {
-            currentMessageID++; // Increment the message ID for this new message
+            currentMessageID++;
             int messageID = currentMessageID;
 
-            // Enable and update the message text
             messageText.gameObject.SetActive(true);
             messageText.text = text;
 
-            // Use a coroutine for delayed message hiding
             StartCoroutine(HideMessageAfterDelay(messageID));
         }
         else
@@ -185,11 +158,10 @@ public class PickCardsManager : MonoBehaviour
     {
         yield return new WaitForSeconds(messageDuration);
 
-        // Ensure only the latest message is cleared
         if (messageID == currentMessageID && messageText != null && messageText.gameObject.activeSelf)
         {
-            messageText.text = ""; // Clear the text
-            messageText.gameObject.SetActive(false); // Properly hide the text
+            messageText.text = "";
+            messageText.gameObject.SetActive(false);
         }
     }
 

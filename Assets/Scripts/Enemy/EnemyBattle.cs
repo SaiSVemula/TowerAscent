@@ -202,5 +202,4 @@ public class EnemyBattle : BattleEntity
         Debug.Log($"{EnemyName} uses {selectedCard.Name} on {player.name}.");
         selectedCard.Use(this, player);
     }
-
 }
