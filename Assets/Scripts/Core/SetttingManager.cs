@@ -113,6 +113,7 @@ public class SettingsManager : MonoBehaviour
     {
         GameManager.Instance.GameDifficulty = (Difficulty)index;
         PlayerPrefs.SetInt("PlayersGameDifficulty", index);
+        Debug.Log($"Difficulty set to: {index}");
     }
 
     private void SetShadows(bool shadowsOn){
