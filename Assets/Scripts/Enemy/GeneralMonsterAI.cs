@@ -196,7 +196,7 @@ public class GeneralMonsterAI : BattleEntity
             playerMovementScript.LockMovement(true); 
         }
 
-        miniBattleManager.SendMessage("StartMiniBattle", this); ;
+        miniBattleManager.SendMessage("StartMiniBattle", this);
     }
 
     public void SetUpMiniBattle()
