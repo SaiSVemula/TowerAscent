@@ -1,7 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using TMPro;
+using System.Collections; // Required for IEnumerator
+
+
 
 [System.Serializable]
 public class DialogueNode
@@ -22,8 +25,16 @@ public class GeneralNPC : MonoBehaviour
 {
     public Animator animator;
 
+    [Header("Objects to Disable and Conditions")]
+    public GameObject[] objectsToDisable;
+    public string[] disableConditions; // Conditions corresponding to each object (e.g., "TalkToNPC2", "DefeatSpider")
+
+    [Header("Barrier Interaction")]
+    public TextMeshProUGUI barrierMessageText; // UI Text to display the message
+    public float messageDuration = 2f; // Duration the message is displayed
+
     [Header("Floating Text and Dialogue")]
-    public string npcName = "NPC1"; // Name of the NPC
+    public string npcName = "NPC1";
     public GameObject floatingText;
     public GameObject dialogueUI;
     public Text dialogueText;
@@ -38,38 +49,35 @@ public class GeneralNPC : MonoBehaviour
     public List<DialogueNode> dialogueNodes;
     private DialogueNode currentDialogueNode;
     private bool isInteracting = false;
-    private bool awaitingPlayerResponse = false;
 
     public float subtitleDisplayDuration = 3f;
 
-    private ObjectiveManager objectiveManager; // Reference to the ObjectiveManager
+    private ObjectiveManager objectiveManager;
+    private bool isMessageDisplayed = false; // Prevent spamming the barrier message
 
-    protected virtual void Start()
+    private void Start()
     {
-        if (floatingText != null) floatingText.SetActive(false);
-        if (dialogueUI != null) dialogueUI.SetActive(false);
+        floatingText?.SetActive(false);
+        dialogueUI?.SetActive(false);
 
-        // Clear any leftover buttons or objects in the ResponsePanel
-        if (responsePanel != null)
-        {
-            foreach (Transform child in responsePanel)
-            {
-                Destroy(child.gameObject);
-            }
-        }
+        ClearResponsePanel();
 
         player = GameObject.FindWithTag("Player")?.transform;
         if (player == null) Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
 
-        // Find the ObjectiveManager in the scene
         objectiveManager = FindObjectOfType<ObjectiveManager>();
         if (objectiveManager == null)
         {
             Debug.LogError("ObjectiveManager not found in the scene!");
         }
+
+        if (barrierMessageText != null)
+        {
+            barrierMessageText.text = ""; // Clear the barrier message at the start
+        }
     }
 
-    void Update()
+    private void Update()
     {
         if (player == null || isInteracting) return;
 
@@ -77,30 +85,20 @@ public class GeneralNPC : MonoBehaviour
 
         if (distanceToPlayer <= detectionRadius)
         {
-            OnPlayerInRange();
+            floatingText?.SetActive(true);
+
+            FacePlayer();
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                StartInteraction();
+            }
         }
         else
         {
-            OnPlayerOutOfRange();
+            floatingText?.SetActive(false);
+            if (isInteracting) EndInteraction();
         }
-    }
-
-    protected virtual void OnPlayerInRange()
-    {
-        if (floatingText != null && !floatingText.activeSelf) floatingText.SetActive(true);
-
-        FacePlayer();
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            StartInteraction();
-        }
-    }
-
-    protected virtual void OnPlayerOutOfRange()
-    {
-        if (floatingText != null && floatingText.activeSelf) floatingText.SetActive(false);
-        if (isInteracting) EndInteraction();
     }
 
     private void FacePlayer()
@@ -113,11 +111,11 @@ public class GeneralNPC : MonoBehaviour
         }
     }
 
-    public virtual void StartInteraction()
+    public void StartInteraction()
     {
         isInteracting = true;
-        if (floatingText != null) floatingText.SetActive(false);
-        if (dialogueUI != null) dialogueUI.SetActive(true);
+        floatingText?.SetActive(false);
+        dialogueUI?.SetActive(true);
 
         animator.SetTrigger("WaveTrigger");
 
@@ -126,11 +124,7 @@ public class GeneralNPC : MonoBehaviour
             currentDialogueNode = dialogueNodes[0];
             DisplayDialogueNode(currentDialogueNode);
 
-            // Mark the objective as complete if this is NPC1
-            if (npcName == "NPC1" && objectiveManager != null)
-            {
-                objectiveManager.CompleteCurrentObjective();
-            }
+            HandleObjectiveAndConditions();
         }
         else
         {
@@ -139,12 +133,66 @@ public class GeneralNPC : MonoBehaviour
         }
     }
 
-    public virtual void EndInteraction()
+    private void HandleObjectiveAndConditions()
+    {
+        if (objectiveManager != null)
+        {
+            if (npcName == "NPC1")
+            {
+                objectiveManager.ClearAndSetNextObjective("Talk to NPC2");
+            }
+            else if (npcName == "NPC2")
+            {
+                objectiveManager.ClearAndSetNextObjective("Find and Defeat the Spider!");
+            }
+        }
+
+        CheckAndDisableObjects();
+    }
+
+    private void CheckAndDisableObjects()
+    {
+        for (int i = 0; i < objectsToDisable.Length; i++)
+        {
+            if (i < disableConditions.Length && objectsToDisable[i] != null)
+            {
+                string condition = disableConditions[i];
+
+                if (condition == "TalkToNPC2" && objectiveManager.IsObjectiveComplete("Talk to NPC2"))
+                {
+                    objectsToDisable[i].SetActive(false);
+                    Debug.Log($"Disabled {objectsToDisable[i].name} for condition {condition}");
+                }
+                else if (condition == "DefeatSpider")
+                {
+                    // Placeholder: Spider defeat logic not implemented yet
+                    Debug.Log($"Set up to disable {objectsToDisable[i].name} after defeating spider.");
+                }
+            }
+        }
+    }
+
+    public void HandleBarrierCollision()
+    {
+        if (!isMessageDisplayed && barrierMessageText != null)
+        {
+            StartCoroutine(DisplayBarrierMessage());
+        }
+    }
+
+    private IEnumerator DisplayBarrierMessage()
+    {
+        isMessageDisplayed = true;
+        barrierMessageText.text = "Required objective not reached!";
+        yield return new WaitForSeconds(messageDuration);
+        barrierMessageText.text = ""; // Clear the message
+        isMessageDisplayed = false;
+    }
+
+    public void EndInteraction()
     {
         isInteracting = false;
-        awaitingPlayerResponse = false;
-        if (dialogueUI != null) dialogueUI.SetActive(false);
-
+        dialogueUI?.SetActive(false);
         ClearResponsePanel();
     }
 
@@ -152,23 +200,13 @@ public class GeneralNPC : MonoBehaviour
     {
         if (node == null) return;
 
-        if (dialogueText != null) dialogueText.text = $"{npcName}: {node.NPCDialogue}";
-
-        awaitingPlayerResponse = node.PlayerResponses.Count > 0;
-
-        if (awaitingPlayerResponse)
-        {
-            Invoke(nameof(DisplayPlayerResponses), subtitleDisplayDuration);
-        }
-        else
-        {
-            Invoke(nameof(ProceedToNextDialogue), subtitleDisplayDuration);
-        }
+        dialogueText.text = $"{npcName}: {node.NPCDialogue}";
+        Invoke(node.PlayerResponses.Count > 0 ? nameof(DisplayPlayerResponses) : nameof(ProceedToNextDialogue), subtitleDisplayDuration);
     }
 
     private void ProceedToNextDialogue()
     {
-        if (currentDialogueNode != null && currentDialogueNode.NextNode != null)
+        if (currentDialogueNode?.NextNode != null)
         {
             currentDialogueNode = currentDialogueNode.NextNode;
             DisplayDialogueNode(currentDialogueNode);
@@ -181,39 +219,17 @@ public class GeneralNPC : MonoBehaviour
 
     private void DisplayPlayerResponses()
     {
-        if (dialogueText != null) dialogueText.text = "";
-
         ClearResponsePanel();
 
         foreach (PlayerResponse response in currentDialogueNode.PlayerResponses)
         {
-            if (responseButtonPrefab == null)
-            {
-                Debug.LogError("ResponseButtonPrefab is not assigned.");
-                continue;
-            }
-
             GameObject button = Instantiate(responseButtonPrefab, responsePanel);
             button.SetActive(true);
 
             var tmpText = button.GetComponentInChildren<TMP_Text>();
-            var uiText = button.GetComponentInChildren<Text>();
+            if (tmpText != null) tmpText.text = response.ResponseText;
 
-            if (tmpText != null)
-            {
-                tmpText.text = response.ResponseText;
-            }
-            else if (uiText != null)
-            {
-                uiText.text = response.ResponseText;
-            }
-            else
-            {
-                Debug.LogError("ResponseButton is missing a Text or TMP_Text component!");
-            }
-
-            Button buttonComponent = button.GetComponent<Button>();
-            buttonComponent.onClick.AddListener(() => HandlePlayerResponse(response));
+            button.GetComponent<Button>().onClick.AddListener(() => HandlePlayerResponse(response));
         }
 
         responsePanel.gameObject.SetActive(true);
@@ -227,23 +243,12 @@ public class GeneralNPC : MonoBehaviour
         }
     }
 
-    public void HandlePlayerResponse(PlayerResponse response)
+    private void HandlePlayerResponse(PlayerResponse response)
     {
-        if (response != null)
-        {
-            responsePanel.gameObject.SetActive(false);
-            ClearResponsePanel();
-
-            if (dialogueText != null) dialogueText.text = $"You: {response.ResponseText}";
-
-            Invoke(nameof(DisplayNextNPCDialogue), subtitleDisplayDuration);
-
-            currentDialogueNode = response.NextNode;
-        }
-        else
-        {
-            EndInteraction();
-        }
+        ClearResponsePanel();
+        dialogueText.text = $"You: {response.ResponseText}";
+        currentDialogueNode = response.NextNode;
+        Invoke(nameof(DisplayNextNPCDialogue), subtitleDisplayDuration);
     }
 
     private void DisplayNextNPCDialogue()
