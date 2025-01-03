@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement; // For scene management
 using System.Linq; // Required for grouping functionality
 
-public class InventoryUITest : MonoBehaviour
+public class InventoryCardsRenderer : MonoBehaviour
 {
     [SerializeField] private Transform cardGrid; // Reference to the CardGrid
     [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
+    public bool isPickingWeaponCards = false; // Flag for weapon card filtering
+
 
     private void OnEnable()
     {
@@ -32,11 +34,17 @@ public class InventoryUITest : MonoBehaviour
         RefreshInventoryUI(); // Display the initial inventory
     }
 
-    private void RefreshInventoryUI()
+    public void RefreshInventoryUI()
     {
         ClearInventoryUI(); // Clear existing UI
 
         List<Card> ownedCards = PlayerInventory.Instance.GetOwnedCards();
+
+        // Filter for weapon cards if in weapon picking mode
+        if (isPickingWeaponCards)
+        {
+            ownedCards = ownedCards.Where(card => card is WeaponCard).ToList();
+        }
 
         // Group cards by name and count the quantities
         var groupedCards = ownedCards
@@ -66,14 +74,14 @@ public class InventoryUITest : MonoBehaviour
             img.sprite = groupedCard.Card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
             img.color = Color.white;
 
-            if (SceneManager.GetActiveScene().name == "Loadout")
+            if (SceneManager.GetActiveScene().name == "LoadoutPage")
             {
                 // Add DraggableItem component
                 DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
-                CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
-                // Initialize the card display
-                cardDisplay.Initialize(groupedCard.Card);
             }
+            CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
+            // Initialize the card display
+            cardDisplay.Initialize(groupedCard.Card);
 
             // Add a child for the card's text
             GameObject textObj = new GameObject("CardText", typeof(RectTransform), typeof(Text));

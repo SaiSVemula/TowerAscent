@@ -30,6 +30,7 @@ public class TriggerCheckpoint : MonoBehaviour
             Transform playerTransform = other.transform;
             Vector3 playerCoord = playerTransform.position;
             GameManager.Instance.UpdatePlayerLocation(playerCoord);
+            GameManager.Instance.SavePlayerState();
 
             // Log the player's coordinates when the checkpoint is activated
             Debug.Log($"Checkpoint activated! Player coordinates: {playerCoord}");
@@ -49,15 +50,23 @@ public class TriggerCheckpoint : MonoBehaviour
     private void SetCheckpointState(bool isActivated)
     {
         if (whiteBox != null)
+        {
             whiteBox.SetActive(!isActivated);  // Hide when activated
-        
+        }
+
         if (whiteParticle != null)
+        {
             whiteParticle.SetActive(!isActivated);  // Hide when activated
-        
-        if (greenBox != null)
-            greenBox.SetActive(isActivated);  // Show when activated
+        }
+
+        if (greenBox != null) 
+        { 
+            greenBox.SetActive(isActivated); // Show when activated
+        }
         
         if (greenParticle != null)
+        {
             greenParticle.SetActive(isActivated);  // Show when activated
+        }
     }
 }

@@ -5,7 +5,7 @@ public class SaveGame : MonoBehaviour
     public static void SaveGameState()
     {
         var gm = GameManager.Instance;
-
+        Debug.Log($"Saving game state... {gm.GetPlayerHealth()}");
         PlayerPrefs.SetString("SavedScene", gm.GetCurrentScene());
         PlayerPrefs.SetFloat("PlayerCoordX", gm.GetPlayerLocation().x);
         PlayerPrefs.SetFloat("PlayerCoordY", gm.GetPlayerLocation().y);
@@ -21,6 +21,9 @@ public class SaveGame : MonoBehaviour
 
 
         PlayerPrefs.Save();
+
+        int health = PlayerPrefs.GetInt("CurrentHealth");
+        Debug.Log($"Player health saved: {health}");
         Debug.Log("Game state saved.");
     }
 }

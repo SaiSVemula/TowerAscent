@@ -10,8 +10,17 @@ public class BagUIManager : MonoBehaviour
     public GameObject uiCanvas; // Reference to the UI_Canvas
     private PickCardsManager pickCardsManager; // Reference to the PickCardsManager script
 
+    private LevelLoader levelLoader;
+
     void Start()
     {
+        // Find the LevelLoader instance in the current scene
+        levelLoader = FindObjectOfType<LevelLoader>();
+        if (levelLoader == null)
+        {
+            Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
+        }
+
         // Automatically disable and enable the canvas to fix button issues
         if (uiCanvas != null)
         {
@@ -40,6 +49,11 @@ public class BagUIManager : MonoBehaviour
         }
     }
 
+    public void OnSettingsButtonClick()
+    {
+        levelLoader.LoadSettingsPanel();
+    }
+
     // Method to toggle the bag UI visibility
     public void ToggleBagUI()
     {
@@ -52,7 +66,7 @@ public class BagUIManager : MonoBehaviour
             Time.timeScale = 0f;   // Pause the game
 
             // Clear the message text if the UI is opened
-            pickCardsManager?.ClearMessageTextOnUIOpen();
+            //pickCardsManager.ClearMessageTextOnUIOpen();
 
             Debug.Log("Inventory opened.");
         }
