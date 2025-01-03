@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody PlayerRigidBody;
     public Animator animator;
     public Transform CurrentPlayer;
+    private bool movementLocked = false;//added for mini-battle
 
     void Start() // Initialize variables in Start method
     {
@@ -31,7 +32,10 @@ public class PlayerMovement : MonoBehaviour
         bool CurrentlyRunning = playerControls.Player.MakePlayerRun.IsPressed(); // is the left shift pressed to indicate running?
         bool JumpPressed = playerControls.Player.MakePlayerJump.triggered; // is space pressed to indicate user wants to jump?
         MakePlayerMove(UsersKeyStroke, CurrentlyRunning);
-        if (JumpPressed) MakePlayerJump();
+        if (JumpPressed) 
+        {
+            MakePlayerJump();
+        }
         UpdateAnimator(UsersKeyStroke, CurrentlyRunning); 
     }
 
@@ -59,8 +63,10 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //Makes a player jump by first checking whether the player is not already jumping (by checking if player is not touching the floor)
-    private void MakePlayerJump() {
-        if (PlayerOnTheFloor) { 
+    private void MakePlayerJump() 
+    {
+        if (PlayerOnTheFloor) 
+        { 
             PlayerRigidBody.AddForce(Vector3.up * 4.5f, ForceMode.Impulse); 
             
             // Update jump animation
@@ -85,5 +91,15 @@ public class PlayerMovement : MonoBehaviour
 
         // Update run animation
         animator.SetBool("IsRunning", CurrentlyRunning);
+    }
+
+    public void LockMovement(bool lockMovement)
+    {
+        movementLocked = lockMovement;
+
+        // Update animator state
+        animator.SetBool("IsIdle", lockMovement);
+        animator.SetBool("WASDPressed", !lockMovement);
+        animator.SetBool("IsRunning", false);
     }
 }

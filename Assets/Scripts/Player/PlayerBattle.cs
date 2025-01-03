@@ -1,43 +1,65 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerBattle : BattleEntity
 {
     [SerializeField] private Slider PlayerHealthBar;
+    // Fields for mini-battle
+    private List<Card> miniBattleCardPool = new List<Card>();
     protected override void Awake()
     {
         Debug.Log("PlayerBattle Awake called");
         // Clear existing card loadout to avoid duplicates
+        //LoadManager.LoadGameState();
         cardLoadout.Clear();
-
-        maxHealth = GameManager.Instance.GetPlayerHealth();
 
         // Initialize base class properties
         base.Awake();
 
-        // Log maxHealth for debugging
+        // Initialize player health
+        maxHealth = GameManager.Instance.GetPlayerHealth();
+
+        if (maxHealth == 0)
+        {
+            maxHealth = 100;
+        }
+
         Debug.Log($"Base maxHealth: {maxHealth}");
 
         healthBar = PlayerHealthBar;
-        currentHealth = maxHealth; // Initialize current health
+        currentHealth = maxHealth;
+
         if (healthBar != null)
         {
-            healthBar.maxValue = maxHealth; // Sync max value
-            UpdateHealthBar(); // Set initial value
+            healthBar.maxValue = maxHealth;
+            UpdateHealthBar();
         }
 
-        // Initialize card loadout with default cards
-        cardLoadout = GameManager.Instance.CurrentCardLoadout;
+        // Add logic to load mini-battle features only outside the BattleScene
+        if (SceneManager.GetActiveScene().name != "BattleScene")
+        {
+            Debug.Log("Setting up mini-battle features for the player.");
+            LoadMiniBattleCardPool();
+        }
+        else
+        {
+            // Initialize card loadout with default cards
+            cardLoadout = GameManager.Instance.CurrentCardLoadout;
 
-        // Log the card loadout initialization
-        Debug.Log($"Card loadout initialized with {cardLoadout.Count} cards.");
+            // Log the card loadout initialization
+            Debug.Log($"Card loadout initialized with {cardLoadout.Count} cards.");
+        }
     }
 
     public void UsePlayerCard(int cardIndex, EnemyBattle targetEnemy)
     {
-        if (cardIndex < 0 || cardIndex >= cardLoadout.Count) return;
+        if (cardIndex < 0 || cardIndex >= cardLoadout.Count)
+        {
+            return;
+        }
 
         Card selectedCard = cardLoadout[cardIndex];
         if (selectedCard != null)
@@ -67,9 +89,14 @@ public class PlayerBattle : BattleEntity
     public void DecrementEffectTimers()
     {
         // Ensure temporary lists are initialized
-        if (temporaryDefenses == null) temporaryDefenses = new List<(int, int)>();
-        if (temporaryHeals == null) temporaryHeals = new List<(int, int)>();
-
+        if (temporaryDefenses == null)
+        {
+            temporaryDefenses = new List<(int, int)>();
+        }
+        if (temporaryHeals == null)
+        {
+            temporaryHeals = new List<(int, int)>();
+        }
         // Decrement defense timers
         for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
         {
@@ -94,4 +121,77 @@ public class PlayerBattle : BattleEntity
             }
         }
     }
+
+    //Mini-battle methods for player
+
+    public void UseMiniBattleCard(BattleEntity target)
+    {
+        Card selectedCard = GetMiniBattleCard();
+        if (selectedCard == null)
+        {
+            return;
+        }
+
+        Debug.Log($"Player used {selectedCard.Name} on {target.name}.");
+        string logMessage = selectedCard.Use(this, target);
+        Debug.Log(logMessage);
+    }
+
+    public void SetUpMiniBattle()
+    {
+        if (SceneManager.GetActiveScene().name == "BattleScene")
+        {
+            return;
+        }
+
+        Debug.Log("Setting up mini-battle stats for the player.");
+        LoadMiniBattleCardPool();
+
+        // Reset player health for the mini-battle
+        maxHealth = GameManager.Instance.GetPlayerHealth();
+        currentHealth = maxHealth;
+        if (healthBar != null)
+        {
+            healthBar.value = currentHealth;
+        }
+    }
+
+    public void LoadMiniBattleCardPool()
+    {
+        Debug.Log("Loading mini-battle card pool...");
+
+        // Fetch the pool from the GameManager
+        miniBattleCardPool = GameManager.Instance.GetMiniBattleCardPool();
+
+        if (miniBattleCardPool == null || miniBattleCardPool.Count == 0)
+        {
+            Debug.LogWarning("No cards available in MiniBattleCardPool. Adding default card.");
+            GameManager.Instance.AddDefaultCardIfPoolEmpty();
+            miniBattleCardPool = GameManager.Instance.GetMiniBattleCardPool();
+        }
+
+        Debug.Log($"Mini-battle card pool loaded with {miniBattleCardPool.Count} cards.");
+    }
+
+    public Card GetMiniBattleCard()
+    {
+        if (miniBattleCardPool == null || miniBattleCardPool.Count == 0)
+        {
+            Debug.LogWarning("No cards available in MiniBattleCardPool. Fetching default pool.");
+            GameManager.Instance.AddDefaultCardIfPoolEmpty();
+            miniBattleCardPool = GameManager.Instance.GetMiniBattleCardPool();
+        }
+
+        if (miniBattleCardPool == null || miniBattleCardPool.Count == 0)
+        {
+            Debug.LogError("MiniBattleCardPool is still empty. No cards to fetch.");
+            return null;
+        }
+
+        // Select a random card (or implement specific logic for choosing a card)
+        int randomIndex = Random.Range(0, miniBattleCardPool.Count);
+        Debug.Log($"Returning card: {miniBattleCardPool[randomIndex].Name}");
+        return miniBattleCardPool[randomIndex];
+    }
+
 }

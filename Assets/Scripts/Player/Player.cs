@@ -44,6 +44,8 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        maxHealth = 100;//deafult
+        GameManager.Instance.UpdatePlayerHealth(maxHealth);
         currentHealth = maxHealth;
     }
 

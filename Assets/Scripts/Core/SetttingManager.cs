@@ -24,15 +24,24 @@ public class SettingsManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null) {instance = this;}
-        else {Destroy(gameObject);}
+        if (instance == null) 
+        {
+            instance = this;
+        }
+        else 
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Start()
     {
 
         levelLoader = FindObjectOfType<LevelLoader>();
-        if (levelLoader == null) { Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene."); }
+        if (levelLoader == null) 
+        { 
+            Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
+        }
 
         UpdateButtonInGroup(MenuModeButtons, 0);
         GroupUpButtons(BattleDifficultyModes, (index) => SetDifficulty(index));
@@ -52,11 +61,20 @@ public class SettingsManager : MonoBehaviour
         RestoreSettings();
     }
 
-    public void GeneralSettings() { showpanel(generalPanel); }
+    public void GeneralSettings() 
+    { 
+        showpanel(generalPanel); 
+    }
 
-    public void AudioSettings() { showpanel(audioPanel); }
+    public void AudioSettings() 
+    { 
+        showpanel(audioPanel); 
+    }
 
-    public void VideoSettings() { showpanel(videoPanel); }
+    public void VideoSettings() 
+    { 
+        showpanel(videoPanel); 
+    }
 
     private void showpanel(GameObject panelToShow)
     {

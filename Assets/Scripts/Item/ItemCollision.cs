@@ -75,7 +75,10 @@ public class ItemCollision : MonoBehaviour
 
     private Card GetRandomCardFromPool(List<Card> cardPool)
     {
-        if (cardPool == null || cardPool.Count == 0) return null;
+        if (cardPool == null || cardPool.Count == 0)
+        {
+            return null;
+        }
 
         int randomIndex = Random.Range(0, cardPool.Count);
         return cardPool[randomIndex];
