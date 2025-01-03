@@ -74,7 +74,7 @@ public class InventoryCardsRenderer : MonoBehaviour
             img.sprite = groupedCard.Card.CardSprite ?? defaultCardSprite; // Use the card's sprite or default
             img.color = Color.white;
 
-            if (SceneManager.GetActiveScene().name == "Loadout")
+            if (SceneManager.GetActiveScene().name == "LoadoutPage")
             {
                 // Add DraggableItem component
                 DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
