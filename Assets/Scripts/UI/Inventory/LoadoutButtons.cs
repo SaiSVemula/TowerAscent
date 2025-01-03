@@ -61,7 +61,7 @@ public class LoadoutButtons : MonoBehaviour
         if (levelLoader != null)
         {
             GameManager.Instance.CurrentCardLoadout = validLoadoutCards; // Save the valid loadout
-            levelLoader.LoadScene("Loadout", "BattleScene"); // Replace "BattleScene" with the actual scene name
+            levelLoader.LoadScene("LoadoutPage", "BattleScene"); // Replace "BattleScene" with the actual scene name
         }
         else
         {

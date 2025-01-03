@@ -123,7 +123,7 @@ public class TriggerZoneHandler : MonoBehaviour
         string nextScene;
         string currentScene = SceneManager.GetActiveScene().name;
 
-        if (currentScene == "ExplorationScene")
+        if (currentScene == "Level 0")
         {
             nextScene = "Level 1";
         }
@@ -141,7 +141,7 @@ public class TriggerZoneHandler : MonoBehaviour
         {
             GameManager.Instance.NextScene = nextScene;
             Debug.Log($"Next scene set to: {nextScene}");
-            levelLoader.LoadScene(currentScene, "Loadout");
+            levelLoader.LoadScene(currentScene, "LoadoutPage");
         }
         else
         {

@@ -41,7 +41,7 @@ public class LevelLoader : MonoBehaviour
     //Helper method to load the next scene saving the previous scene in the GameManager
     public void LoadScene(string currentScene, string nextScene)
     {
-        if (currentScene == "ExplorationScene" || currentScene == "StartPage" || currentScene == "Level 1" || currentScene == "Level 2") 
+        if (currentScene == "Level 0" || currentScene == "StartPage" || currentScene == "Level 1" || currentScene == "Level 2") 
         {
             GameManager.Instance.PreviousScene = currentScene;
         }

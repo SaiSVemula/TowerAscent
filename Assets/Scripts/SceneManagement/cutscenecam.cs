@@ -83,7 +83,7 @@ public class DollyCartController : MonoBehaviour
             // Check if the dolly cart has reached the end of the track
             if (dollyCart.m_Position >= trackLength * trackEndThreshold)
             {
-                // Load the "ExplorationScene" scene
+                // Load the "Level 0" scene
                 LoadNextScene();
             }
         }
@@ -97,9 +97,9 @@ public class DollyCartController : MonoBehaviour
         switch (previousScene)
         {
             case "StartPage":
-                nextScene = "ExplorationScene";
+                nextScene = "Level 0";
                 break;
-            case "ExplorationScene":
+            case "Level 0":
                 nextScene = "Level 1";
                 break;
             case "Level 1":
