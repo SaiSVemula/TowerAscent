@@ -15,9 +15,14 @@ public class ObjectiveManager : MonoBehaviour
 
     private void UpdateObjectiveDisplay()
     {
-        objectivesText.text = currentObjectiveIndex < objectives.Count
-            ? objectives[currentObjectiveIndex]
-            : "Complete!";
+        if (currentObjectiveIndex < objectives.Count)
+        {
+            objectivesText.text = objectives[currentObjectiveIndex];
+        }
+        else
+        {
+            objectivesText.text = "Complete!";
+        }
     }
 
     public void CompleteCurrentObjective()
@@ -29,16 +34,12 @@ public class ObjectiveManager : MonoBehaviour
         }
     }
 
-    public void ClearAndSetNextObjective(string nextObjective)
+    public void AddObjective(string objective)
     {
-        objectives.Clear();
-        objectives.Add(nextObjective);
-        currentObjectiveIndex = 0;
-        UpdateObjectiveDisplay();
-    }
-
-    public bool IsObjectiveComplete(string objectiveName)
-    {
-        return objectives.IndexOf(objectiveName) < currentObjectiveIndex;
+        objectives.Add(objective);
+        if (objectives.Count == 1)
+        {
+            UpdateObjectiveDisplay();
+        }
     }
 }
