@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BagUIManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class BagUIManager : MonoBehaviour
     private bool wasKinematic; // To save the Rigidbody's kinematic state
     public GameObject uiCanvas; // Reference to the UI_Canvas
     private PickCardsManager pickCardsManager; // Reference to the PickCardsManager script
+    public Button settingsButton; // Reference to the settings button
 
     private LevelLoader levelLoader;
 
@@ -47,23 +49,26 @@ public class BagUIManager : MonoBehaviour
         {
             ToggleBagUI();
         }
+
+        // Continuously update the settings button's state
+        UpdateSettingsButtonState();
     }
 
     public void OnSettingsButtonClick()
     {
         // Update the current scene
         GameManager.Instance.UpdateCurrentScene();
-        
+
         // Save the player state
         GameManager.Instance.SavePlayerState();
-        
+
         // Find the player object by tag
         GameObject playerObject = GameObject.FindWithTag("Player");
         if (playerObject != null)
         {
             // Get the player's current position
             Vector3 currentPlayerLocation = playerObject.transform.position;
-            
+
             // Save the current player location to PlayerPrefs
             PlayerPrefs.SetFloat("templocation_x", currentPlayerLocation.x);
             PlayerPrefs.SetFloat("templocation_y", currentPlayerLocation.y);
@@ -83,29 +88,26 @@ public class BagUIManager : MonoBehaviour
         levelLoader.LoadSettingsPanel();
     }
 
-
-
-    // Method to toggle the bag UI visibility
     public void ToggleBagUI()
     {
-        isBagOpen = !isBagOpen; // Invert the state
-        bagUIPanel.SetActive(isBagOpen);
-
-        if (isBagOpen)
+        if (PanelManager.Instance != null)
         {
-            PausePlayerMovement(); // Freeze the player when inventory opens
-            Time.timeScale = 0f;   // Pause the game
+            isBagOpen = !isBagOpen; // Toggle bag state
 
-            // Clear the message text if the UI is opened
-            //pickCardsManager.ClearMessageTextOnUIOpen();
-
-            Debug.Log("Inventory opened.");
-        }
-        else
-        {
-            ResumePlayerMovement(); // Resume movement when inventory closes
-            Time.timeScale = 1f;    // Resume the game
-            Debug.Log("Inventory closed.");
+            if (isBagOpen)
+            {
+                PanelManager.Instance.OpenInventory(); // Open Inventory Panel
+                PausePlayerMovement();
+                Time.timeScale = 0f; // Pause the game
+                Debug.Log("Inventory opened.");
+            }
+            else
+            {
+                PanelManager.Instance.CloseAllPanels(); // Close all panels
+                ResumePlayerMovement();
+                Time.timeScale = 1f; // Resume the game
+                Debug.Log("Inventory closed.");
+            }
         }
     }
 
@@ -140,5 +142,15 @@ public class BagUIManager : MonoBehaviour
         ToggleBagUI();
     }
 
+    public void UpdateSettingsButtonState()
+    {
+        if (PanelManager.Instance != null && settingsButton != null)
+        {
+            // Disable the settings button if inventory or shop menu is open
+            bool shouldDisable = PanelManager.Instance.inventoryPanel.activeSelf ||
+                                 PanelManager.Instance.shopMenuPanel.activeSelf;
 
+            settingsButton.interactable = !shouldDisable;
+        }
+    }
 }
