@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3ec7262836254b49860f95f60331145, type: 3}
-  m_Name: Dagger Slash
+  m_Script: {fileID: 11500000, guid: 08bd7073446cd4d479903dd7ae1f0f26, type: 3}
+  m_Name: Companion2
   m_EditorClassIdentifier: 
-  name: Dagger Slash
-  description: Deals minor damage
-  type: 0
-  cardSprite: {fileID: 21300000, guid: 19439bf479743b74dbebfe9b2759e126, type: 3}
-  damage: 10
+  companionName: Companion2
+  companionSprite: {fileID: 21300000, guid: 36fea8d5ca0dd52408f223f400ef265d, type: 3}
+  description: 
+  health: 70
+  defense: 5

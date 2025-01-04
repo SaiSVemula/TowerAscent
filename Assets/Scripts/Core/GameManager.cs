@@ -29,6 +29,26 @@ public class GameManager : MonoBehaviour
     private List<GameObject> partyCompanions = new List<GameObject>(); // Store companions in the party
     public List<GameObject> PartyCompanions => partyCompanions;
 
+    private List<CompanionCard> ownedCompanions = new List<CompanionCard>();
+
+    public List<CompanionCard> GetOwnedCompanions()
+    {
+        return new List<CompanionCard>(ownedCompanions); // Return a copy to prevent direct modification
+    }
+
+    public void AddCompanion(CompanionCard companion)
+    {
+        if (companion != null)
+        {
+            ownedCompanions.Add(companion);
+            Debug.Log($"Companion added to inventory: {companion.name}");
+        }
+        else
+        {
+            Debug.LogWarning("Tried to add a null companion to inventory.");
+        }
+    }
+
     // Mini-battle card pool
     private List<Card> miniBattleCardPool = new List<Card>();
 
@@ -95,6 +115,19 @@ public class GameManager : MonoBehaviour
                 companion.SetActive(true); // Ensure companion is active
             }
         }
+    }
+
+    public void SetCompanionType(CompanionType companionType)
+    {
+        PlayerPrefs.SetInt("PlayerCompanionType", (int)companionType);
+        PlayerPrefs.Save();
+        Debug.Log($"Companion type set to: {companionType}");
+    }
+
+    public CompanionType GetCompanionType()
+    {
+        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
+        return (CompanionType)companionTypeInt;
     }
 
     // Initialize or retrieve the Player instance

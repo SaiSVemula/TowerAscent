@@ -16,5 +16,5 @@ MonoBehaviour:
   description: Pierces enemy defences, dealing damage that ignores a portion of the
     armor.
   type: 2
-  cardSprite: {fileID: 21300000, guid: fc330db9d58e2ca4bb69614c3942abcd, type: 3}
+  cardSprite: {fileID: 21300000, guid: 45435a0f9c910764195f1cfc5df562b5, type: 3}
   damage: 30

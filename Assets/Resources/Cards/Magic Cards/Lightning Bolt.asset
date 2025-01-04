@@ -15,5 +15,5 @@ MonoBehaviour:
   name: Lightning Bolt
   description: Strikes an enemy with electricity
   type: 1
-  cardSprite: {fileID: 21300000, guid: 3bd36dd81e6ae534a9f9fca4c176546a, type: 3}
+  cardSprite: {fileID: 21300000, guid: 0b011bd8e47138843896e693f3c902fa, type: 3}
   damage: 20
