@@ -13,10 +13,13 @@ public class CardDisplay : MonoBehaviour
     {
         CardData = card;
 
-        // Update UI elements
-        if (cardImage != null)
+        if (cardImage != null && card.CardSprite != null)
         {
             cardImage.sprite = card.CardSprite; // Use the card's sprite
+        }
+        else
+        {
+            Debug.LogError($"Card sprite is null for {card.Name}!");
         }
 
         if (cardNameText != null)
@@ -24,6 +27,7 @@ public class CardDisplay : MonoBehaviour
             cardNameText.text = card.Name; // Display the card's name
         }
     }
+
 
     public Card GetCard()
     {

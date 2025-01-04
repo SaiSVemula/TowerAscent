@@ -1,15 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement; // For scene management
-using System.Linq; // Required for grouping functionality
+using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class InventoryCardsRenderer : MonoBehaviour
 {
     [SerializeField] private Transform cardGrid; // Reference to the CardGrid
     [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
     public bool isPickingWeaponCards = false; // Flag for weapon card filtering
-
 
     private void OnEnable()
     {
@@ -31,11 +30,56 @@ public class InventoryCardsRenderer : MonoBehaviour
 
     private void Start()
     {
+        if (cardGrid == null)
+        {
+            Debug.LogError("CardGrid is not assigned in the Inspector!");
+            return;
+        }
+
+        //Testing();
+
         RefreshInventoryUI(); // Display the initial inventory
+    }
+
+    private void Testing()
+    {
+        if (PlayerInventory.Instance == null)
+        {
+            Debug.LogError("PlayerInventory.Instance is not initialized!");
+            return;
+        }
+
+        // Add test cards to the inventory
+        List<Card> testCards = new List<Card>
+        {
+            Resources.Load<Card>("Cards/Weapon Cards/Axe Chop"),
+            Resources.Load<Card>("Cards/Magic Cards/Fireball"),
+            Resources.Load<Card>("Cards/Defence Cards/Dodge"),
+            Resources.Load<Card>("Cards/Healing Cards/First Aid"),
+            Resources.Load<Card>("Cards/Combination Cards/Dagger Dodge")
+        };
+
+        foreach (Card card in testCards)
+        {
+            if (card == null)
+            {
+                Debug.LogError("A test card could not be loaded! Check the card path.");
+            }
+            else
+            {
+                PlayerInventory.Instance.AddCard(card);
+            }
+        }
     }
 
     public void RefreshInventoryUI()
     {
+        if (PlayerInventory.Instance == null)
+        {
+            Debug.LogError("PlayerInventory.Instance is null!");
+            return;
+        }
+
         ClearInventoryUI(); // Clear existing UI
 
         List<Card> ownedCards = PlayerInventory.Instance.GetOwnedCards();
@@ -77,10 +121,11 @@ public class InventoryCardsRenderer : MonoBehaviour
             if (SceneManager.GetActiveScene().name == "LoadoutPage")
             {
                 // Add DraggableItem component
-                DraggableItem draggableItem = newCard.AddComponent<DraggableItem>();
+                newCard.AddComponent<DraggableItem>();
             }
+
+            // Add CardDisplay component and initialize it
             CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
-            // Initialize the card display
             cardDisplay.Initialize(groupedCard.Card);
 
             // Add a child for the card's text
@@ -97,8 +142,6 @@ public class InventoryCardsRenderer : MonoBehaviour
             text.fontSize = 20;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = Color.black;
-
-
         }
     }
 

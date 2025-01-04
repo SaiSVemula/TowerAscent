@@ -15,5 +15,5 @@ MonoBehaviour:
   name: Hammer Smash
   description: High-damage physical attack.
   type: 2
-  cardSprite: {fileID: 21300000, guid: 04a1455223291bd42837782e9b460e9f, type: 3}
+  cardSprite: {fileID: 21300000, guid: 736a6a9b72391e84fb2e8dc0c73f8023, type: 3}
   damage: 30

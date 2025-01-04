@@ -202,4 +202,19 @@ public class EnemyBattle : BattleEntity
         Debug.Log($"{EnemyName} uses {selectedCard.Name} on {player.name}.");
         selectedCard.Use(this, player);
     }
+
+    public override void DecrementEffectTimers()
+    {
+        base.DecrementEffectTimers(); // Call the base implementation
+
+        // Optional: Add enemy-specific logic or updates
+        Debug.Log($"Enemy {EnemyName}: Effect timers decremented.");
+    }
+
+    protected override void OnEffectTimersUpdated()
+    {
+        // Add any enemy-specific logic if needed
+        Debug.Log($"Enemy {EnemyName}: Specific updates after decrementing timers.");
+    }
+
 }

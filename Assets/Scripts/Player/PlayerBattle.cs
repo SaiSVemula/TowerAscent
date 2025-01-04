@@ -86,41 +86,67 @@ public class PlayerBattle : BattleEntity
         }
     }
 
-    public void DecrementEffectTimers()
-    {
-        // Ensure temporary lists are initialized
-        if (temporaryDefenses == null)
-        {
-            temporaryDefenses = new List<(int, int)>();
-        }
-        if (temporaryHeals == null)
-        {
-            temporaryHeals = new List<(int, int)>();
-        }
-        // Decrement defense timers
-        for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
-        {
-            temporaryDefenses[i] = (temporaryDefenses[i].value, temporaryDefenses[i].timer - 1);
-            if (temporaryDefenses[i].timer <= 0)
-            {
-                Debug.Log($"Defence effect expired: {temporaryDefenses[i].value}");
-                temporaryDefenses.RemoveAt(i);
-            }
-        }
-        UpdateCurrentDefence();
+    //public void DecrementEffectTimers()
+    //{
+    //    // Ensure temporary lists are initialized
+    //    if (temporaryDefenses == null)
+    //    {
+    //        temporaryDefenses = new List<(int, int)>();
+    //    }
+    //    if (temporaryHeals == null)
+    //    {
+    //        temporaryHeals = new List<(int, int)>();
+    //    }
+    //    // Decrement defense timers
+    //    for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
+    //    {
+    //        temporaryDefenses[i] = (temporaryDefenses[i].value, temporaryDefenses[i].timer - 1);
+    //        if (temporaryDefenses[i].timer <= 0)
+    //        {
+    //            Debug.Log($"Defence effect expired: {temporaryDefenses[i].value}");
+    //            temporaryDefenses.RemoveAt(i);
+    //        }
+    //    }
+    //    UpdateCurrentDefence();
 
-        // Decrement healing timers
-        for (int i = temporaryHeals.Count - 1; i >= 0; i--)
+    //    // Decrement healing timers
+    //    for (int i = temporaryHeals.Count - 1; i >= 0; i--)
+    //    {
+    //        Heal(temporaryHeals[i].value); // Apply healing
+    //        temporaryHeals[i] = (temporaryHeals[i].value, temporaryHeals[i].timer - 1);
+    //        if (temporaryHeals[i].timer <= 0)
+    //        {
+    //            Debug.Log($"Healing effect expired: {temporaryHeals[i].value}");
+    //            temporaryHeals.RemoveAt(i);
+    //        }
+    //    }
+    //}
+
+    public override void DecrementEffectTimers()
+    {
+        base.DecrementEffectTimers(); // Call base logic for decrementing
+
+        // Refresh the UI
+        if (SceneManager.GetActiveScene().name == "BattleScene")
         {
-            Heal(temporaryHeals[i].value); // Apply healing
-            temporaryHeals[i] = (temporaryHeals[i].value, temporaryHeals[i].timer - 1);
-            if (temporaryHeals[i].timer <= 0)
+            BattleUI battleUI = FindObjectOfType<BattleUI>();
+            if (battleUI != null)
             {
-                Debug.Log($"Healing effect expired: {temporaryHeals[i].value}");
-                temporaryHeals.RemoveAt(i);
+                battleUI.UpdateEffectTimers();
             }
+            UpdateHealthBar();
         }
+
+        Debug.Log("Player timers decremented and UI updated.");
     }
+
+
+    protected override void OnEffectTimersUpdated()
+    {
+        // Add any player-specific logic if needed
+        Debug.Log("Player-specific logic after decrementing effect timers.");
+    }
+
 
     //Mini-battle methods for player
 

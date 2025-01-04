@@ -209,7 +209,7 @@ public class SettingsManager : MonoBehaviour
 
             // Save the updated player state and game state
             GameManager.Instance.SavePlayerState();
-            SaveGame.SaveGameState();
+            SaveManager.SaveGameState();
             
         }
 

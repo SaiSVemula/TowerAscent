@@ -36,7 +36,7 @@ public class TriggerCheckpoint : MonoBehaviour
             Debug.Log($"Checkpoint activated! Player coordinates: {playerCoord}");
 
             // Save the updated state
-            SaveGame.SaveGameState();
+            SaveManager.SaveGameState();
 
             // Log the state save
             Debug.Log("Scene and player location updated and saved.");
