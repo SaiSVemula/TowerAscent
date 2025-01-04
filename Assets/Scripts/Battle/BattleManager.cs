@@ -381,7 +381,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-
     public IEnumerator EndBattle(bool playerWon)
     {
         Debug.Log(playerWon ? "Player wins!" : "Enemy wins!");
@@ -407,8 +406,8 @@ public class BattleManager : MonoBehaviour
             // lost so back to scene.
             nextScene = GameManager.Instance.PreviousScene;
         }
-        //levelLoader.LoadScene("BattleScene", nextScene);
-        levelLoader.LoadScene("BattleScene", "LevelTransitionCutScene");
+        levelLoader.LoadScene("BattleScene", nextScene);
+        //levelLoader.LoadScene("BattleScene", "LevelTransitionCutScene");
     }
 
     private void SaveBattleResults(bool playerWon)
