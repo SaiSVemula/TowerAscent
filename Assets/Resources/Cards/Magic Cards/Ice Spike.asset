@@ -15,6 +15,5 @@ MonoBehaviour:
   name: Ice Spike
   description: Deals ice damage
   type: 1
-  cardSprite: {fileID: 0}
+  cardSprite: {fileID: 21300000, guid: bb76d95183ac48741a3c0c377493d523, type: 3}
   damage: 15
-  effect: 

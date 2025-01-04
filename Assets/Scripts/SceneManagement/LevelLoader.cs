@@ -22,6 +22,7 @@ public class LevelLoader : MonoBehaviour
     public void LoadSettingsPanel()
     {
         GameManager.Instance.PreviousScene = SceneManager.GetActiveScene().name;
+        GameManager.Instance.SavePlayerState();
         SceneManager.LoadScene("SettingsPage");
     }
 

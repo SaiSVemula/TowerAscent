@@ -9,6 +9,9 @@ TagManager:
   - ForcedZone
   - Item
   - disappear1
+  - NoRunZone
+  - effects
+  - particle
   layers:
   - Default
   - TransparentFX

@@ -119,4 +119,48 @@ public class LoadManager : MonoBehaviour
 
         Debug.Log($"Game state restored: Health={savedHealth}, Coins={savedCoins}, Position={playerTransform.position}, Inventory={savedInventoryRaw}");
     }
+
+    public static void TempLoadGameState()
+    {
+        // Ensure the current scene is updated and saved
+        string savedScene = GameManager.Instance.GetCurrentScene();
+
+        // Find the LevelLoader instance
+        LevelLoader levelLoader = Object.FindObjectOfType<LevelLoader>();
+        if (levelLoader == null)
+        {
+            Debug.LogError("LevelLoader instance not found!");
+            return;
+        }
+
+        // Load the saved scene
+        levelLoader.LoadScene("SettingsPage", savedScene);
+
+        // Start the coroutine to wait for the scene load
+        GameManager.Instance.StartCoroutine(TempWaitForPlayerInScene());
+    }
+
+    private static IEnumerator TempWaitForPlayerInScene()
+    {
+        // Wait until the scene is loaded and the player object is available
+        yield return new WaitUntil(() => GameObject.FindWithTag("Player") != null);
+
+        // Find the player object
+        Transform playerTransform = GameObject.FindWithTag("Player").transform;
+
+        // Retrieve the saved player location from PlayerPrefs
+        float savedX = PlayerPrefs.GetFloat("templocation_x", 0); // Default to 0 if not found
+        float savedY = PlayerPrefs.GetFloat("templocation_y", 0); // Default to 0 if not found
+        float savedZ = PlayerPrefs.GetFloat("templocation_z", 0); // Default to 0 if not found
+
+        // Set the player's position to the saved coordinates
+        Vector3 savedPlayerLocation = new Vector3(savedX, savedY, savedZ);
+        playerTransform.position = savedPlayerLocation;
+
+        Debug.Log("Player object found and position updated to: " + savedPlayerLocation);
+    }
+
+
+
+
 }
