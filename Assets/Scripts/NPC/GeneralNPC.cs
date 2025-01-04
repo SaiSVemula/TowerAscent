@@ -1,9 +1,8 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections; // Required for IEnumerator
-
 
 
 [System.Serializable]
@@ -27,11 +26,11 @@ public class GeneralNPC : MonoBehaviour
 
     [Header("Objects to Disable and Conditions")]
     public GameObject[] objectsToDisable;
-    public string[] disableConditions; // Conditions corresponding to each object (e.g., "TalkToNPC2", "DefeatSpider")
+    public string[] disableConditions;
 
     [Header("Barrier Interaction")]
-    public TextMeshProUGUI barrierMessageText; // UI Text to display the message
-    public float messageDuration = 2f; // Duration the message is displayed
+    public TextMeshProUGUI barrierMessageText;
+    public float messageDuration = 2f;
 
     [Header("Floating Text and Dialogue")]
     public string npcName = "NPC1";
@@ -53,7 +52,7 @@ public class GeneralNPC : MonoBehaviour
     public float subtitleDisplayDuration = 3f;
 
     private ObjectiveManager objectiveManager;
-    private bool isMessageDisplayed = false; // Prevent spamming the barrier message
+    private bool isMessageDisplayed = false;
 
     private void Start()
     {
@@ -75,6 +74,8 @@ public class GeneralNPC : MonoBehaviour
         {
             barrierMessageText.text = ""; // Clear the barrier message at the start
         }
+
+        CheckAndDisableObjects();
     }
 
     private void Update()
@@ -137,16 +138,10 @@ public class GeneralNPC : MonoBehaviour
     {
         if (objectiveManager != null)
         {
-            if (npcName == "NPC1")
-            {
-                objectiveManager.ClearAndSetNextObjective("Talk to NPC2");
-            }
-            else if (npcName == "NPC2")
-            {
-                objectiveManager.ClearAndSetNextObjective("Find and Defeat the Spider!");
-            }
+            objectiveManager.CompleteCurrentObjective();
         }
 
+        // Check all conditions, including spider defeat
         CheckAndDisableObjects();
     }
 
@@ -163,14 +158,15 @@ public class GeneralNPC : MonoBehaviour
                     objectsToDisable[i].SetActive(false);
                     Debug.Log($"Disabled {objectsToDisable[i].name} for condition {condition}");
                 }
-                else if (condition == "DefeatSpider")
+                else if (condition == "DefeatSpider" && GameManager.Instance.IsSpiderDefeated("Spider1"))
                 {
-                    // Placeholder: Spider defeat logic not implemented yet
-                    Debug.Log($"Set up to disable {objectsToDisable[i].name} after defeating spider.");
+                    objectsToDisable[i].SetActive(false);
+                    Debug.Log($"Disabled {objectsToDisable[i].name} for condition {condition}");
                 }
             }
         }
     }
+
 
     public void HandleBarrierCollision()
     {
@@ -188,6 +184,7 @@ public class GeneralNPC : MonoBehaviour
         barrierMessageText.text = ""; // Clear the message
         isMessageDisplayed = false;
     }
+
 
     public void EndInteraction()
     {

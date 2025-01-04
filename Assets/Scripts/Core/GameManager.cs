@@ -25,6 +25,9 @@ public class GameManager : MonoBehaviour
     public int CurrentCoins1 { get => CurrentCoins; set => CurrentCoins = value; }
     public List<Card> CurrentCardLoadout { get => cardLoadout; set => cardLoadout = value; }
 
+    private List<GameObject> partyCompanions = new List<GameObject>(); // Store companions in the party
+    public List<GameObject> PartyCompanions => partyCompanions;
+
     // Mini-battle card pool
     private List<Card> miniBattleCardPool = new List<Card>();
 
@@ -59,6 +62,36 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persist GameManager across scenes
             LoadSpiderStates();
+        }
+    }
+
+
+    // Add a companion to the party
+    public void AddCompanionToParty(GameObject companion)
+    {
+        if (!partyCompanions.Contains(companion))
+        {
+            partyCompanions.Add(companion);
+            DontDestroyOnLoad(companion); // Persist companion across scenes
+            Debug.Log($"Companion {companion.name} added to the party.");
+        }
+    }
+
+    // Spawn all companions in the current level
+    public void SpawnCompanionsInCurrentLevel()
+    {
+        foreach (var companion in partyCompanions)
+        {
+            if (companion != null)
+            {
+                // Position companions near the player
+                var player = FindObjectOfType<Player>();
+                if (player != null)
+                {
+                    companion.transform.position = player.transform.position + new Vector3(Random.Range(1, 3), 0, Random.Range(1, 3));
+                }
+                companion.SetActive(true); // Ensure companion is active
+            }
         }
     }
 
@@ -144,10 +177,6 @@ public class GameManager : MonoBehaviour
     public void UpdateBigbattleWins(int wins) { bigbattleWins = wins; }
     public void UpdateBigbattleLosses(int losses) { bigbattleLosses = losses; }
 
-    // Check if a spider has been defeated
-    public bool IsSpiderDefeated(string spiderID) { return defeatedSpiders.Contains(spiderID); }
-
-    // Mark a spider as defeated
     public void MarkSpiderDefeated(string spiderID)
     {
         if (!defeatedSpiders.Contains(spiderID))
@@ -156,6 +185,13 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Spider with ID {spiderID} marked as defeated.");
         }
     }
+
+    public bool IsSpiderDefeated(string spiderID)
+    {
+        Debug.Log($"Checking if spider with ID {spiderID} is defeated: {defeatedSpiders.Contains(spiderID)}");
+        return defeatedSpiders.Contains(spiderID);
+    }
+
 
     // Full get method, used when saving a game to perfs
     public (string, Vector3, int, int, string[], string, int, int, int, int) GetFullGameState()
