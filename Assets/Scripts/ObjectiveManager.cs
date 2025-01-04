@@ -24,21 +24,16 @@ public class ObjectiveManager : MonoBehaviour
     {
         if (currentObjectiveIndex < objectives.Count)
         {
+            string completedObjective = objectives[currentObjectiveIndex];
             currentObjectiveIndex++;
             UpdateObjectiveDisplay();
+            Debug.Log($"Objective '{completedObjective}' marked as complete.");
         }
-    }
-
-    public void ClearAndSetNextObjective(string nextObjective)
-    {
-        objectives.Clear();
-        objectives.Add(nextObjective);
-        currentObjectiveIndex = 0;
-        UpdateObjectiveDisplay();
     }
 
     public bool IsObjectiveComplete(string objectiveName)
     {
-        return objectives.IndexOf(objectiveName) < currentObjectiveIndex;
+        int index = objectives.IndexOf(objectiveName);
+        return index >= 0 && index < currentObjectiveIndex;
     }
 }

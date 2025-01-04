@@ -177,10 +177,6 @@ public class GameManager : MonoBehaviour
     public void UpdateBigbattleWins(int wins) { bigbattleWins = wins; }
     public void UpdateBigbattleLosses(int losses) { bigbattleLosses = losses; }
 
-    // Check if a spider has been defeated
-    public bool IsSpiderDefeated(string spiderID) { return defeatedSpiders.Contains(spiderID); }
-
-    // Mark a spider as defeated
     public void MarkSpiderDefeated(string spiderID)
     {
         if (!defeatedSpiders.Contains(spiderID))
@@ -189,6 +185,13 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Spider with ID {spiderID} marked as defeated.");
         }
     }
+
+    public bool IsSpiderDefeated(string spiderID)
+    {
+        Debug.Log($"Checking if spider with ID {spiderID} is defeated: {defeatedSpiders.Contains(spiderID)}");
+        return defeatedSpiders.Contains(spiderID);
+    }
+
 
     // Full get method, used when saving a game to perfs
     public (string, Vector3, int, int, string[], string, int, int, int, int) GetFullGameState()
