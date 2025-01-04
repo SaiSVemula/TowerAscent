@@ -27,6 +27,7 @@ public class LoadoutTabsManager : MonoBehaviour
     public void ShowTab(string tabName)
     {
         ClearGrid(); // Clear the current grid content
+        noItemsText.gameObject.SetActive(false);
 
         if (tabName == "Cards")
         {
@@ -74,7 +75,7 @@ public class LoadoutTabsManager : MonoBehaviour
     private void DisplayNoItemsMessage(string message)
     {
         ClearGrid(); // Ensure grid is cleared
-        noItemsText.text = message;
+        //noItemsText.text = message;
         noItemsText.gameObject.SetActive(true);
     }
 }
