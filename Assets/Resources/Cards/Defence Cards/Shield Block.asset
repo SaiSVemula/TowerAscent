@@ -15,6 +15,6 @@ MonoBehaviour:
   name: Shield Block
   description: Reduces incoming physical damage for one turn.
   type: 1
-  cardSprite: {fileID: 21300000, guid: a9d2034617682d6439209ccbddbd5157, type: 3}
+  cardSprite: {fileID: 21300000, guid: 10e9ef34aeb6b574dbe591ac56737fd6, type: 3}
   defence: 10
-  timer: 1
+  timer: 0

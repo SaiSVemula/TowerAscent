@@ -15,5 +15,5 @@ MonoBehaviour:
   name: Sword Slash
   description: Deals moderate physical damage to a single enemy.
   type: 3
-  cardSprite: {fileID: 21300000, guid: 0efbea3f2cdb6c840b162a88d422647f, type: 3}
+  cardSprite: {fileID: 21300000, guid: 06d13c27ee1b49d43a85afc567789984, type: 3}
   damage: 40

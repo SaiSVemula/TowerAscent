@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Combines physical and magical defence for reduced damage from all
     sources.
   type: 3
-  cardSprite: {fileID: 21300000, guid: 1b44cd449f01c5b48bfaf8a947a6d914, type: 3}
+  cardSprite: {fileID: 21300000, guid: 7e8a0091697db9c4f810734aebda2679, type: 3}
   defence: 20
-  timer: 1
+  timer: 0

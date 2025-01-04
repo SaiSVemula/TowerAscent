@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+
 public class GameManager : MonoBehaviour
 {
     // Singleton instance of GameManager
@@ -9,10 +11,6 @@ public class GameManager : MonoBehaviour
 
     // Reference to the Player
     private Player playerInstance;
-
-    // Add a companion type field
-    private CompanionType currentCompanionType;
-    public CompanionType CurrentCompanionType => currentCompanionType;
 
     // Game state variables
 
@@ -66,6 +64,7 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject); // Persist GameManager across scenes
             LoadSpiderStates();
         }
+        SceneManager.sceneLoaded += SceneLoadup;
     }
 
 
@@ -221,6 +220,9 @@ public class GameManager : MonoBehaviour
     // Used when clicking out of a menu mid gameplay
     public void LoadGameState()
     {
+        // Perform game state loading logic here
+        SceneManager.LoadScene(SavedScene);
+
         if (playerInstance != null)
         {
             playerInstance.transform.position = PlayerCoord;
@@ -228,11 +230,6 @@ public class GameManager : MonoBehaviour
             playerInstance.Gold = CurrentCoins;
             playerInstance.Inventory = new List<string>(CardsInInventory);
             playerInstance.PlayerName = PlayerName;
-            LoadMiniBattleCardPoolFromPrefs();
-
-            // Load companion type
-            currentCompanionType = GetCompanionType();
-            Debug.Log($"Loaded companion type: {currentCompanionType}");
 
             Debug.Log("Game state loaded.");
         }
@@ -240,7 +237,6 @@ public class GameManager : MonoBehaviour
         // Mark the game state as loaded
         hasGameStateLoaded = true;
     }
-
 
     // Loads a new scene and saves the current state
     public void LoadScene(string nextScene)
@@ -268,15 +264,8 @@ public class GameManager : MonoBehaviour
 
         defeatedSpiders.Clear(); // Reset spider states
         PlayerPrefs.DeleteKey("DefeatedSpiders"); // Clear saved spider states
-
-        // Reset companion type
-        currentCompanionType = CompanionType.Companion1;
-        PlayerPrefs.SetInt("PlayerCompanionType", (int)CompanionType.Companion1);
-        PlayerPrefs.Save();
-
         Debug.Log("Game state cleared.");
     }
-
 
 
     // Post Mini Battle logic.
@@ -385,25 +374,58 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Set the companion type and save it
-    public void SetCompanionType(CompanionType companionType)
-    {
-        currentCompanionType = companionType;
-        PlayerPrefs.SetInt("PlayerCompanionType", (int)companionType);
-        PlayerPrefs.Save();
-        Debug.Log($"Companion type set to: {companionType}");
-    }
-
-    // Retrieve the companion type
-    public CompanionType GetCompanionType()
-    {
-        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
-        return (CompanionType)companionTypeInt;
-    }
-
-
     public void CompleteObjective(string objectiveName)
     {
         // Implement objective completion logic here
+    }
+
+
+
+    private void SceneLoadup(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"Scene loaded: {scene.name}");
+
+        // Check and update particle and post-processing states
+        UpdateParticlesState();
+        UpdatePostProcessingState();
+    }
+
+    private void UpdateParticlesState()
+    {
+        // Check the PlayerPref key "AreParticlesOn"
+        bool areParticlesOn = PlayerPrefs.GetInt("AreParticlesOn", 1) == 1; // Default to true (1) if key does not exist
+
+        // Find all objects tagged as "Particle"
+        GameObject[] particleObjects = GameObject.FindGameObjectsWithTag("particle");
+
+        // Enable or disable them based on the PlayerPref value
+        foreach (GameObject particleObject in particleObjects)
+        {
+            particleObject.SetActive(areParticlesOn);
+        }
+
+        Debug.Log($"Particles are now {(areParticlesOn ? "enabled" : "disabled")}.");
+    }
+
+    private void UpdatePostProcessingState()
+    {
+        // Check the PlayerPref key "AreEffectsOn"
+        bool areEffectsOn = PlayerPrefs.GetInt("AreEffectsOn", 1) == 1; // Default to true (1) if key does not exist
+
+        // Find all objects with the tag "effects"
+        GameObject[] effectsObjects = GameObject.FindGameObjectsWithTag("effects");
+        if (effectsObjects.Length > 0)
+        {
+            foreach (GameObject effectsObject in effectsObjects)
+            {
+                effectsObject.SetActive(areEffectsOn);
+            }
+
+            Debug.Log($"Effects are now {(areEffectsOn ? "enabled" : "disabled")}.");
+        }
+        else
+        {
+            Debug.LogWarning("No objects with the tag 'effects' found in the scene.");
+        }
     }
 }

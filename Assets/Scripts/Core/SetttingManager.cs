@@ -17,6 +17,7 @@ public class SettingsManager : MonoBehaviour
     public Slider MusicVol;
     public Slider sfxVol;
     public Button WEBGLfullscreen;
+    public Button SaveGameButton;
     private static SettingsManager instance;
     public Color selectedColor = Color.green;
     public Color unselectedColor = Color.white;
@@ -52,6 +53,7 @@ public class SettingsManager : MonoBehaviour
         GroupUpButtons(MenuModeButtons, (index) => SetPanel(index));
 
         WEBGLfullscreen.onClick.AddListener(ToggleFullscreen);
+        SaveGameButton.onClick.AddListener(ToggleSaveGame);
 
         CameraMovementSensitivity.onValueChanged.AddListener(SetCameraSensitivity);
         MasterVol.onValueChanged.AddListener(SetMasterVolume);
@@ -87,15 +89,30 @@ public class SettingsManager : MonoBehaviour
     public void exit() 
     {
         // Load the previous scene when exiting the settings menu
-        if (!string.IsNullOrEmpty(GameManager.Instance.PreviousScene))
+        string previousScene = GameManager.Instance.PreviousScene;
+
+        if (string.IsNullOrEmpty(previousScene))
         {
-            levelLoader.LoadScene("SettingsPage", GameManager.Instance.PreviousScene);
+            Debug.LogError("Previous scene not set!");
+            return;
+        }
+
+        if (previousScene == "StartPage")
+        {
+            levelLoader.LoadScene("SettingsPage", "StartPage");
+        }
+        else if (previousScene == "Level 0" || previousScene == "Level 1" || previousScene == "Level 2")
+        {
+            GameManager.Instance.LoadPlayerState();
+            LoadManager.TempLoadGameState();
         }
         else
         {
-            Debug.LogError("Previous scene not set!");
+            Debug.LogWarning($"Unrecognized previous scene: {previousScene}. Defaulting to StartPage.");
+            levelLoader.LoadScene("SettingsPage", "StartPage");
         }
     }
+
 
     private void GroupUpButtons(Button[] buttons, System.Action<int> onClickAction)
     {
@@ -171,6 +188,30 @@ public class SettingsManager : MonoBehaviour
     private void SetMusicVolume(float volume){PlayerPrefs.SetFloat("SoundMusicVol", volume);}
     private void SetSFXVolume(float volume){PlayerPrefs.SetFloat("SoundSFXVol", volume);}
     private void ToggleFullscreen(){Screen.fullScreen = !Screen.fullScreen;}
+    private void ToggleSaveGame()
+    {
+        if (GameManager.Instance.PreviousScene == "Level 0" || 
+            GameManager.Instance.PreviousScene == "Level 1" || 
+            GameManager.Instance.PreviousScene == "Level 2")
+        {
+            // Retrieve the player's saved position from PlayerPrefs
+            Vector3 currentPlayerLocation = new Vector3(
+                PlayerPrefs.GetFloat("templocation_x", 0),
+                PlayerPrefs.GetFloat("templocation_y", 0),
+                PlayerPrefs.GetFloat("templocation_z", 0)
+            );
+
+            // Update the player's location in the GameManager
+            GameManager.Instance.UpdatePlayerLocation(currentPlayerLocation);
+
+            // Save the updated player state and game state
+            GameManager.Instance.SavePlayerState();
+            SaveGame.SaveGameState();
+            
+        }
+
+    }
+
 
     private void RestoreSettings()
     {

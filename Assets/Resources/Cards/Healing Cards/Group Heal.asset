@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Group Heal
   description: Restores health to all allies only once.
   type: 3
-  cardSprite: {fileID: 21300000, guid: 4d2566e64079048439a72962545bc490, type: 3}
+  cardSprite: {fileID: 21300000, guid: 50183d07e42f14d409e129e94ea97fe6, type: 3}
   healing: 30
-  timer: 1
+  timer: 0
   canRevive: 1

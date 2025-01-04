@@ -51,8 +51,39 @@ public class BagUIManager : MonoBehaviour
 
     public void OnSettingsButtonClick()
     {
+        // Update the current scene
+        GameManager.Instance.UpdateCurrentScene();
+        
+        // Save the player state
+        GameManager.Instance.SavePlayerState();
+        
+        // Find the player object by tag
+        GameObject playerObject = GameObject.FindWithTag("Player");
+        if (playerObject != null)
+        {
+            // Get the player's current position
+            Vector3 currentPlayerLocation = playerObject.transform.position;
+            
+            // Save the current player location to PlayerPrefs
+            PlayerPrefs.SetFloat("templocation_x", currentPlayerLocation.x);
+            PlayerPrefs.SetFloat("templocation_y", currentPlayerLocation.y);
+            PlayerPrefs.SetFloat("templocation_z", currentPlayerLocation.z);
+
+            // Save the PlayerPrefs to ensure data is persisted
+            PlayerPrefs.Save();
+
+            Debug.Log("Player location saved to PlayerPrefs.");
+        }
+        else
+        {
+            Debug.LogError("Player object not found in the scene.");
+        }
+
+        // Load the settings panel
         levelLoader.LoadSettingsPanel();
     }
+
+
 
     // Method to toggle the bag UI visibility
     public void ToggleBagUI()
@@ -108,4 +139,6 @@ public class BagUIManager : MonoBehaviour
     {
         ToggleBagUI();
     }
+
+
 }
