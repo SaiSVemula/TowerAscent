@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Regen
   description: Heals a small amount of health for just you each turn for once turns.
   type: 2
-  cardSprite: {fileID: 0}
+  cardSprite: {fileID: 21300000, guid: 4c7bc7ce2df9cc447bcf59ba65b71c13, type: 3}
   healing: 5
   timer: 5
   canRevive: 0
