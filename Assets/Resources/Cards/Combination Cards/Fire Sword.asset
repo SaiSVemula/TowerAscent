@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3ec7262836254b49860f95f60331145, type: 3}
-  m_Name: Sword Slash
+  m_Script: {fileID: 11500000, guid: 5fabe56c2dbeda44382e4c0e13e0f034, type: 3}
+  m_Name: Fire Sword
   m_EditorClassIdentifier: 
-  name: Sword Slash
-  description: Deals moderate physical damage to a single enemy.
-  type: 3
+  name: Fire Sword
+  description: Deals Physical damage with additional magical damage.
+  type: 2
   cardSprite: {fileID: 21300000, guid: 0efbea3f2cdb6c840b162a88d422647f, type: 3}
-  damage: 40
+  subCards:
+  - {fileID: 11400000, guid: 24502412a62ebd443a0099098ee258ed, type: 2}
+  - {fileID: 11400000, guid: 75f3e491ddfb1ba43a45d990da01dfb6, type: 2}

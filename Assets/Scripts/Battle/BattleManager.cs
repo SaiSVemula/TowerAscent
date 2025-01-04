@@ -7,6 +7,7 @@ public class BattleManager : MonoBehaviour
 {
     [SerializeField] private PlayerBattle playerPrefab;
     [SerializeField] private EnemyBattle enemyPrefab;
+    [SerializeField] private CompanionBattle companionInstance;
     [SerializeField] private Transform playerSpawnPoint;
     [SerializeField] private Transform enemySpawnPoint;
     [SerializeField] private BattleUI battleUI;
@@ -19,7 +20,7 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        //Testing();//run only during development
+        Testing();//run only during development
 
         levelLoader = FindObjectOfType<LevelLoader>();
 
@@ -33,45 +34,33 @@ public class BattleManager : MonoBehaviour
 
     private void Testing()
     {
-        GameManager.Instance.PreviousScene = "Level 0";
-        GameManager.Instance.NextScene = "Level 1";
+        GameManager.Instance.PreviousScene = "Level 1";
+        GameManager.Instance.NextScene = "Level 2";
         GameManager.Instance.GameDifficulty = Difficulty.Easy;
         GameManager.Instance.UpdatePlayerHealth(100);
+
+        GameManager.Instance.SetCompanionType(CompanionType.Companion1);
 
         List<Card> cardLoadout = new List<Card>
         {
         Resources.Load<Card>("Cards/Weapon Cards/Axe Chop"),
         Resources.Load<Card>("Cards/Magic Cards/Fireball"),
         Resources.Load<Card>("Cards/Defence Cards/Dodge"),
-        Resources.Load<Card>("Cards/Healing Cards/First Aid")
+        Resources.Load<Card>("Cards/Healing Cards/First Aid"),
+        Resources.Load<Card>("Cards/Combination Cards/Dagger Dodge")
         };
 
-        GameManager.Instance.CurrentCardLoadout = cardLoadout;  
+        GameManager.Instance.CurrentCardLoadout = cardLoadout;
     }
 
     private void HandleStartBattle()
     {
-        // Spawn player and enemy only after clicking "Start Battle"
-        SpawnEntities();
+        SpawnPlayer();
+        SpawnCompanion();
+        SpawnCorrectEnemy();
 
         // Initialize the battle after entities spawn
         StartCoroutine(InitializeBattle());
-    }
-
-    private void SpawnEntities()
-    {
-        // Spawn player
-        playerInstance = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
-        playerInstance.name = "Player";
-
-        if (playerInstance == null)
-        {
-            Debug.LogError("Player instance failed to spawn!");
-            return;
-        }
-
-        // Spawn and initialize the enemy
-        SpawnCorrectEnemy();
     }
 
     public IEnumerator InitializeBattle()
@@ -99,35 +88,144 @@ public class BattleManager : MonoBehaviour
         Debug.Log("Battle initialization complete.");
     }
 
-    private void SpawnCorrectEnemy()
+    private void SpawnPlayer()
     {
-        // Destroy any existing enemy
-        if (enemyInstance != null)
+        // Try to find an existing PlayerBattle object in the scene
+        playerInstance = FindObjectOfType<PlayerBattle>();
+
+        if (playerInstance == null)
         {
-            Destroy(enemyInstance.gameObject);
+            // Instantiate the PlayerPrefab if not found
+            playerInstance = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
+            playerInstance.name = "Player";
+            Debug.Log("Player instance created from prefab.");
         }
-
-        // Instantiate the enemy prefab
-        GameObject enemyObject = Instantiate(enemyPrefab.gameObject, enemySpawnPoint.position, Quaternion.identity);
-
-        // Get the EnemyBattle component
-        enemyInstance = enemyObject.GetComponent<EnemyBattle>();
-        if (enemyInstance == null)
+        else
         {
-            Debug.LogError("Enemy prefab does not have an EnemyBattle component!");
+            // Use the found instance and reposition it
+            playerInstance.gameObject.SetActive(true);
+            playerInstance.transform.position = playerSpawnPoint.position;
+            playerInstance.transform.rotation = Quaternion.identity;
+            Debug.Log("Player instance found and repositioned.");
+        }
+    }
+
+    private void SpawnCompanion()
+    {
+        if (companionInstance == null)
+        {
+            Debug.LogError("Companion prefab is not assigned in the Inspector!");
             return;
         }
 
-        // Initialize the enemy
+        // Ensure the prefab's GameObject is initially disabled
+        companionInstance.gameObject.SetActive(false);
+
+        // Determine the companion type
+        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
+        CompanionType companionType = (CompanionType)companionTypeInt;
+
+        // Get the CompanionBattle component from the prefab
+        CompanionBattle companionBattle = companionInstance.GetComponent<CompanionBattle>();
+        if (companionBattle == null)
+        {
+            Debug.LogError("CompanionPrefab does not have a CompanionBattle component!");
+            return;
+        }
+
+        // Initialize the companion with the correct type
+        companionBattle.Initialize(companionType);
+
+        // Optionally configure visuals if needed
+        SetupCompanionVisuals(companionType);
+
+        // Set the position and enable the companion
+        companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2; // Adjust spawn offset
+        companionInstance.transform.rotation = Quaternion.identity; // Reset rotation
+        companionInstance.gameObject.SetActive(true);
+
+        Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
+    }
+
+    private void SetupCompanionVisuals(CompanionType companionType)
+    {
+        Transform companion1Avatar = companionInstance.transform.Find("companion1");
+        Transform companion2Avatar = companionInstance.transform.Find("companion2");
+        Transform companion3Avatar = companionInstance.transform.Find("companion3");
+
+        if (companion1Avatar != null)
+            companion1Avatar.gameObject.SetActive(companionType == CompanionType.Companion1);
+
+        if (companion2Avatar != null)
+            companion2Avatar.gameObject.SetActive(companionType == CompanionType.Companion2);
+
+        if (companion3Avatar != null)
+            companion3Avatar.gameObject.SetActive(companionType == CompanionType.Companion3);
+    }
+
+    private void SpawnCorrectEnemy()
+    {
+        if (enemyPrefab == null)
+        {
+            Debug.LogError("EnemyPrefab is not assigned in the Inspector!");
+            return;
+        }
+
+        // Ensure the prefab's GameObject is initially disabled
+        enemyPrefab.gameObject.SetActive(false);
+
+        // Determine the enemy type
         EnemyType enemyType = DetermineEnemyType();
-        //enemyInstance.Initialize(GameManager.Instance.GameDifficulty, enemyType);
+
+        // Get the EnemyBattle component from the prefab
+        EnemyBattle enemyBattle = enemyPrefab.GetComponent<EnemyBattle>();
+        if (enemyBattle == null)
+        {
+            Debug.LogError("EnemyPrefab does not have an EnemyBattle component!");
+            return;
+        }
+
+        // Initialize the enemy with the correct type and difficulty
         int difficulty = PlayerPrefs.GetInt("PlayersGameDifficulty", 0);
-        enemyInstance.Initialize(difficulty, enemyType);
+        enemyBattle.Initialize(difficulty, enemyType);
 
-        // Set the GameObject's name to the enemy's name
-        enemyObject.name = enemyInstance.EnemyName;
+        // Optionally configure visuals if needed
+        SetupEnemyVisuals(enemyType);
 
-        Debug.Log($"Enemy spawned: {enemyObject.name} with {enemyInstance.MaxHealth} HP.");
+        // Set the position and enable the enemy
+        enemyPrefab.transform.position = enemySpawnPoint.position;
+        //enemyPrefab.transform.rotation = Quaternion.identity; // Reset rotation
+        enemyPrefab.gameObject.SetActive(true);
+
+        // Update the active enemy reference
+        enemyInstance = enemyBattle;
+
+        Debug.Log($"Spawned enemy: {enemyBattle.EnemyName} with {enemyBattle.MaxHealth} HP.");
+    }
+
+    private void SetupEnemyVisuals(EnemyType enemyType)
+    {
+        Transform greenAvatar = enemyPrefab.transform.Find("Green");
+        Transform redAvatar = enemyPrefab.transform.Find("Red");
+        Transform lichAvatar = enemyPrefab.transform.Find("FreeLichHP");
+
+        if (greenAvatar == null || redAvatar == null || lichAvatar == null)
+        {
+            Debug.LogWarning("One or more enemy avatars are missing in the prefab.");
+        }
+
+        if (greenAvatar)
+        {
+            greenAvatar.gameObject.SetActive(enemyType == EnemyType.Enemy1);
+        }
+        if (redAvatar)
+        {
+            redAvatar.gameObject.SetActive(enemyType == EnemyType.Enemy2);
+        }
+        if (lichAvatar)
+        {
+            lichAvatar.gameObject.SetActive(enemyType == EnemyType.Enemy3);
+        }
     }
 
     private EnemyType DetermineEnemyType()
@@ -180,9 +278,36 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        // Player's turn ends, companion and enemy turns occur
+        StartCoroutine(CompanionAndEnemyTurn());
+    }
+
+    private IEnumerator CompanionAndEnemyTurn()
+    {
+        if (companionInstance != null && companionInstance.CurrentHealth > 0)
+        {
+            // Companion attacks first
+            companionInstance.AttackEnemy(enemyInstance, battleUI);
+            Debug.Log("Companion attacked the enemy.");
+            yield return new WaitForSeconds(1f);
+        }
+
+        // Check if enemy is defeated
+        if (enemyInstance.CurrentHealth <= 0)
+        {
+            Debug.Log("Enemy defeated by companion!");
+            StartCoroutine(EndBattle(true));
+            yield break;
+        }
+
+        // Enemy's turn
         isPlayerTurn = false;
+        yield return StartCoroutine(EnemyTurnWithDelay(null));
+
+        // Player's turn starts again
+        isPlayerTurn = true;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
-        StartCoroutine(EnemyTurnWithDelay(selectedCard));
+        battleUI.RenderCards(playerInstance.CardLoadout);
     }
 
     private IEnumerator EnemyTurnWithDelay(Card selectedCard)
@@ -195,33 +320,65 @@ public class BattleManager : MonoBehaviour
             yield break;
         }
 
-        if (playerInstance == null)
+        if (playerInstance == null && companionInstance == null)
         {
-            Debug.LogError("playerInstance is null in EnemyTurnWithDelay!");
+            Debug.LogError("Both playerInstance and companionInstance are null in EnemyTurnWithDelay!");
             yield break;
         }
 
         // Enemy uses a card or action
-        enemyInstance.AttackPlayer(playerInstance);
+        if (enemyInstance.CardLoadout == null || enemyInstance.CardLoadout.Count == 0)
+        {
+            Debug.LogError($"{enemyInstance.EnemyName} has no cards in its loadout.");
+            yield break;
+        }
+
+        // Select a random card from the enemy's card loadout
+        int cardIndex = Random.Range(0, enemyInstance.CardLoadout.Count);
+        Card selectedEnemyCard = enemyInstance.CardLoadout[cardIndex];
+
+        if (selectedEnemyCard == null)
+        {
+            Debug.LogError("Selected card for the enemy is null.");
+            yield break;
+        }
+
+        // Enemy attacks the player
+        if (playerInstance != null && playerInstance.CurrentHealth > 0)
+        {
+            string logMessagePlayer = selectedEnemyCard.Use(enemyInstance, playerInstance);
+            battleUI.AddBattleLog($"{enemyInstance.EnemyName} used {selectedEnemyCard.Name} on {playerInstance.name}. {logMessagePlayer}");
+            Debug.Log($"{enemyInstance.EnemyName} attacked Player: {logMessagePlayer}");
+        }
+
+        // Enemy attacks the companion (if present and alive)
+        if (companionInstance != null && companionInstance.CurrentHealth > 0)
+        {
+            string logMessageCompanion = selectedEnemyCard.Use(enemyInstance, companionInstance);
+            battleUI.AddBattleLog($"{enemyInstance.EnemyName} used {selectedEnemyCard.Name} on {companionInstance.CompanionName}. {logMessageCompanion}");
+            Debug.Log($"{enemyInstance.EnemyName} attacked Companion: {logMessageCompanion}");
+        }
 
         // Update effect timers for the enemy after its turn
         enemyInstance.DecrementEffectTimers();
         Debug.Log("Enemy effect timers decremented.");
 
-        // Update UI to reflect enemy effect timers (if applicable)
+        // Update the UI to reflect changes in health or status
         battleUI.UpdateEffectTimers();
 
-        // Check if the player is defeated
+        // Check if the player or companion is defeated
         if (playerInstance.CurrentHealth <= 0)
         {
-            StartCoroutine(EndBattle(false));
+            Debug.Log("Player has been defeated!");
+            yield return StartCoroutine(EndBattle(false));
             yield break;
         }
 
-        // Enable player's turn
-        isPlayerTurn = true;
-        battleUI.UpdateTurnIndicator(isPlayerTurn);
-        battleUI.RenderCards(playerInstance.CardLoadout);
+        if (companionInstance != null && companionInstance.CurrentHealth <= 0)
+        {
+            Debug.Log("Companion has been defeated!");
+            battleUI.AddBattleLog($"{companionInstance.CompanionName} has been defeated!");
+        }
     }
 
 

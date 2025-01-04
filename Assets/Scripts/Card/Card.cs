@@ -12,10 +12,10 @@ public enum CardType
 
 public abstract class Card : ScriptableObject
 {
-    [SerializeField] private string name;
-    [SerializeField] private string description;
-    [SerializeField] private CardType type;
-    [SerializeField] private Sprite cardSprite;
+    [SerializeField] protected string name;
+    [SerializeField] protected string description;
+    [SerializeField] protected CardType type;
+    [SerializeField] protected Sprite cardSprite;
 
     public string Name => name;
     public string Description => description;

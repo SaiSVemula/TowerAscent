@@ -1,12 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+using System.Collections;
 
-public class InventorySlot : MonoBehaviour, IDropHandler
+public class LoadoutSlot : MonoBehaviour, IDropHandler
 {
     public event Action OnCardChanged; // Event to notify changes in the slot
 
-    [SerializeField] private string slotType; // Expected type for the slot
+    [SerializeField] public string slotType; // Expected type for the slot
     [SerializeField] private Transform inventoryGrid; // Reference to the inventory grid
 
     public bool IsOccupied => transform.childCount > 0; // Check if the slot is occupied
@@ -14,17 +15,24 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {
         GameObject droppedItem = eventData.pointerDrag;
-        if (droppedItem == null) return;
+        if (droppedItem == null)
+        {
+            Debug.LogWarning("No item was dragged onto the slot.");
+            return;
+        }
 
         DraggableItem draggableItem = droppedItem.GetComponent<DraggableItem>();
-        if (draggableItem == null) return;
+        if (draggableItem == null)
+        {
+            Debug.LogWarning("Dragged item is not draggable.");
+            return;
+        }
 
         CardDisplay cardDisplay = droppedItem.GetComponent<CardDisplay>();
         if (cardDisplay == null || cardDisplay.CardData == null)
         {
-            Debug.LogWarning("Dropped item has no valid card data. Returning to inventory.");
+            Debug.LogWarning("Dragged item has no valid card data. Returning to inventory.");
             ReturnCardToInventory(droppedItem);
-            NotifyCardChange();
             return;
         }
 
@@ -33,8 +41,8 @@ public class InventorySlot : MonoBehaviour, IDropHandler
             if (!IsOccupied)
             {
                 draggableItem.parentAfterDrag = transform;
+                StartCoroutine(DelayedNotify());
                 Debug.Log($"Card {cardDisplay.CardData.Name} added to {slotType} slot.");
-                NotifyCardChange();
             }
             else
             {
@@ -56,12 +64,15 @@ public class InventorySlot : MonoBehaviour, IDropHandler
             CardDisplay cardDisplay = transform.GetChild(0).GetComponent<CardDisplay>();
             if (cardDisplay != null)
             {
-                Debug.Log($"Validating card {cardDisplay.CardData.Name} for slot {slotType}.");
-                return ValidateCardType(cardDisplay.CardData);
+                bool isValid = ValidateCardType(cardDisplay.CardData);
+                Debug.Log($"Validating card {cardDisplay.CardData.Name} for slot {slotType}. IsValid: {isValid}");
+                return isValid;
             }
         }
+        Debug.Log($"Slot {slotType} is empty or invalid.");
         return false;
     }
+
 
     private bool ValidateCardType(Card card)
     {
@@ -86,12 +97,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         cardObject.transform.SetParent(inventoryGrid);
         cardObject.transform.localPosition = Vector3.zero;
         Debug.Log($"Card returned to inventory.");
-        NotifyCardChange();
+        StartCoroutine(DelayedNotify());
     }
-
-    private void NotifyCardChange()
+    private IEnumerator DelayedNotify()
     {
-        Debug.Log($"Card change event triggered for slot {slotType}.");
+        yield return null; // Wait for the next frame
+        Debug.Log($"Card change event triggered for slot {slotType} after delay.");
         OnCardChanged?.Invoke();
     }
 }

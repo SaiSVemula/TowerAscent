@@ -4,10 +4,10 @@ using TMPro;
 public class TextHighlighter : MonoBehaviour
 {
     [Header("Slot References")]
-    [SerializeField] private InventorySlot weaponSlot;
-    [SerializeField] private InventorySlot magicSlot;
-    [SerializeField] private InventorySlot defenceSlot;
-    [SerializeField] private InventorySlot healingSlot;
+    [SerializeField] private LoadoutSlot weaponSlot;
+    [SerializeField] private LoadoutSlot magicSlot;
+    [SerializeField] private LoadoutSlot defenceSlot;
+    [SerializeField] private LoadoutSlot healingSlot;
 
     [Header("Text References")]
     [SerializeField] private TextMeshProUGUI weaponSlotText;
@@ -16,7 +16,7 @@ public class TextHighlighter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healingSlotText;
 
     [Header("Colours For Text")]
-    [SerializeField] private Color validCardColor = Color.white; // Full white for valid card
+    [SerializeField] private Color validCardColor = Color.green; // Full white for valid card
     [SerializeField] private Color defaultColor = Color.gray;   // Grey for invalid or empty slot
 
     private void Start()
@@ -44,25 +44,29 @@ public class TextHighlighter : MonoBehaviour
 
     private void UnsubscribeFromSlotEvents()
     {
-        weaponSlot.OnCardChanged -= () => UpdateSlotTextColor(weaponSlot, weaponSlotText);
-        magicSlot.OnCardChanged -= () => UpdateSlotTextColor(magicSlot, magicSlotText);
-        defenceSlot.OnCardChanged -= () => UpdateSlotTextColor(defenceSlot, defenceSlotText);
-        healingSlot.OnCardChanged -= () => UpdateSlotTextColor(healingSlot, healingSlotText);
+        if (weaponSlot != null) weaponSlot.OnCardChanged -= () => UpdateSlotTextColor(weaponSlot, weaponSlotText);
+        if (magicSlot != null) magicSlot.OnCardChanged -= () => UpdateSlotTextColor(magicSlot, magicSlotText);
+        if (defenceSlot != null) defenceSlot.OnCardChanged -= () => UpdateSlotTextColor(defenceSlot, defenceSlotText);
+        if (healingSlot != null) healingSlot.OnCardChanged -= () => UpdateSlotTextColor(healingSlot, healingSlotText);
     }
 
-    private void UpdateSlotTextColor(InventorySlot slot, TextMeshProUGUI slotText)
+    private void UpdateSlotTextColor(LoadoutSlot slot, TextMeshProUGUI slotText)
     {
+        Debug.Log($"Updating text color for slot {slot.slotType}. IsValidCard: {slot.IsValidCard()}");
+
         if (slot.IsValidCard())
         {
-            slotText.color = validCardColor; // Valid card in slot
-            Debug.Log($"Slot text for {slot.name} updated to valid color.");
+            slotText.color = validCardColor;
+            Debug.Log($"Slot {slot.slotType} text color set to valid (green).");
         }
         else
         {
-            slotText.color = defaultColor; // No valid card in slot
-            Debug.Log($"Slot text for {slot.name} updated to default color.");
+            slotText.color = defaultColor;
+            Debug.Log($"Slot {slot.slotType} text color set to default (gray).");
         }
     }
+
+
 
     private void ResetSlotColours()
     {

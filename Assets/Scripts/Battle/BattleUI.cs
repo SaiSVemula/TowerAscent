@@ -28,8 +28,8 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private float logEntrySpacing = 10f;
 
     [Header("Status Effects")]
-    [SerializeField] private TextMeshProUGUI defenceTimerText;
-    [SerializeField] private TextMeshProUGUI healingTimerText;
+    [SerializeField] private TextMeshProUGUI defenceText;
+    [SerializeField] private TextMeshProUGUI healingText;
 
     private Queue<TextMeshProUGUI> logPool = new Queue<TextMeshProUGUI>();
     private List<TextMeshProUGUI> activeLogEntries = new List<TextMeshProUGUI>();
@@ -135,8 +135,7 @@ public class BattleUI : MonoBehaviour
         // Layout calculations
         float cardWidth = 150f;
         float cardHeight = 200f;
-        float spacing = 20f;
-        float startX = -(cards.Count * (cardWidth + spacing)) / 2 + (cardWidth / 2);
+        float startX = -(cards.Count * (cardWidth)) / 2 + (cardWidth / 2);
 
         // Create and setup cards
         for (int i = 0; i < cards.Count; i++)
@@ -151,7 +150,7 @@ public class BattleUI : MonoBehaviour
             {
                 rectTransform.sizeDelta = new Vector2(cardWidth, cardHeight);
                 rectTransform.localScale = Vector3.one * 0.7f;
-                rectTransform.localPosition = new Vector3(startX + i * (cardWidth + spacing), 0, 0);
+                rectTransform.localPosition = new Vector3(startX + i * (cardWidth), 0, 0);
             }
 
             // Setup card visuals
@@ -208,24 +207,23 @@ public class BattleUI : MonoBehaviour
 
     public void UpdateEffectTimers()
     {
-        if (defenceTimerText == null || healingTimerText == null)
+        if (defenceText == null || healingText == null)
         {
-            Debug.LogError("Timer Text references are not assigned.");
+            Debug.LogError("DefenceText or HealingText references are not assigned in BattleUI.");
             return;
         }
 
-        // Update defence timer text
-        defenceTimerText.text = playerBattle.TemporaryDefences.Count == 0
+        // Update Defence Text
+        defenceText.text = playerBattle.TemporaryDefences.Count == 0
             ? "No Active Defence"
-            : $"Defence: {string.Join(", ", playerBattle.TemporaryDefences.Select(d => $"{d.value} ({d.timer} turns)"))}";
+            : $"Current Defence: {string.Join(", ", playerBattle.TemporaryDefences.Select(d => $"{d.value} ({d.timer} turns)"))}";
 
-        // Update healing timer text
-        healingTimerText.text = playerBattle.TemporaryHeals.Count == 0
+        // Update Healing Text
+        healingText.text = playerBattle.TemporaryHeals.Count == 0
             ? "No Active Healing"
-            : $"Healing: {string.Join(", ", playerBattle.TemporaryHeals.Select(h => $"{h.value} ({h.timer} turns)"))}";
+            : $"Current Healing: {string.Join(", ", playerBattle.TemporaryHeals.Select(h => $"{h.value} ({h.timer} turns)"))}";
 
-        defenceTimerText.gameObject.SetActive(true);
-        healingTimerText.gameObject.SetActive(true);
+        Debug.Log("Effect timers updated on BattleUI.");
     }
 
 

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
 public class GameManager : MonoBehaviour
 {
     // Singleton instance of GameManager
@@ -10,6 +9,10 @@ public class GameManager : MonoBehaviour
 
     // Reference to the Player
     private Player playerInstance;
+
+    // Add a companion type field
+    private CompanionType currentCompanionType;
+    public CompanionType CurrentCompanionType => currentCompanionType;
 
     // Game state variables
 
@@ -225,6 +228,11 @@ public class GameManager : MonoBehaviour
             playerInstance.Gold = CurrentCoins;
             playerInstance.Inventory = new List<string>(CardsInInventory);
             playerInstance.PlayerName = PlayerName;
+            LoadMiniBattleCardPoolFromPrefs();
+
+            // Load companion type
+            currentCompanionType = GetCompanionType();
+            Debug.Log($"Loaded companion type: {currentCompanionType}");
 
             Debug.Log("Game state loaded.");
         }
@@ -232,6 +240,7 @@ public class GameManager : MonoBehaviour
         // Mark the game state as loaded
         hasGameStateLoaded = true;
     }
+
 
     // Loads a new scene and saves the current state
     public void LoadScene(string nextScene)
@@ -259,8 +268,15 @@ public class GameManager : MonoBehaviour
 
         defeatedSpiders.Clear(); // Reset spider states
         PlayerPrefs.DeleteKey("DefeatedSpiders"); // Clear saved spider states
+
+        // Reset companion type
+        currentCompanionType = CompanionType.Companion1;
+        PlayerPrefs.SetInt("PlayerCompanionType", (int)CompanionType.Companion1);
+        PlayerPrefs.Save();
+
         Debug.Log("Game state cleared.");
     }
+
 
 
     // Post Mini Battle logic.
@@ -368,6 +384,23 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("No saved mini-battle card pool found in PlayerPrefs.");
         }
     }
+
+    // Set the companion type and save it
+    public void SetCompanionType(CompanionType companionType)
+    {
+        currentCompanionType = companionType;
+        PlayerPrefs.SetInt("PlayerCompanionType", (int)companionType);
+        PlayerPrefs.Save();
+        Debug.Log($"Companion type set to: {companionType}");
+    }
+
+    // Retrieve the companion type
+    public CompanionType GetCompanionType()
+    {
+        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
+        return (CompanionType)companionTypeInt;
+    }
+
 
     public void CompleteObjective(string objectiveName)
     {

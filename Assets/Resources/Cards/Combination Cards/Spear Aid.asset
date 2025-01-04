@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3ec7262836254b49860f95f60331145, type: 3}
-  m_Name: Spear Thrust
+  m_Script: {fileID: 11500000, guid: 5fabe56c2dbeda44382e4c0e13e0f034, type: 3}
+  m_Name: Spear Aid
   m_EditorClassIdentifier: 
-  name: Spear Thrust
-  description: Pierces enemy defences, dealing damage that ignores a portion of the
-    armor.
+  name: Spear Aid
+  description: Pierces enemy defenses and restores a small amount of health.
   type: 2
   cardSprite: {fileID: 21300000, guid: 45435a0f9c910764195f1cfc5df562b5, type: 3}
-  damage: 30
+  subCards:
+  - {fileID: 11400000, guid: 288a68d82f71c4d4db72d37168d3bd1a, type: 2}
+  - {fileID: 11400000, guid: 1c366d25083c3024c98c0e0117b46292, type: 2}
