@@ -388,6 +388,7 @@ public class GameManager : MonoBehaviour
         // Check and update particle and post-processing states
         UpdateParticlesState();
         UpdatePostProcessingState();
+        UpdateBrightnessState();
     }
 
     private void UpdateParticlesState()
@@ -426,6 +427,38 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogWarning("No objects with the tag 'effects' found in the scene.");
+        }
+    }
+
+    public static void UpdateBrightnessState()
+    {
+        float percentage = PlayerPrefs.GetFloat("lightBrightness");
+        // Find the light in the scene with the tag "MainLight"
+        GameObject mainLightObject = GameObject.FindWithTag("SceneLight");
+
+        if (mainLightObject != null)
+        {
+            Light mainLight = mainLightObject.GetComponent<Light>();
+
+            if (mainLight != null)
+            {
+                // Calculate the new intensity
+                float originalIntensity = mainLight.intensity;
+                float adjustedIntensity = originalIntensity * (1 + percentage);
+
+                // Update the light's intensity
+                mainLight.intensity = Mathf.Max(0, adjustedIntensity); // Ensure intensity is not negative
+
+                Debug.Log($"Main light brightness adjusted by {percentage * 100}%. New intensity: {mainLight.intensity}");
+            }
+            else
+            {
+                Debug.LogWarning("The GameObject tagged 'MainLight' does not have a Light component.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No GameObject with the tag 'MainLight' was found in the scene.");
         }
     }
 }

@@ -29,6 +29,7 @@ public class StartMenu : MonoBehaviour
             float tempMasterVolume = PlayerPrefs.GetFloat("SoundMasterVol", 0.5f);
             float tempMusicVolume = PlayerPrefs.GetFloat("SoundMusicVol", 0.5f);
             float tempSFXVolume = PlayerPrefs.GetFloat("SoundSFXVol", 0.5f);
+            float tempbrightness = PlayerPrefs.GetFloat("lightBrightness", 0.5f);
 
             // Clear PlayerPrefs
             PlayerPrefs.DeleteAll();
@@ -43,6 +44,7 @@ public class StartMenu : MonoBehaviour
             PlayerPrefs.SetFloat("SoundMasterVol", tempMasterVolume);
             PlayerPrefs.SetFloat("SoundMusicVol", tempMusicVolume);
             PlayerPrefs.SetFloat("SoundSFXVol", tempSFXVolume);
+            PlayerPrefs.SetFloat("lightBrightness", tempbrightness);
             PlayerPrefs.Save();
 
             // Load the start scene
