@@ -25,6 +25,9 @@ public class GameManager : MonoBehaviour
     public int CurrentCoins1 { get => CurrentCoins; set => CurrentCoins = value; }
     public List<Card> CurrentCardLoadout { get => cardLoadout; set => cardLoadout = value; }
 
+    private List<GameObject> partyCompanions = new List<GameObject>(); // Store companions in the party
+    public List<GameObject> PartyCompanions => partyCompanions;
+
     // Mini-battle card pool
     private List<Card> miniBattleCardPool = new List<Card>();
 
@@ -59,6 +62,36 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // Persist GameManager across scenes
             LoadSpiderStates();
+        }
+    }
+
+
+    // Add a companion to the party
+    public void AddCompanionToParty(GameObject companion)
+    {
+        if (!partyCompanions.Contains(companion))
+        {
+            partyCompanions.Add(companion);
+            DontDestroyOnLoad(companion); // Persist companion across scenes
+            Debug.Log($"Companion {companion.name} added to the party.");
+        }
+    }
+
+    // Spawn all companions in the current level
+    public void SpawnCompanionsInCurrentLevel()
+    {
+        foreach (var companion in partyCompanions)
+        {
+            if (companion != null)
+            {
+                // Position companions near the player
+                var player = FindObjectOfType<Player>();
+                if (player != null)
+                {
+                    companion.transform.position = player.transform.position + new Vector3(Random.Range(1, 3), 0, Random.Range(1, 3));
+                }
+                companion.SetActive(true); // Ensure companion is active
+            }
         }
     }
 
