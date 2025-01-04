@@ -241,8 +241,8 @@ public class GeneralMonsterAI : BattleEntity
         // Play particle effect
         Instantiate(deathEffect, transform.position, Quaternion.identity);
 
-
         // Log defeat in GameManager
+        Debug.Log($"Spider with ID {spiderID} defeated. Marking it as defeated.");
         GameManager.Instance.MarkSpiderDefeated(spiderID);
 
         // Remove spider and health bar from the scene
@@ -254,4 +254,5 @@ public class GeneralMonsterAI : BattleEntity
 
         Destroy(gameObject);
     }
+
 }
