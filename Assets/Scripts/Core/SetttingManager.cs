@@ -16,6 +16,7 @@ public class SettingsManager : MonoBehaviour
     public Slider MasterVol;
     public Slider MusicVol;
     public Slider sfxVol;
+    public Slider brightness;
     public Button WEBGLfullscreen;
     public Button SaveGameButton;
     private static SettingsManager instance;
@@ -59,6 +60,7 @@ public class SettingsManager : MonoBehaviour
         MasterVol.onValueChanged.AddListener(SetMasterVolume);
         MusicVol.onValueChanged.AddListener(SetMusicVolume);
         sfxVol.onValueChanged.AddListener(SetSFXVolume);
+        brightness.onValueChanged.AddListener(SetBrightness);
 
         RestoreSettings();
     }
@@ -184,6 +186,7 @@ public class SettingsManager : MonoBehaviour
     }
 
     private void SetCameraSensitivity(float sensitivity){PlayerPrefs.SetFloat("MovementCamSensitivity", sensitivity);}
+    private void SetBrightness(float sensitivity){PlayerPrefs.SetFloat("lightBrightness", sensitivity);}
     private void SetMasterVolume(float volume){PlayerPrefs.SetFloat("SoundMasterVol", volume);}
     private void SetMusicVolume(float volume){PlayerPrefs.SetFloat("SoundMusicVol", volume);}
     private void SetSFXVolume(float volume){PlayerPrefs.SetFloat("SoundSFXVol", volume);}
@@ -233,6 +236,10 @@ public class SettingsManager : MonoBehaviour
         float tempcamsens = PlayerPrefs.GetFloat("MovementCamSensitivity", 0.1f);
         CameraMovementSensitivity.value = tempcamsens;
         SetCameraSensitivity(tempcamsens);
+
+        float tempbrightness = PlayerPrefs.GetFloat("lightBrightness", 0f);
+        brightness.value = tempbrightness;
+        SetBrightness(tempbrightness);
 
         float tempmastervol = PlayerPrefs.GetFloat("SoundMasterVol", 0.5f);
         MasterVol.value = tempmastervol;
