@@ -5,16 +5,20 @@ public class LoadoutButtons : MonoBehaviour
     [SerializeField] private LevelLoader levelLoader; // Reference to LevelLoader
     [SerializeField] private Transform inventoryGrid; // Reference to the inventory grid
     [SerializeField] private Transform[] loadoutSlots; // Array of the right-hand slots
+    [SerializeField] private LoadoutSlot[] cardSlots; // Array of the left-hand slots
     private List<string> validLoadout; // Stores the card names of the valid loadout
     private List<Card> validLoadoutCards; // Stores the Card objects of the valid loadout
 
     public void ClearSlots()
     {
-        foreach (Transform slot in loadoutSlots)
+        for (int i = 0; i < loadoutSlots.Length; i++)
         {
+            Transform slot = loadoutSlots[i];
+            LoadoutSlot loadoutSlot = cardSlots[i];
             if (slot.childCount > 0) // Check if the slot contains a card
             {
                 Transform card = slot.GetChild(0); // Get the card
+                loadoutSlot.SetCardTextColor(Color.black);
                 card.SetParent(inventoryGrid); // Move the card back to the inventory
                 card.localPosition = Vector3.zero; // Reset card's position
                 card.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 150); // Reset card's size

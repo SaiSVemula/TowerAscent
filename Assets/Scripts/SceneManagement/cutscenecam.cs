@@ -89,7 +89,7 @@ public class DollyCartController : MonoBehaviour
         }
     }
 
-    void LoadNextScene()
+    public void LoadNextScene()
     {
         string previousScene = GameManager.Instance.PreviousScene;
         string nextScene;

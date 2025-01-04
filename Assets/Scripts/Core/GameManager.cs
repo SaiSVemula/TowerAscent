@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class GameManager : MonoBehaviour
 {
     // Singleton instance of GameManager
@@ -27,6 +28,26 @@ public class GameManager : MonoBehaviour
 
     private List<GameObject> partyCompanions = new List<GameObject>(); // Store companions in the party
     public List<GameObject> PartyCompanions => partyCompanions;
+
+    private List<CompanionCard> ownedCompanions = new List<CompanionCard>();
+
+    public List<CompanionCard> GetOwnedCompanions()
+    {
+        return new List<CompanionCard>(ownedCompanions); // Return a copy to prevent direct modification
+    }
+
+    public void AddCompanion(CompanionCard companion)
+    {
+        if (companion != null)
+        {
+            ownedCompanions.Add(companion);
+            Debug.Log($"Companion added to inventory: {companion.name}");
+        }
+        else
+        {
+            Debug.LogWarning("Tried to add a null companion to inventory.");
+        }
+    }
 
     // Mini-battle card pool
     private List<Card> miniBattleCardPool = new List<Card>();
@@ -63,6 +84,7 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject); // Persist GameManager across scenes
             LoadSpiderStates();
         }
+        SceneManager.sceneLoaded += SceneLoadup;
     }
 
 
@@ -93,6 +115,19 @@ public class GameManager : MonoBehaviour
                 companion.SetActive(true); // Ensure companion is active
             }
         }
+    }
+
+    public void SetCompanionType(CompanionType companionType)
+    {
+        PlayerPrefs.SetInt("PlayerCompanionType", (int)companionType);
+        PlayerPrefs.Save();
+        Debug.Log($"Companion type set to: {companionType}");
+    }
+
+    public CompanionType GetCompanionType()
+    {
+        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
+        return (CompanionType)companionTypeInt;
     }
 
     // Initialize or retrieve the Player instance
@@ -375,5 +410,88 @@ public class GameManager : MonoBehaviour
     public void CompleteObjective(string objectiveName)
     {
         // Implement objective completion logic here
+    }
+
+
+
+    private void SceneLoadup(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"Scene loaded: {scene.name}");
+
+        // Check and update particle and post-processing states
+        UpdateParticlesState();
+        UpdatePostProcessingState();
+        UpdateBrightnessState();
+    }
+
+    private void UpdateParticlesState()
+    {
+        // Check the PlayerPref key "AreParticlesOn"
+        bool areParticlesOn = PlayerPrefs.GetInt("AreParticlesOn", 1) == 1; // Default to true (1) if key does not exist
+
+        // Find all objects tagged as "Particle"
+        GameObject[] particleObjects = GameObject.FindGameObjectsWithTag("particle");
+
+        // Enable or disable them based on the PlayerPref value
+        foreach (GameObject particleObject in particleObjects)
+        {
+            particleObject.SetActive(areParticlesOn);
+        }
+
+        Debug.Log($"Particles are now {(areParticlesOn ? "enabled" : "disabled")}.");
+    }
+
+    private void UpdatePostProcessingState()
+    {
+        // Check the PlayerPref key "AreEffectsOn"
+        bool areEffectsOn = PlayerPrefs.GetInt("AreEffectsOn", 1) == 1; // Default to true (1) if key does not exist
+
+        // Find all objects with the tag "effects"
+        GameObject[] effectsObjects = GameObject.FindGameObjectsWithTag("effects");
+        if (effectsObjects.Length > 0)
+        {
+            foreach (GameObject effectsObject in effectsObjects)
+            {
+                effectsObject.SetActive(areEffectsOn);
+            }
+
+            Debug.Log($"Effects are now {(areEffectsOn ? "enabled" : "disabled")}.");
+        }
+        else
+        {
+            Debug.LogWarning("No objects with the tag 'effects' found in the scene.");
+        }
+    }
+
+    public static void UpdateBrightnessState()
+    {
+        float percentage = PlayerPrefs.GetFloat("lightBrightness");
+        // Find the light in the scene with the tag "MainLight"
+        GameObject mainLightObject = GameObject.FindWithTag("SceneLight");
+
+        if (mainLightObject != null)
+        {
+            Light mainLight = mainLightObject.GetComponent<Light>();
+
+            if (mainLight != null)
+            {
+                // Calculate the new intensity
+                float originalIntensity = mainLight.intensity;
+                float adjustedIntensity = originalIntensity * (1 + percentage);
+
+                // Update the light's intensity
+                mainLight.intensity = Mathf.Max(0, adjustedIntensity); // Ensure intensity is not negative
+
+                Debug.Log($"Main light brightness adjusted by {percentage * 100}%. New intensity: {mainLight.intensity}");
+            }
+            else
+            {
+                Debug.LogWarning("The GameObject tagged 'MainLight' does not have a Light component.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No GameObject with the tag 'MainLight' was found in the scene.");
+        }
     }
 }

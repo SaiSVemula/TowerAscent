@@ -29,6 +29,7 @@ public class PlayerInventory : MonoBehaviour
         AddCard(Resources.Load<Card>("Cards/Defence Cards/Dodge"));
         AddCard(Resources.Load<Card>("Cards/Magic Cards/Fireball"));
         AddCard(Resources.Load<Card>("Cards/Healing Cards/First Aid")); 
+        AddCard(Resources.Load<Card>("Cards/Combination Cards/Dagger Dodge"));
     }
 
     public void AddCard(Card card)

@@ -41,7 +41,7 @@ public abstract class BattleEntity : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damageAmount)
+    public virtual void TakeDamage(int damageAmount)
     {
         int netDamage = Mathf.Max(damageAmount - currentDefence, 0);
         if(SceneManager.GetActiveScene().name != "BattleScene")
@@ -61,14 +61,12 @@ public abstract class BattleEntity : MonoBehaviour
         }
     }
 
-    public void Heal(int healAmount)
+    public virtual void Heal(int healAmount)
     {
         currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
         Debug.Log($"Player healed by {healAmount}, Current Health: {currentHealth}");
         UpdateHealthBar(); 
     }
-
-
 
     public void AddDefence(int defenceAmount)
     {
@@ -98,7 +96,7 @@ public abstract class BattleEntity : MonoBehaviour
         currentDefence = baseDefence + temporaryDefenses.Sum(d => d.value);
     }
 
-    public void DecrementEffectTimers()
+    public virtual void DecrementEffectTimers()
     {
         // Decrement defense timers
         for (int i = temporaryDefenses.Count - 1; i >= 0; i--)
@@ -106,6 +104,7 @@ public abstract class BattleEntity : MonoBehaviour
             temporaryDefenses[i] = (temporaryDefenses[i].value, temporaryDefenses[i].timer - 1);
             if (temporaryDefenses[i].timer <= 0)
             {
+                Debug.Log($"{name}: Defence effect expired. Value: {temporaryDefenses[i].value}");
                 temporaryDefenses.RemoveAt(i);
             }
         }
@@ -114,14 +113,24 @@ public abstract class BattleEntity : MonoBehaviour
         // Decrement healing timers
         for (int i = temporaryHeals.Count - 1; i >= 0; i--)
         {
-            Heal(temporaryHeals[i].value);
+            Heal(temporaryHeals[i].value); // Apply healing effect
             temporaryHeals[i] = (temporaryHeals[i].value, temporaryHeals[i].timer - 1);
             if (temporaryHeals[i].timer <= 0)
             {
+                Debug.Log($"{name}: Healing effect expired. Value: {temporaryHeals[i].value}");
                 temporaryHeals.RemoveAt(i);
             }
         }
+
+        // Allow child classes to handle additional updates if necessary
+        OnEffectTimersUpdated();
     }
+
+    protected virtual void OnEffectTimersUpdated()
+    {
+        // Optional override for child classes
+    }
+
 
     // Updates the health of the entity
     protected void UpdateHealthBar()
