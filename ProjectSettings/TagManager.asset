@@ -12,6 +12,7 @@ TagManager:
   - NoRunZone
   - effects
   - particle
+  - SceneLight
   layers:
   - Default
   - TransparentFX
