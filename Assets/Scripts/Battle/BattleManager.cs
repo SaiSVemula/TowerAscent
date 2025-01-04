@@ -20,7 +20,7 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        Testing();//run only during development
+        //Testing();//run only during development
 
         levelLoader = FindObjectOfType<LevelLoader>();
 
@@ -75,8 +75,6 @@ public class BattleManager : MonoBehaviour
         playerInstance.gameObject.SetActive(true);
         enemyInstance.gameObject.SetActive(true);
 
-        // Update UI before the countdown starts
-        battleUI.UpdateEffectTimers();
 
         yield return StartCoroutine(battleUI.ShowCountdown());
 
@@ -269,7 +267,6 @@ public class BattleManager : MonoBehaviour
 
         // Update effect timers after card usage
         playerInstance.DecrementEffectTimers();
-        battleUI.UpdateEffectTimers();
 
         if (enemyInstance.CurrentHealth <= 0)
         {
@@ -362,9 +359,6 @@ public class BattleManager : MonoBehaviour
         // Update effect timers for the enemy after its turn
         enemyInstance.DecrementEffectTimers();
         Debug.Log("Enemy effect timers decremented.");
-
-        // Update the UI to reflect changes in health or status
-        battleUI.UpdateEffectTimers();
 
         // Check if the player or companion is defeated
         if (playerInstance.CurrentHealth <= 0)
