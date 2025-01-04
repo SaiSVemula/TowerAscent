@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 [System.Serializable]
 public class DialogueNode
 {
@@ -184,7 +183,6 @@ public class GeneralNPC : MonoBehaviour
         barrierMessageText.text = ""; // Clear the message
         isMessageDisplayed = false;
     }
-
 
     public void EndInteraction()
     {
