@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
+using TMPro;
 
 public class LoadoutSlot : MonoBehaviour, IDropHandler
 {
@@ -9,6 +10,7 @@ public class LoadoutSlot : MonoBehaviour, IDropHandler
 
     [SerializeField] public string slotType; // Expected type for the slot
     [SerializeField] private Transform inventoryGrid; // Reference to the inventory grid
+    [SerializeField] private TextMeshProUGUI slotText; // Text to display the slot type
 
     public bool IsOccupied => transform.childCount > 0; // Check if the slot is occupied
 
@@ -41,7 +43,7 @@ public class LoadoutSlot : MonoBehaviour, IDropHandler
             if (!IsOccupied)
             {
                 draggableItem.parentAfterDrag = transform;
-                StartCoroutine(DelayedNotify());
+                SetCardTextColor(Color.green); // passing green
                 Debug.Log($"Card {cardDisplay.CardData.Name} added to {slotType} slot.");
             }
             else
@@ -86,6 +88,8 @@ public class LoadoutSlot : MonoBehaviour, IDropHandler
                 return card is DefenceCard;
             case "HealingCard":
                 return card is HealingCard;
+            case "CombinationCard":
+                return card is CombinationCard;
             default:
                 Debug.LogError($"Invalid slot type: {slotType}");
                 return false;
@@ -97,13 +101,19 @@ public class LoadoutSlot : MonoBehaviour, IDropHandler
         cardObject.transform.SetParent(inventoryGrid);
         cardObject.transform.localPosition = Vector3.zero;
         Debug.Log($"Card returned to inventory.");
-        StartCoroutine(DelayedNotify());
+        SetCardTextColor(Color.black); // Passing black
     }
-    private IEnumerator DelayedNotify()
+
+    public void SetCardTextColor(Color color)
     {
-        yield return null; // Wait for the next frame
-        Debug.Log($"Card change event triggered for slot {slotType} after delay.");
-        OnCardChanged?.Invoke();
+        if (slotText != null)
+        {
+            slotText.color = color; // Set the text color
+        }
+        else
+        {
+            Debug.LogWarning("No Text component found on the card.");
+        }
     }
 }
 

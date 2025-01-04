@@ -48,10 +48,11 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, 
         }
         else
         {
+            // If dropped in a valid slot, align the card properly
             transform.SetParent(parentAfterDrag);
-            transform.localPosition = Vector3.zero;
+            transform.localPosition = Vector3.zero; // Center in the slot
         }
 
-        image.raycastTarget = true; 
+        image.raycastTarget = true; // Re-enable raycast
     }
 }

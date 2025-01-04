@@ -33,11 +33,14 @@ public class PickCardsManager : MonoBehaviour
         }
 
         // Configure button listeners
-        pickCardsButton.onClick.AddListener(StartPickingMode);
-        saveCardPoolButton.onClick.AddListener(SaveSelectedCards);
+        if(SceneManager.GetActiveScene().name != "LoadoutPage")
+        {
+            pickCardsButton.onClick.AddListener(StartPickingMode);
+            saveCardPoolButton.onClick.AddListener(SaveSelectedCards);
 
-        // Initially hide the save button
-        saveCardPoolButton.gameObject.SetActive(false);
+            // Initially hide the save button
+            saveCardPoolButton.gameObject.SetActive(false);
+        }
     }
 
     public void StartPickingMode()
