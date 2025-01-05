@@ -9,6 +9,8 @@ public class PlayerBattle : BattleEntity
     [SerializeField] private Slider PlayerHealthBar;
     // Fields for mini-battle
     private List<Card> miniBattleCardPool = new List<Card>();
+
+
     protected override void Awake()
     {
         Debug.Log("PlayerBattle Awake called");
@@ -67,6 +69,7 @@ public class PlayerBattle : BattleEntity
             Debug.Log($"Player used {selectedCard.Name} on {targetEnemy.name}");
             Debug.Log(selectedCard.Use(this, targetEnemy));
         }
+
     }
 
     public void UpdateEffectTimers()
@@ -141,22 +144,6 @@ public class PlayerBattle : BattleEntity
     {
         // Add any player-specific logic if needed
         Debug.Log("Player-specific logic after decrementing effect timers.");
-    }
-
-
-    //Mini-battle methods for player
-
-    public void UseMiniBattleCard(BattleEntity target)
-    {
-        Card selectedCard = GetMiniBattleCard();
-        if (selectedCard == null)
-        {
-            return;
-        }
-
-        Debug.Log($"Player used {selectedCard.Name} on {target.name}.");
-        string logMessage = selectedCard.Use(this, target);
-        Debug.Log(logMessage);
     }
 
     public void SetUpMiniBattle()
