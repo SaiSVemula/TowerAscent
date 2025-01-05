@@ -490,6 +490,8 @@ public class BattleManager : MonoBehaviour
         // Display the battle result
         yield return StartCoroutine(battleUI.ShowBattleResult(playerWon));
 
+        yield return new WaitForSeconds(3f);
+
         // Disable player interactions after the battle
         isPlayerTurn = false;
 
