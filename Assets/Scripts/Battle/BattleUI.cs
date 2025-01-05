@@ -14,7 +14,7 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private Button startBattleButton;
 
     [Header("Card System")]
-    [SerializeField] private GameObject cardPanel;
+    [SerializeField] public GameObject cardPanel;
     [SerializeField] private Transform cardContainer;
     [SerializeField] private GameObject cardTemplate;
     [SerializeField] private BattleManager battleManager;
