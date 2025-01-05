@@ -6,11 +6,12 @@ For Persisitent Data Storage (i.e allows us to resume the game from the browser)
 */
 public class SaveManager : MonoBehaviour
 {
+    // Modify the SaveGameState method to also save CardsInInventory, ownedCompanions, spiders, and miniBattleCardPool.
     public static void SaveGameState()
     {
-        var currentGameManager = GameManager.Instance; // Gets The GameManager Instance
+        var currentGameManager = GameManager.Instance;
 
-        // Saves Everything in the gamemanager to PlayerPrefs For Persistent Data Storage
+        // Existing saves
         PlayerPrefs.SetString("SavedScene", currentGameManager.GetCurrentScene());
         PlayerPrefs.SetFloat("PlayerCoordX", currentGameManager.GetPlayerLocation().x);
         PlayerPrefs.SetFloat("PlayerCoordY", currentGameManager.GetPlayerLocation().y);
@@ -23,6 +24,13 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.SetInt("BigbattleWins", currentGameManager.GetBigbattleWins());
         PlayerPrefs.SetInt("BigbattleLosses", currentGameManager.GetBigbattleLosses());
 
+        // New saves
+        currentGameManager.SavePlayerInventoryToPrefs();  // Saves CardsInInventory
+        currentGameManager.SaveOwnedCompanionsToPrefs();  // Saves ownedCompanions
+        currentGameManager.SaveSpiderStates();            // Saves defeated spiders
+        currentGameManager.SaveMiniBattleCardPoolToPrefs(); // Saves miniBattleCardPool
+
         PlayerPrefs.Save();
+        Debug.Log("Full game state saved (including inventory, companions, spiders, and mini-battle pool).");
     }
 }

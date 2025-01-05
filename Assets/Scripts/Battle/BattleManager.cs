@@ -108,17 +108,14 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Ensure the prefab's GameObject is initially disabled
-        companionInstance.gameObject.SetActive(false);
-
-        // Determine the companion type
-        //int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
-        //CompanionType companionType = (CompanionType)companionTypeInt;
-
-        // get companion added from game manager
         CompanionType companionType = GameManager.Instance.GetCompanionType();
+        if (companionType == CompanionType.None)
+        {
+            Debug.Log("No companion selected. Skipping companion spawn.");
+            companionInstance.gameObject.SetActive(false);
+            return;
+        }
 
-        // Get the CompanionBattle component from the prefab
         CompanionBattle companionBattle = companionInstance.GetComponent<CompanionBattle>();
         if (companionBattle == null)
         {
@@ -126,15 +123,11 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Initialize the companion with the correct type
         companionBattle.Initialize(companionType);
-
-        // Optionally configure visuals if needed
         SetupCompanionVisuals(companionType);
 
-        // Set the position and enable the companion
-        companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2; // Adjust spawn offset
-        companionInstance.transform.rotation = Quaternion.identity; // Reset rotation
+        companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2;
+        companionInstance.transform.rotation = Quaternion.identity;
         companionInstance.gameObject.SetActive(true);
 
         Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");

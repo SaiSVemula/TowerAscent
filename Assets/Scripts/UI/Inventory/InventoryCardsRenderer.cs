@@ -10,9 +10,10 @@ public class InventoryCardsRenderer : MonoBehaviour
     [SerializeField] private Sprite defaultCardSprite; // Placeholder sprite for cards
     public bool isPickingWeaponCards = false; // Flag for weapon card filtering
 
+    private List<Card> lastRenderedCards = new List<Card>(); // Track last rendered cards to prevent duplication
+
     private void OnEnable()
     {
-        // Subscribe to the inventory updated event
         if (PlayerInventory.Instance != null)
         {
             PlayerInventory.Instance.OnInventoryUpdated += RefreshInventoryUI;
@@ -21,7 +22,6 @@ public class InventoryCardsRenderer : MonoBehaviour
 
     private void OnDisable()
     {
-        // Unsubscribe to avoid memory leaks
         if (PlayerInventory.Instance != null)
         {
             PlayerInventory.Instance.OnInventoryUpdated -= RefreshInventoryUI;
@@ -47,8 +47,6 @@ public class InventoryCardsRenderer : MonoBehaviour
             return;
         }
 
-        ClearInventoryUI(); // Clear existing UI
-
         List<Card> ownedCards = PlayerInventory.Instance.GetOwnedCards();
 
         // Filter for weapon cards if in weapon picking mode
@@ -57,13 +55,24 @@ public class InventoryCardsRenderer : MonoBehaviour
             ownedCards = ownedCards.Where(card => card is WeaponCard).ToList();
         }
 
+        // If the current owned cards match the last rendered cards, skip re-rendering
+        if (ownedCards.SequenceEqual(lastRenderedCards))
+        {
+            Debug.Log("Cards are already up-to-date. Skipping re-rendering.");
+            return;
+        }
+
+        // Save the current owned cards as the last rendered state
+        lastRenderedCards = new List<Card>(ownedCards);
+
+        ClearInventoryUI(); // Clear existing UI
+
         // Group cards by name and count the quantities
         var groupedCards = ownedCards
             .GroupBy(card => card.Name)
             .Select(group => new { Card = group.First(), Count = group.Count() })
             .ToList();
 
-        // Inside InventoryCardsRenderer.cs
         foreach (var groupedCard in groupedCards)
         {
             if (groupedCard.Card == null) continue;
