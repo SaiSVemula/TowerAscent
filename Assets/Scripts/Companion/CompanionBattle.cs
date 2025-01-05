@@ -5,9 +5,10 @@ using UnityEngine.UI;
 
 public enum CompanionType
 {
-    Companion1 = 0,
-    Companion2 = 1,
-    Companion3 = 2
+    None = 0,
+    Companion1,
+    Companion2,
+    Companion3,
 }
 
 public class CompanionBattle : BattleEntity

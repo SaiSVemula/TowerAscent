@@ -165,7 +165,52 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game state updated.");
     }
 
-    // Loads everything from memory
+    // Add these new methods inside your GameManager class
+    public void SaveOwnedCompanionsToPrefs()
+    {
+        List<string> companionNames = ownedCompanions.Select(c => c.name).ToList();
+        string serializedCompanions = string.Join(",", companionNames);
+        PlayerPrefs.SetString("OwnedCompanions", serializedCompanions);
+        PlayerPrefs.Save();
+        Debug.Log("Owned companions saved to PlayerPrefs.");
+    }
+
+    public void LoadOwnedCompanionsFromPrefs()
+    {
+        string serializedCompanions = PlayerPrefs.GetString("OwnedCompanions", "");
+        if (!string.IsNullOrEmpty(serializedCompanions))
+        {
+            string[] companionNames = serializedCompanions.Split(',');
+            ownedCompanions = new List<CompanionCard>();
+            foreach (string cName in companionNames)
+            {
+                var loadedCompanion = Resources.Load<CompanionCard>($"Cards/{cName}");
+                if (loadedCompanion != null) ownedCompanions.Add(loadedCompanion);
+            }
+            Debug.Log("Owned companions loaded from PlayerPrefs.");
+        }
+        else
+        {
+            Debug.Log("No owned companions found in PlayerPrefs.");
+        }
+    }
+
+    public void SavePlayerInventoryToPrefs()
+    {
+        if (CardsInInventory != null && CardsInInventory.Length > 0)
+        {
+            string serializedInventory = string.Join(",", CardsInInventory);
+            PlayerPrefs.SetString("PlayerInventory", serializedInventory);
+        }
+        else
+        {
+            PlayerPrefs.SetString("PlayerInventory", "");
+        }
+        PlayerPrefs.Save();
+        Debug.Log("Player inventory saved to PlayerPrefs.");
+    }
+
+    // Modify your LoadGameState to load owned companions plus ensure spiders & mini-battle pool also load
     public void LoadGameState()
     {
         if (playerInstance != null)
@@ -175,6 +220,9 @@ public class GameManager : MonoBehaviour
             playerInstance.Gold = CurrentCoins;
             playerInstance.Inventory = new List<string>(CardsInInventory);
             playerInstance.PlayerName = PlayerName;
+            LoadOwnedCompanionsFromPrefs();
+            LoadMiniBattleCardPoolFromPrefs();
+            LoadSpiderStates();
             Debug.Log("Game state loaded.");
         }
         hasGameStateLoaded = true;
@@ -323,17 +371,37 @@ public class GameManager : MonoBehaviour
     }
 
     // Adds a companion
+    private CompanionCard selectedCompanion;
+
     public void AddCompanion(CompanionCard companion)
     {
         if (companion != null)
         {
-            ownedCompanions.Add(companion);
-            Debug.Log($"Companion added to inventory: {companion.name}");
+            selectedCompanion = companion;
+            Debug.Log($"Companion added: {companion.CompanionName}");
         }
         else
         {
             Debug.LogWarning("Tried to add a null companion to inventory.");
         }
+    }
+
+    public void ClearCompanion()
+    {
+        selectedCompanion = null;
+        PlayerPrefs.SetInt("PlayerCompanionType", -1); // Default value for no companion
+        PlayerPrefs.Save();
+        Debug.Log("Companion cleared from loadout.");
+    }
+
+    public CompanionType GetCompanionType()
+    {
+        if (selectedCompanion == null)
+        {
+            return CompanionType.None; // Default enum value for no companion
+        }
+
+        return selectedCompanion.Type;
     }
 
     // Sets companion type
@@ -342,13 +410,6 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("PlayerCompanionType", (int)companionType);
         PlayerPrefs.Save();
         Debug.Log($"Companion type set to: {companionType}");
-    }
-
-    // Gets companion type
-    public CompanionType GetCompanionType()
-    {
-        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0);
-        return (CompanionType)companionTypeInt;
     }
 
     // Runs each time a scene is loaded
