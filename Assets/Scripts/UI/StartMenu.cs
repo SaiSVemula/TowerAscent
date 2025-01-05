@@ -20,6 +20,7 @@ public class StartMenu : MonoBehaviour
 
     private void NewGame() // method for starting a new game
     {
+        AudioManager.instance.PlaySFX(0);
         if (levelLoader != null)
         {
             GameManager.Instance.Clear(); // make sure game manager is cleared
@@ -60,12 +61,14 @@ public class StartMenu : MonoBehaviour
 
     public void Resume() // handles resuming
     {
+        AudioManager.instance.PlaySFX(0);
         if (PlayerPrefs.HasKey("SavedScene")) { LoadManager.LoadGameState(); } // reinstate player and game stats and load the game (checks if we have a save file)
         else { Debug.LogWarning("No saved game found!"); }
     }
 
     public void Settings() // opens settings page
     {
+        AudioManager.instance.PlaySFX(0);
         if (levelLoader != null)
         {
             GameManager.Instance.UpdateCurrentScene(); // updates scene so we know where to come back to when exiting
@@ -73,5 +76,10 @@ public class StartMenu : MonoBehaviour
         }
     }
 
-    public void Quit() { if (levelLoader != null) { levelLoader.LoadScene("StartPage", "EndPage"); } } // Transition to EndPage where credits are shown
+    public void Quit() { 
+        
+        AudioManager.instance.PlaySFX(0);
+        if (levelLoader != null) { levelLoader.LoadScene("StartPage", "EndPage"); } 
+    
+    } // Transition to EndPage where credits are shown
 }

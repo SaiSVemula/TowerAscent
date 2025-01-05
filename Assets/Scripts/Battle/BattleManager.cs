@@ -261,7 +261,9 @@ public class BattleManager : MonoBehaviour
         battleUI.AddBattleLog(logMessage);
 
         PlayerAnimator.SetTrigger("Attack");
+        AudioManager.instance.PlaySFX(1);
 
+        yield return new WaitForSeconds(0.2f);
         GreenDragonAnimator.SetTrigger("GetHit");        
         RedDragonAnimator.SetTrigger("GetHit");        
         IceBossAnimator.SetTrigger("GetHit");
@@ -364,6 +366,7 @@ public class BattleManager : MonoBehaviour
             IceBossAnimator.SetTrigger("Attack");
 
             PlayerAnimator.SetTrigger("GetHit");
+            AudioManager.instance.PlaySFX(1);
         }
 
         // Enemy attacks the companion (if present and alive)
@@ -406,6 +409,8 @@ public class BattleManager : MonoBehaviour
             comp1Animator.SetTrigger("Die");
             comp2Animator.SetTrigger("Die");
             comp3Animator.SetTrigger("Die");
+            
+            AudioManager.instance.PlaySFX(2);
 
             Debug.Log("Companion has been defeated!");
             battleUI.AddBattleLog($"{companionInstance.CompanionName} has been defeated!");
