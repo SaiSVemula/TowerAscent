@@ -1,54 +1,58 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class LoadoutButtons : MonoBehaviour
 {
-    // References to other components
-    [SerializeField] private LevelLoader levelLoader;
-    [SerializeField] private Transform inventoryGrid;
-    [SerializeField] private Transform[] loadoutSlots;
-    [SerializeField] private LoadoutSlot[] cardSlots;
+    [SerializeField] private Transform cardsGrid; // Reference to the cards grid
+    [SerializeField] private Transform companionsGrid; // Reference to the companions grid
+    [SerializeField] private Transform[] loadoutSlots; // All the slots in the loadout
+    [SerializeField] private LoadoutSlot[] cardSlots; // Array of card slots
     [SerializeField] private GameObject instructionsPanel;
-
-    private List<string> validLoadout;
-    private List<Card> validLoadoutCards;
 
     // For the Clear button
     public void ClearSlots()
     {
-        foreach (var slot in loadoutSlots)
+        for (int i = 0; i < loadoutSlots.Length; i++)
         {
-            if (slot.childCount > 0)
+            Transform slot = loadoutSlots[i];
+            LoadoutSlot loadoutSlot = cardSlots[i];
+
+            if (slot.childCount > 0) // Check if the slot contains a card
             {
                 Transform card = slot.GetChild(0); // Get the card
-                var loadoutSlot = slot.GetComponent<LoadoutSlot>();
-                if (loadoutSlot != null)
-                {
-                    loadoutSlot.SetCardTextColor(Color.black);
-                }
+                loadoutSlot.SetCardTextColor(Color.black); // Reset slot text color
 
-                card.SetParent(inventoryGrid); // Move the card back to the inventory
-                card.localPosition = Vector3.zero; // Reset card's position
-                card.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 150); // Reset card's size
-                Debug.Log($"Card {card.name} returned to inventory.");
+                if (loadoutSlot.slotType == "CompanionCard")
+                {
+                    // Return the companion card to the companions grid
+                    ReturnCardToGrid(card.gameObject, companionsGrid);
+                }
+                else
+                {
+                    // Return other cards to the cards grid
+                    ReturnCardToGrid(card.gameObject, cardsGrid);
+                }
             }
         }
+    }
 
-        // Clear companion in GameManager
-        GameManager.Instance.AddCompanion(null);
-        Debug.Log("Companion selection cleared.");
+    private void ReturnCardToGrid(GameObject cardObject, Transform targetGrid)
+    {
+        cardObject.transform.SetParent(targetGrid);
+        cardObject.transform.localPosition = Vector3.zero; // Reset position in the grid
+        RectTransform rect = cardObject.GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.sizeDelta = new Vector2(150, 200); // Reset size to default
+        }
+        Debug.Log($"Card {cardObject.name} returned to {targetGrid.name}.");
     }
 
     // For the Confirm Loadout button
     public void SaveLoadout()
     {
-        validLoadout = new List<string>();
-        validLoadoutCards = new List<Card>();
-
+        List<Card> validLoadoutCards = new List<Card>();
         CompanionCard selectedCompanion = null;
-
-        int mandatoryCardCount = 0; // Track how many mandatory cards are added
-        int requiredMandatoryCards = 4; // The number of mandatory cards needed
 
         foreach (Transform slot in loadoutSlots)
         {
@@ -57,8 +61,8 @@ public class LoadoutButtons : MonoBehaviour
                 if (slot.name == "CompanionSlot")
                 {
                     // Handle companion card
-                    var companionDisplay = slot.GetChild(0).GetComponent<CompanionCardDisplay>();
-                    if (companionDisplay != null && companionDisplay.CompanionCardData != null)
+                    CompanionCardDisplay companionDisplay = slot.GetChild(0).GetComponent<CompanionCardDisplay>();
+                    if (companionDisplay != null)
                     {
                         selectedCompanion = companionDisplay.CompanionCardData;
                         Debug.Log($"Companion selected: {selectedCompanion.CompanionName}");
@@ -66,49 +70,21 @@ public class LoadoutButtons : MonoBehaviour
                 }
                 else
                 {
-                    // Handle regular cards
+                    // Handle normal cards
                     CardDisplay cardDisplay = slot.GetChild(0).GetComponent<CardDisplay>();
                     if (cardDisplay != null && cardDisplay.CardData != null)
                     {
-                        validLoadout.Add(cardDisplay.CardData.Name);
                         validLoadoutCards.Add(cardDisplay.CardData);
-                        mandatoryCardCount++;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Invalid card in slot {slot.name}.");
-                        return;
                     }
                 }
             }
         }
 
-        // Check if mandatory cards are complete
-        if (mandatoryCardCount < requiredMandatoryCards)
-        {
-            Debug.LogWarning($"Loadout is incomplete. You need at least {requiredMandatoryCards} mandatory cards.");
-            return;
-        }
-
-        Debug.Log("Loadout confirmed!");
-        foreach (string cardName in validLoadout)
-        {
-            Debug.Log($"Card: {cardName}");
-        }
-
-        // Save the loadout in GameManager
+        // Update the GameManager with the selected cards and companion
         GameManager.Instance.CurrentCardLoadout = validLoadoutCards;
         GameManager.Instance.AddCompanion(selectedCompanion);
 
-        // Transition to the battle scene
-        if (levelLoader != null)
-        {
-            levelLoader.LoadScene("LoadoutPage", "BattleScene");
-        }
-        else
-        {
-            Debug.LogError("LevelLoader reference is missing.");
-        }
+        Debug.Log("Loadout saved successfully!");
     }
 
     // To disable the instructions panel
@@ -118,10 +94,6 @@ public class LoadoutButtons : MonoBehaviour
         {
             instructionsPanel.SetActive(false);
             Debug.Log("Instructions panel has been disabled.");
-        }
-        else
-        {
-            Debug.LogWarning("Instructions panel is not assigned or already disabled.");
         }
     }
 }

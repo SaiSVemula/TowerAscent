@@ -39,6 +39,7 @@ public class BattleManager : MonoBehaviour
 
         battleUI.OnStartBattle += HandleStartBattle;
 
+        //PlayerAnimator = playerInstance.GetComponent.transform.Find("RPGH")<Animator>();
         comp1Animator = companionInstance.transform.Find("companion1").GetComponent<Animator>();
         comp2Animator = companionInstance.transform.Find("companion2").GetComponent<Animator>();
         comp3Animator = companionInstance.transform.Find("companion3").GetComponent<Animator>();

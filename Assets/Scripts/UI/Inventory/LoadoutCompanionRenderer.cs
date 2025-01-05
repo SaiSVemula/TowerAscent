@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 public class LoadoutCompanionsRenderer : MonoBehaviour
 {
+    private bool isRendered = false; // Track if the companions are already rendered
+
     public void RenderCompanions(List<CompanionCard> ownedCompanions, Transform grid)
     {
+        if (isRendered) return; // Skip rendering if already done
+
         foreach (var companion in ownedCompanions)
         {
             if (companion == null) continue;
@@ -36,5 +39,7 @@ public class LoadoutCompanionsRenderer : MonoBehaviour
             var companionDisplay = newCompanion.GetComponent<CompanionCardDisplay>();
             companionDisplay.Initialize(companion);
         }
+
+        isRendered = true; // Mark as rendered
     }
 }

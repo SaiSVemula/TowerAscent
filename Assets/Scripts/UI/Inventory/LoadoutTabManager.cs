@@ -6,7 +6,8 @@ public class LoadoutTabsManager : MonoBehaviour
 {
     [SerializeField] private Button cardsButton; // Button to show cards
     [SerializeField] private Button companionsButton; // Button to show companions
-    [SerializeField] private Transform grid; // Shared grid for displaying cards and companions
+    [SerializeField] private GameObject cardGrid; // Reference to the cards grid
+    [SerializeField] private GameObject companionGrid; // Reference to the companions grid
     [SerializeField] private InventoryCardsRenderer cardsRenderer; // Card renderer
     [SerializeField] private LoadoutCompanionsRenderer companionsRenderer; // Companion renderer
     [SerializeField] private TextMeshProUGUI noItemsText; // Text to display when no items are present
@@ -16,9 +17,9 @@ public class LoadoutTabsManager : MonoBehaviour
 
     private void Start()
     {
-        //// Assign button click events
-        //cardsButton.onClick.AddListener(() => ShowTab("Cards"));
-        //companionsButton.onClick.AddListener(() => ShowTab("Companions"));
+        // Assign button click events
+        cardsButton.onClick.AddListener(() => ShowTab("Cards"));
+        companionsButton.onClick.AddListener(() => ShowTab("Companions"));
 
         // Default to showing cards
         ShowTab("Cards");
@@ -26,7 +27,6 @@ public class LoadoutTabsManager : MonoBehaviour
 
     public void ShowTab(string tabName)
     {
-        ClearGrid(); // Clear the current grid content
         noItemsText.gameObject.SetActive(false);
 
         if (tabName == "Cards")
@@ -34,13 +34,19 @@ public class LoadoutTabsManager : MonoBehaviour
             SetButtonState(cardsButton, true);
             SetButtonState(companionsButton, false);
 
-            // Use the existing RefreshInventoryUI method for cards
+            cardGrid.SetActive(true); // Show cards grid
+            companionGrid.SetActive(false); // Hide companions grid
+
+            // Refresh cards UI (only if needed)
             cardsRenderer.RefreshInventoryUI();
         }
         else if (tabName == "Companions")
         {
             SetButtonState(cardsButton, false);
             SetButtonState(companionsButton, true);
+
+            cardGrid.SetActive(false); // Hide cards grid
+            companionGrid.SetActive(true); // Show companions grid
 
             var ownedCompanions = GameManager.Instance?.GetOwnedCompanions() ?? new System.Collections.Generic.List<CompanionCard>();
             if (ownedCompanions.Count == 0)
@@ -50,7 +56,7 @@ public class LoadoutTabsManager : MonoBehaviour
             }
 
             noItemsText.gameObject.SetActive(false); // Hide the no-items text
-            companionsRenderer.RenderCompanions(ownedCompanions, grid); // Render companions in the shared grid
+            companionsRenderer.RenderCompanions(ownedCompanions, companionGrid.transform); // Render companions only once
         }
     }
 
@@ -64,18 +70,9 @@ public class LoadoutTabsManager : MonoBehaviour
         }
     }
 
-    private void ClearGrid()
-    {
-        foreach (Transform child in grid)
-        {
-            Destroy(child.gameObject);
-        }
-    }
-
     private void DisplayNoItemsMessage(string message)
     {
-        ClearGrid(); // Ensure grid is cleared
-        //noItemsText.text = message;
+        noItemsText.text = message;
         noItemsText.gameObject.SetActive(true);
     }
 }
