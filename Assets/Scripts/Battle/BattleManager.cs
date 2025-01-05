@@ -18,6 +18,16 @@ public class BattleManager : MonoBehaviour
 
     private LevelLoader levelLoader;
 
+    public Animator PlayerAnimator;
+    public Animator GreenDragonAnimator;
+    public Animator RedDragonAnimator;
+    public Animator IceBossAnimator;
+
+    public Animator comp1Animator;
+    public Animator comp2Animator;
+    public Animator comp3Animator;
+
+
     private void Start()
     {
         //Testing();//run only during development
@@ -265,12 +275,24 @@ public class BattleManager : MonoBehaviour
         string logMessage = selectedCard.Use(playerInstance, enemyInstance);
         battleUI.AddBattleLog(logMessage);
 
+        PlayerAnimator.SetTrigger("Attack");
+
+        GreenDragonAnimator.SetTrigger("GetHit");        
+        RedDragonAnimator.SetTrigger("GetHit");        
+        IceBossAnimator.SetTrigger("GetHit");
+
         // Update effect timers after card usage
         playerInstance.DecrementEffectTimers();
 
         if (enemyInstance.CurrentHealth <= 0)
         {
             Debug.Log("Enemy defeated!");
+
+            // Death animations
+            GreenDragonAnimator.SetTrigger("Die");        
+            RedDragonAnimator.SetTrigger("Die");        
+            IceBossAnimator.SetTrigger("Die");
+
             StartCoroutine(EndBattle(true));
             return;
         }
@@ -287,6 +309,11 @@ public class BattleManager : MonoBehaviour
             companionInstance.AttackEnemy(enemyInstance, battleUI);
             Debug.Log("Companion attacked the enemy.");
             yield return new WaitForSeconds(1f);
+
+            // attack animations
+            comp1Animator.SetTrigger("Attack");
+            comp2Animator.SetTrigger("Attack");
+            comp3Animator.SetTrigger("Attack");
         }
 
         // Check if enemy is defeated
@@ -346,6 +373,12 @@ public class BattleManager : MonoBehaviour
             string logMessagePlayer = selectedEnemyCard.Use(enemyInstance, playerInstance);
             battleUI.AddBattleLog($"{enemyInstance.EnemyName} used {selectedEnemyCard.Name} on {playerInstance.name}. {logMessagePlayer}");
             Debug.Log($"{enemyInstance.EnemyName} attacked Player: {logMessagePlayer}");
+
+            GreenDragonAnimator.SetTrigger("Attack");
+            RedDragonAnimator.SetTrigger("Attack");
+            IceBossAnimator.SetTrigger("Attack");
+
+            PlayerAnimator.SetTrigger("GetHit");
         }
 
         // Enemy attacks the companion (if present and alive)
@@ -354,6 +387,12 @@ public class BattleManager : MonoBehaviour
             string logMessageCompanion = selectedEnemyCard.Use(enemyInstance, companionInstance);
             battleUI.AddBattleLog($"{enemyInstance.EnemyName} used {selectedEnemyCard.Name} on {companionInstance.CompanionName}. {logMessageCompanion}");
             Debug.Log($"{enemyInstance.EnemyName} attacked Companion: {logMessageCompanion}");
+
+            
+            // gethit animations
+            comp1Animator.SetTrigger("GetHit");
+            comp2Animator.SetTrigger("GetHit");
+            comp3Animator.SetTrigger("GetHit");
         }
 
         // Update effect timers for the enemy after its turn
@@ -364,12 +403,25 @@ public class BattleManager : MonoBehaviour
         if (playerInstance.CurrentHealth <= 0)
         {
             Debug.Log("Player has been defeated!");
+
+            PlayerAnimator.SetTrigger("Die"); // Death animation
+
+            // Win animations
+            GreenDragonAnimator.SetTrigger("Win");        
+            RedDragonAnimator.SetTrigger("Win");        
+            IceBossAnimator.SetTrigger("Win");
+
             yield return StartCoroutine(EndBattle(false));
             yield break;
         }
 
         if (companionInstance != null && companionInstance.CurrentHealth <= 0)
         {
+            // die animations
+            comp1Animator.SetTrigger("Die");
+            comp2Animator.SetTrigger("Die");
+            comp3Animator.SetTrigger("Die");
+
             Debug.Log("Companion has been defeated!");
             battleUI.AddBattleLog($"{companionInstance.CompanionName} has been defeated!");
         }

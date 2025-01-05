@@ -17,10 +17,10 @@ public class EnemyBattle : BattleEntity
     private int difficulty;
     private EnemyType enemyType;
 
+
     public EnemyBattle Initialize(int gameDifficulty, EnemyType enemyType)
     {
         Debug.Log($"Initializing Enemy with Difficulty: {gameDifficulty}, Type: {enemyType}");
-
         this.difficulty = gameDifficulty;
         this.enemyType = enemyType;
 
@@ -201,6 +201,7 @@ public class EnemyBattle : BattleEntity
 
         Debug.Log($"{EnemyName} uses {selectedCard.Name} on {player.name}.");
         selectedCard.Use(this, player);
+
     }
 
     public override void DecrementEffectTimers()
