@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
@@ -234,6 +235,7 @@ public class BattleManager : MonoBehaviour
     {
         if (!isPlayerTurn)
         {
+            Debug.LogWarning("It's not the player's turn!");
             return;
         }
 
@@ -250,70 +252,106 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        // End the player's turn immediately to prevent further interactions
+        isPlayerTurn = false;
+
+        // Execute card logic
         string logMessage = selectedCard.Use(playerInstance, enemyInstance);
         battleUI.AddBattleLog(logMessage);
 
+        // Disable all card buttons
+        Transform cardPanel = battleUI.cardPanel.transform;
+        foreach (Transform card in cardPanel)
+        {
+            Button cardButton = card.GetComponent<Button>();
+            if (cardButton != null)
+            {
+                cardButton.interactable = false;
+            }
+        }
+
+        // Proceed to animations and effects
+        StartCoroutine(HandlePlayerCardAnimationAndTransition(selectedCard));
+    }
+
+    private IEnumerator HandlePlayerCardAnimationAndTransition(Card selectedCard)
+    {
+        // Trigger player attack animation
         PlayerAnimator.SetTrigger("Attack");
         AudioManager.instance.PlaySFX(1);
 
+        // Short delay for the animation to start
         yield return new WaitForSeconds(0.2f);
-        GreenDragonAnimator.SetTrigger("GetHit");        
-        RedDragonAnimator.SetTrigger("GetHit");        
+
+        // Trigger enemy hit animations
+        GreenDragonAnimator.SetTrigger("GetHit");
+        RedDragonAnimator.SetTrigger("GetHit");
         IceBossAnimator.SetTrigger("GetHit");
 
-        // Update effect timers after card usage
+        // Update effect timers for the player
         playerInstance.DecrementEffectTimers();
 
+        // Check if the enemy is defeated
         if (enemyInstance.CurrentHealth <= 0)
         {
             Debug.Log("Enemy defeated!");
 
-            // Death animations
-            GreenDragonAnimator.SetTrigger("Die");        
-            RedDragonAnimator.SetTrigger("Die");        
+            // Play enemy death animations
+            GreenDragonAnimator.SetTrigger("Die");
+            RedDragonAnimator.SetTrigger("Die");
             IceBossAnimator.SetTrigger("Die");
 
-            StartCoroutine(EndBattle(true));
-            return;
+            // End the battle
+            yield return StartCoroutine(EndBattle(true));
+            yield break;
         }
 
-        // Player's turn ends, companion and enemy turns occur
-        StartCoroutine(CompanionAndEnemyTurn());
+        // Wait for animations to complete before transitioning to the enemy's turn
+        yield return new WaitForSeconds(1f);
+
+        // Refresh the player’s cards after animations
+        battleUI.RenderCards(playerInstance.CardLoadout);
+
+        // Proceed to companion and enemy turns
+        StartCoroutine(CompanionAndEnemyTurn(selectedCard));
     }
 
-    private IEnumerator CompanionAndEnemyTurn()
+    private IEnumerator CompanionAndEnemyTurn(Card selectedCard)
     {
+        // Companion attacks first if alive
         if (companionInstance != null && companionInstance.CurrentHealth > 0)
         {
-            // Companion attacks first
             companionInstance.AttackEnemy(enemyInstance, battleUI);
             Debug.Log("Companion attacked the enemy.");
-            yield return new WaitForSeconds(1f);
 
-            // attack animations
+            // Trigger companion attack animations
             comp1Animator.SetTrigger("Attack");
             comp2Animator.SetTrigger("Attack");
             comp3Animator.SetTrigger("Attack");
+
+            // Wait for the companion's attack animation
+            yield return new WaitForSeconds(1f);
         }
 
         // Check if enemy is defeated
         if (enemyInstance.CurrentHealth <= 0)
         {
             Debug.Log("Enemy defeated by companion!");
-            StartCoroutine(EndBattle(true));
+            yield return StartCoroutine(EndBattle(true));
             yield break;
         }
 
         // Enemy's turn
-        isPlayerTurn = false;
-        yield return StartCoroutine(EnemyTurnWithDelay(null));
+        yield return StartCoroutine(EnemyTurnWithDelay(selectedCard));
+
+        // Reset cards for the player's turn
+        //battleUI.RenderCards(playerInstance.CardLoadout);
 
         // Player's turn starts again
         isPlayerTurn = true;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
-        battleUI.RenderCards(playerInstance.CardLoadout);
+        //battleUI.EnableCardInteractions();
     }
-
     private IEnumerator EnemyTurnWithDelay(Card selectedCard)
     {
         yield return new WaitForSeconds(1f);
@@ -369,8 +407,6 @@ public class BattleManager : MonoBehaviour
             battleUI.AddBattleLog($"{enemyInstance.EnemyName} used {selectedEnemyCard.Name} on {companionInstance.CompanionName}. {logMessageCompanion}");
             Debug.Log($"{enemyInstance.EnemyName} attacked Companion: {logMessageCompanion}");
 
-            
-            // gethit animations
             comp1Animator.SetTrigger("GetHit");
             comp2Animator.SetTrigger("GetHit");
             comp3Animator.SetTrigger("GetHit");
@@ -385,11 +421,10 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log("Player has been defeated!");
 
-            PlayerAnimator.SetTrigger("Die"); // Death animation
+            PlayerAnimator.SetTrigger("Die");
 
-            // Win animations
-            GreenDragonAnimator.SetTrigger("Win");        
-            RedDragonAnimator.SetTrigger("Win");        
+            GreenDragonAnimator.SetTrigger("Win");
+            RedDragonAnimator.SetTrigger("Win");
             IceBossAnimator.SetTrigger("Win");
 
             yield return StartCoroutine(EndBattle(false));
@@ -398,11 +433,10 @@ public class BattleManager : MonoBehaviour
 
         if (companionInstance != null && companionInstance.CurrentHealth <= 0)
         {
-            // die animations
             comp1Animator.SetTrigger("Die");
             comp2Animator.SetTrigger("Die");
             comp3Animator.SetTrigger("Die");
-            
+
             AudioManager.instance.PlaySFX(2);
 
             Debug.Log("Companion has been defeated!");
