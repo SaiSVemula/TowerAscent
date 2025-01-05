@@ -130,10 +130,6 @@ public class PlayerBattle : BattleEntity
         if (SceneManager.GetActiveScene().name == "BattleScene")
         {
             BattleUI battleUI = FindObjectOfType<BattleUI>();
-            if (battleUI != null)
-            {
-                battleUI.UpdateEffectTimers();
-            }
             UpdateHealthBar();
         }
 

@@ -76,9 +76,9 @@ public class Shopkeeper : MonoBehaviour
 
     public virtual void Interact()
     {
-        if (shopMenu != null)
+        if (PanelManager.Instance != null)
         {
-            shopMenu.SetActive(true);
+            PanelManager.Instance.OpenShopMenu(); // Open Shop Menu Panel
             Time.timeScale = 0f;
             Debug.Log("Shop menu opened.");
         }
@@ -86,9 +86,9 @@ public class Shopkeeper : MonoBehaviour
 
     public void CloseShop()
     {
-        if (shopMenu != null)
+        if (PanelManager.Instance != null)
         {
-            shopMenu.SetActive(false);
+            PanelManager.Instance.CloseAllPanels(); // Close all panels
             Time.timeScale = 1f;
             Debug.Log("Shop menu closed.");
         }

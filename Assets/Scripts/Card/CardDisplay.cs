@@ -19,7 +19,7 @@ public class CardDisplay : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Card sprite is null for {card.Name}!");
+            Debug.Log($"Card sprite is null for {card.Name}!");
         }
 
         if (cardNameText != null)

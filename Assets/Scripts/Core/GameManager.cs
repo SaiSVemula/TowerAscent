@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
+
 
 
 public class GameManager : MonoBehaviour
@@ -11,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     // Reference to the Player
     private Player playerInstance;
+    public event Action<string> SpiderDefeated;
 
     // Game state variables
 
@@ -30,12 +33,10 @@ public class GameManager : MonoBehaviour
     public List<GameObject> PartyCompanions => partyCompanions;
 
     private List<CompanionCard> ownedCompanions = new List<CompanionCard>();
-
     public List<CompanionCard> GetOwnedCompanions()
     {
         return new List<CompanionCard>(ownedCompanions); // Return a copy to prevent direct modification
     }
-
     public void AddCompanion(CompanionCard companion)
     {
         if (companion != null)
@@ -110,7 +111,7 @@ public class GameManager : MonoBehaviour
                 var player = FindObjectOfType<Player>();
                 if (player != null)
                 {
-                    companion.transform.position = player.transform.position + new Vector3(Random.Range(1, 3), 0, Random.Range(1, 3));
+                    companion.transform.position = player.transform.position + new Vector3(UnityEngine.Random.Range(1, 3), 0, UnityEngine.Random.Range(1, 3));
                 }
                 companion.SetActive(true); // Ensure companion is active
             }
@@ -123,7 +124,6 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
         Debug.Log($"Companion type set to: {companionType}");
     }
-
     public CompanionType GetCompanionType()
     {
         int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
@@ -218,6 +218,8 @@ public class GameManager : MonoBehaviour
         {
             defeatedSpiders.Add(spiderID);
             Debug.Log($"Spider with ID {spiderID} marked as defeated.");
+            // Trigger the event
+            SpiderDefeated?.Invoke(spiderID);
         }
     }
 

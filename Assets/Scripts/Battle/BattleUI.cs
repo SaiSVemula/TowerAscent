@@ -27,10 +27,6 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private RectTransform logContainer;
     [SerializeField] private float logEntrySpacing = 10f;
 
-    [Header("Status Effects")]
-    [SerializeField] private TextMeshProUGUI defenceText;
-    [SerializeField] private TextMeshProUGUI healingText;
-
     private Queue<TextMeshProUGUI> logPool = new Queue<TextMeshProUGUI>();
     private List<TextMeshProUGUI> activeLogEntries = new List<TextMeshProUGUI>();
     private List<GameObject> renderedCards = new List<GameObject>();
@@ -62,8 +58,6 @@ public class BattleUI : MonoBehaviour
         // Initially show only instruction canvas
         instructionCanvas.enabled = true;
         battleCanvas.enabled = false;
-
-        UpdateEffectTimers();
 
         if (startBattleButton != null)
         {
@@ -204,28 +198,6 @@ public class BattleUI : MonoBehaviour
             renderedCards.Add(cardObject);
         }
     }
-
-    public void UpdateEffectTimers()
-    {
-        if (defenceText == null || healingText == null)
-        {
-            Debug.LogError("DefenceText or HealingText references are not assigned in BattleUI.");
-            return;
-        }
-
-        // Update Defence Text
-        defenceText.text = playerBattle.TemporaryDefences.Count == 0
-            ? "No Active Defence"
-            : $"Current Defence: {string.Join(", ", playerBattle.TemporaryDefences.Select(d => $"{d.value} ({d.timer} turns)"))}";
-
-        // Update Healing Text
-        healingText.text = playerBattle.TemporaryHeals.Count == 0
-            ? "No Active Healing"
-            : $"Current Healing: {string.Join(", ", playerBattle.TemporaryHeals.Select(h => $"{h.value} ({h.timer} turns)"))}";
-
-        Debug.Log("Effect timers updated on BattleUI.");
-    }
-
 
     public void AddBattleLog(string message)
     {

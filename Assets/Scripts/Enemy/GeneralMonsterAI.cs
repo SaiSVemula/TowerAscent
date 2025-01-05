@@ -17,12 +17,16 @@ public class GeneralMonsterAI : BattleEntity
     // Health Slider
     [SerializeField] public GameObject healthBarPrefab; // Reference to the health bar prefab
     [SerializeField] public Slider EnemyHealthBar; // Reference to the health bar slider
-    
+
     // Spider-Specific Details
     public string spiderID; // Unique ID for each spider
     public ParticleSystem deathEffect; // Effect when spider is defeated
 
     [SerializeField] public MiniBattleManager miniBattleManager;
+
+    // Barriers to disable upon spider defeat
+    [Header("Barriers to Disable on Spider Defeat")]
+    public GameObject[] barriersToDisable;
 
     void Start()
     {
@@ -41,10 +45,9 @@ public class GeneralMonsterAI : BattleEntity
         currentHealth = maxHealth;
         if (healthBar != null)
         {
-            healthBar.maxValue = maxHealth; 
+            healthBar.maxValue = maxHealth;
             UpdateHealthBar(); // Calling parent method
         }
-
 
         playerMovementScript = player.GetComponent<PlayerMovement>();
         if (playerMovementScript == null)
@@ -69,6 +72,7 @@ public class GeneralMonsterAI : BattleEntity
         // Check if the spider has been defeated already
         if (GameManager.Instance.IsSpiderDefeated(spiderID))
         {
+            DisableBarriers(); // Disable barriers if the spider was previously defeated
             Destroy(gameObject);
         }
     }
@@ -170,6 +174,7 @@ public class GeneralMonsterAI : BattleEntity
         // Trigger the mini-battle
         TriggerMiniBattle();
     }
+
     public void AttackPlayer(BattleEntity playerEntity)
     {
         if (playerEntity == null)
@@ -178,7 +183,7 @@ public class GeneralMonsterAI : BattleEntity
             return;
         }
 
-        int damage = 10;                                              ///////////////////////////////////// UPDATE THIS TO HAVE A CARD OR A RANDOM NUMBER
+        int damage = Random.Range(5, 15); // Randomized damage value
         playerEntity.TakeDamage(damage);
 
         Debug.Log($"Spider attacked {playerEntity.name} and dealt {damage} damage.");
@@ -193,7 +198,7 @@ public class GeneralMonsterAI : BattleEntity
         // Disable player's movement
         if (playerMovementScript != null)
         {
-            playerMovementScript.LockMovement(true); 
+            playerMovementScript.LockMovement(true);
         }
 
         miniBattleManager.SendMessage("StartMiniBattle", this);
@@ -202,15 +207,15 @@ public class GeneralMonsterAI : BattleEntity
     public void SetUpMiniBattle()
     {
         int difficulty = PlayerPrefs.GetInt("GameDifficulty", 0);
-        if(difficulty == 0)
+        if (difficulty == 0)
         {
             maxHealth = 25;
         }
-        else if(difficulty == 1)
+        else if (difficulty == 1)
         {
             maxHealth = 50;
         }
-        else if(difficulty == 2)
+        else if (difficulty == 2)
         {
             maxHealth = 75;
         }
@@ -235,7 +240,6 @@ public class GeneralMonsterAI : BattleEntity
         }
     }
 
-
     public void DefeatSpider()
     {
         // Play particle effect
@@ -244,6 +248,8 @@ public class GeneralMonsterAI : BattleEntity
         // Log defeat in GameManager
         Debug.Log($"Spider with ID {spiderID} defeated. Marking it as defeated.");
         GameManager.Instance.MarkSpiderDefeated(spiderID);
+
+        DisableBarriers();
 
         // Remove spider and health bar from the scene
         if (healthBar != null)
@@ -255,4 +261,15 @@ public class GeneralMonsterAI : BattleEntity
         Destroy(gameObject);
     }
 
+    private void DisableBarriers()
+    {
+        foreach (var barrier in barriersToDisable)
+        {
+            if (barrier != null)
+            {
+                barrier.SetActive(false);
+                Debug.Log($"{barrier.name} has been disabled after defeating spider {spiderID}.");
+            }
+        }
+    }
 }
