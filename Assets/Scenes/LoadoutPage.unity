@@ -4807,7 +4807,7 @@ GameObject:
   - component: {fileID: 1778518479}
   - component: {fileID: 1778518478}
   m_Layer: 5
-  m_Name: HealingCardText
+  m_Name: CompanionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

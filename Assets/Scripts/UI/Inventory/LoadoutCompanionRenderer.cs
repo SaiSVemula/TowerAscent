@@ -12,7 +12,7 @@ public class LoadoutCompanionsRenderer : MonoBehaviour
             if (companion == null) continue;
 
             // Create a new companion GameObject
-            GameObject newCompanion = new GameObject(companion.CompanionName, typeof(RectTransform), typeof(Image));
+            GameObject newCompanion = new GameObject(companion.CompanionName, typeof(RectTransform), typeof(Image), typeof(CompanionCardDisplay));
 
             // Set the parent to the grid
             newCompanion.transform.SetParent(grid, false);
@@ -31,6 +31,10 @@ public class LoadoutCompanionsRenderer : MonoBehaviour
 
             // Add DraggableItem component
             newCompanion.AddComponent<DraggableItem>();
+
+            // Assign the CompanionCard data to the CompanionCardDisplay
+            var companionDisplay = newCompanion.GetComponent<CompanionCardDisplay>();
+            companionDisplay.Initialize(companion);
         }
     }
 }

@@ -36,33 +36,43 @@ public class LoadoutButtons : MonoBehaviour
         validLoadout = new List<string>();
         validLoadoutCards = new List<Card>();
 
-        int minimumRequiredCards = 4; // The minimum number of cards required to start the battle
-        int validCardCount = 0;
+        CompanionCard selectedCompanion = null;
 
         foreach (Transform slot in loadoutSlots)
         {
-            if (slot.childCount > 0) // Check if the slot contains a card
+            if (slot.childCount > 0)
             {
-                CardDisplay cardDisplay = slot.GetChild(0).GetComponent<CardDisplay>(); // Get CardDisplay
-                if (cardDisplay != null && cardDisplay.CardData != null)
+                if (slot.name == "CompanionSlot")
                 {
-                    validLoadout.Add(cardDisplay.CardData.Name); // Add the card name to the valid loadout
-                    validLoadoutCards.Add(cardDisplay.CardData); // Add the card object to the valid loadout
-                    validCardCount++;
+                    // Handle companion card
+                    var companionDisplay = slot.GetChild(0).GetComponent<CompanionCard>();
+                    if (companionDisplay != null)
+                    {
+                        selectedCompanion = companionDisplay;
+                        Debug.Log($"Companion selected: {selectedCompanion.CompanionName}");
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning($"Invalid card in slot {slot.name}. Skipping this card.");
-                    continue; // Skip invalid cards, but do not exit early
+                    // Handle regular cards
+                    CardDisplay cardDisplay = slot.GetChild(0).GetComponent<CardDisplay>();
+                    if (cardDisplay != null && cardDisplay.CardData != null)
+                    {
+                        validLoadout.Add(cardDisplay.CardData.Name);
+                        validLoadoutCards.Add(cardDisplay.CardData);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid card in slot {slot.name}.");
+                        return;
+                    }
                 }
             }
-        }
-
-        // Check if the minimum required cards are met
-        if (validCardCount < minimumRequiredCards)
-        {
-            Debug.LogWarning($"Loadout is incomplete. A minimum of {minimumRequiredCards} cards is required.");
-            return; // Exit early if the minimum card requirement is not met
+            else
+            {
+                Debug.LogWarning($"Slot {slot.name} is empty. Loadout is incomplete.");
+                return;
+            }
         }
 
         Debug.Log("Loadout confirmed!");
@@ -71,15 +81,16 @@ public class LoadoutButtons : MonoBehaviour
             Debug.Log($"Card: {cardName}");
         }
 
-        // Transition to the battle scene using LevelLoader
+        GameManager.Instance.CurrentCardLoadout = validLoadoutCards;
+        GameManager.Instance.AddCompanion(selectedCompanion);
+
         if (levelLoader != null)
         {
-            GameManager.Instance.CurrentCardLoadout = validLoadoutCards; // Save the valid loadout
-            levelLoader.LoadScene("LoadoutPage", "BattleScene"); // Replace "BattleScene" with the actual scene name
+            levelLoader.LoadScene("LoadoutPage", "BattleScene");
         }
         else
         {
-            Debug.LogError("LevelLoader reference is missing. Cannot transition to the next scene.");
+            Debug.LogError("LevelLoader reference is missing.");
         }
     }
 
