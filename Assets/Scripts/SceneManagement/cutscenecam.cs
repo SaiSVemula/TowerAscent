@@ -2,99 +2,59 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/*
+This code is used to manage the cutscenes at the start of the game
+and also between battles to the next level
+it manages the dolly, light, camera and calls transiiton to the next scene
+*/
 public class DollyCartController : MonoBehaviour
 {
+
     private LevelLoader levelLoader;
-    public CinemachineDollyCart dollyCart; // Assign the dolly cart here in the Inspector.
-    public float speed = 5f;
-
-    public Light directionalLight; // Assign the Directional Light here in the Inspector (this one follows the camera).
-    public Transform lookAtTarget; // Optional: A target for the light to focus on.
-
-    public Transform cameraTransform; // Assign your camera's transform here.
-    public Vector3 cameraOffset = new Vector3(0, 2, -5); // Offset: Behind and slightly above the dolly cart.
-
-    // New fields for scene loading
-    public float trackEndThreshold = 0.95f; // Threshold to consider the track "finished" (between 0 and 1)
-    private float trackLength;
-
-    // New light for scene transition (this will only be enabled before loading the scene)
+    public CinemachineDollyCart dollyCart;
+    public float camSpeed = 5f; // speed of the camera
+    public Light movinglight; // the light that moves with the user
+    public Transform tolookAt; // object to focus on
+    public Transform movingCamera; // the camera that moves with the track
+    public Vector3 CameraTune = new Vector3(0, 2, -5); // fintune the cameras offset
+    public float WhenToStartTransition = 0.95f; // set when the track finishes (helps to smooth transition)
+    private float scenelength;
     void Start()
     {
-        // Find the LevelLoader instance in the current scene
         levelLoader = FindObjectOfType<LevelLoader>();
-
         if (levelLoader == null)
         {
             Debug.LogError("LevelLoader prefab not found in the scene. Make sure it is added as a prefab to the scene.");
         }
-        // Ensure dolly cart is assigned and calculate the track length
-        if (dollyCart != null && dollyCart.m_Path != null)
-        {
-            trackLength = dollyCart.m_Path.PathLength;  // Get the length of the dolly cart's path
-        }
-        else
-        {
-            Debug.LogError("DollyCart or its path is not assigned.");
-        }
+        if (dollyCart != null && dollyCart.m_Path != null) { scenelength = dollyCart.m_Path.PathLength;} // gets dollys length
     }
 
     void Update()
     {
         if (dollyCart != null)
         {
-            // Move the dolly cart along the track
-            dollyCart.m_Position += speed * Time.deltaTime;
+            dollyCart.m_Position += camSpeed * Time.deltaTime; // moves cart around
 
-            // Update the camera's position
-            if (cameraTransform != null)
-            {
-                // Set the camera's position relative to the dolly cart's position and rotation.
-                cameraTransform.position = dollyCart.transform.position + dollyCart.transform.TransformDirection(cameraOffset);
+            movingCamera.position = dollyCart.transform.position + dollyCart.transform.TransformDirection(CameraTune);
 
-                // Optionally make the camera look at the dolly cart's forward direction or a specific target.
-                if (lookAtTarget != null)
-                {
-                    cameraTransform.LookAt(lookAtTarget);
-                }
-                else
-                {
-                    cameraTransform.rotation = Quaternion.LookRotation(dollyCart.transform.forward);
-                }
-            }
 
-            // If the Directional Light (camera-following) is assigned, update its position or rotation.
-            if (directionalLight != null)
-            {
-                // Make the light follow the dolly cart's position.
-                directionalLight.transform.position = dollyCart.transform.position;
+            if (tolookAt != null) { movingCamera.LookAt(tolookAt); } // sets the camera orientation to look at a object (the tower)
+            else { movingCamera.rotation = Quaternion.LookRotation(dollyCart.transform.forward); }
 
-                // Optional: Make the light look at a target or align with the dolly cart's forward direction.
-                if (lookAtTarget != null)
-                {
-                    directionalLight.transform.LookAt(lookAtTarget);
-                }
-                else
-                {
-                    directionalLight.transform.rotation = Quaternion.LookRotation(dollyCart.transform.forward);
-                }
-            }
+            movinglight.transform.position = dollyCart.transform.position; // also move the lighg around
+            movinglight.transform.LookAt(tolookAt); // make light point at tower
 
-            // Check if the dolly cart has reached the end of the track
-            if (dollyCart.m_Position >= trackLength * trackEndThreshold)
-            {
-                // Load the "Level 0" scene
-                LoadNextScene();
-            }
+            // If we are at the end of the track go to the next scene
+            if (dollyCart.m_Position >= scenelength * WhenToStartTransition) { LoadNextScene(); }
         }
     }
 
-    public void LoadNextScene()
+    public void LoadNextScene() // method to figure out what the next scene is (as for battle transition we need to go to different levels)
     {
-        string previousScene = GameManager.Instance.PreviousScene;
+        string previousScene = GameManager.Instance.PreviousScene; // get last scene
         string nextScene;
 
-        switch (previousScene)
+        switch (previousScene) // find the next scene
         {
             case "StartPage":
                 nextScene = "Level 0";
@@ -109,19 +69,9 @@ public class DollyCartController : MonoBehaviour
                 nextScene = "EndPage";
                 break;
             default:
-                Debug.LogWarning($"Current scene {previousScene} does not have a defined next scene.");
-                return; // Exit if there's no defined next scene
+                return;
         }
 
-        Debug.Log($"Transitioning from LevelTransitionCutScene to {nextScene}.");
-
-        if (levelLoader != null)
-        {
-            levelLoader.LoadScene("LevelTransitionCutScene", nextScene);
-        }
-        else
-        {
-            Debug.LogError("LevelLoader is not assigned.");
-        }
+        if (levelLoader != null) { levelLoader.LoadScene("LevelTransitionCutScene", nextScene); } // transition to the next scene
     }
 }
