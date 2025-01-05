@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
  view around, using Unity's new input system via mouse delta*/
 public class CameraMovement : MonoBehaviour
 {
+
     public Transform CurrentPlayer;
     public float rotationSpeed = 0.1f; // Speed of camera rotation
     public bool isThirdPerson = true; // Toggle via Inspector for third or first person
@@ -12,7 +13,7 @@ public class CameraMovement : MonoBehaviour
     public float thirdPersonHeightOffset = 5f; // Height offset for third-person camera
     public float firstPersonHeightOffset = 1.6f; // Height for first-person camera (rough estimate)
     public float firstPersonForwardOffset = 0.5f; // Slight forward offset for first-person view
-    public GameObject RPGHeroPBR; // Reference to the RPGHeroPBR object
+    public GameObject RPGHeroPBR; // Reference to the RPGHeroPBR object (the player)
 
     private PlayerControls playerControls; // our input compiled script
     private float xAxisRotation = 0f; 
@@ -23,30 +24,27 @@ public class CameraMovement : MonoBehaviour
 
         playerControls = new PlayerControls();
         playerControls.Player.Enable(); // Enable input actions
-        isThirdPerson = PlayerPrefs.GetInt("IsInThirdPerson", 1) == 1;
-        rotationSpeed = PlayerPrefs.GetFloat("MovementCamSensitivity", 0.1f);
+        isThirdPerson = PlayerPrefs.GetInt("IsInThirdPerson", 1) == 1; // check what pov to be in
+        rotationSpeed = PlayerPrefs.GetFloat("MovementCamSensitivity", 0.1f); // check the players sensitivity choice
     }
 
-    void Update()
+    void Update() // this method will be handling rotation and movement as its in update so it updates constantly
     {
         if (isThirdPerson)
         {
             // Enable RPGHeroPBR in third-person
-            if (RPGHeroPBR != null)
-            {
-                RPGHeroPBR.SetActive(true);
-            }
+            if (RPGHeroPBR != null) { RPGHeroPBR.SetActive(true); }
 
             // Third-person camera logic
             Vector3 targetPosition = CurrentPlayer.position - Quaternion.Euler(xAxisRotation, yAxisRotation, 0) * Vector3.forward * thirdPersonDistance;
-            targetPosition.y += thirdPersonHeightOffset; // Add height offset
+            targetPosition.y += thirdPersonHeightOffset; // little height adjustement
             transform.position = targetPosition;
 
-            // Handle mouse input for rotation
+            // Handles the rotation in 3rd person mode
             Vector2 mouseInput = playerControls.Player.Look.ReadValue<Vector2>();
             yAxisRotation += mouseInput.x * rotationSpeed;
             xAxisRotation -= mouseInput.y * rotationSpeed;
-            xAxisRotation = Mathf.Clamp(xAxisRotation, -20f, 30f);
+            xAxisRotation = Mathf.Clamp(xAxisRotation, -20f, 30f); // limit the rotation
 
             // Apply rotation and look at the player
             transform.rotation = Quaternion.Euler(xAxisRotation, yAxisRotation, 0);
@@ -55,23 +53,20 @@ public class CameraMovement : MonoBehaviour
         else
         {
             // Disable RPGHeroPBR in first-person
-            if (RPGHeroPBR != null)
-            {
-                RPGHeroPBR.SetActive(false);
-            }
+            if (RPGHeroPBR != null) { RPGHeroPBR.SetActive(false); }
 
             // First-person camera logic (camera slightly forward from the player)
             Vector3 targetPosition = CurrentPlayer.position + CurrentPlayer.forward * firstPersonForwardOffset;
             targetPosition.y += firstPersonHeightOffset; // Set the height for first-person view
             transform.position = targetPosition;
 
-            // Handle mouse input for rotation (no offset for first-person)
+            // Handles Rotation in 1st person
             Vector2 mouseInput = playerControls.Player.Look.ReadValue<Vector2>();
             yAxisRotation += mouseInput.x * rotationSpeed;
             xAxisRotation -= mouseInput.y * rotationSpeed;
-            xAxisRotation = Mathf.Clamp(xAxisRotation, -80f, 80f); // Limiting rotation range for first-person view
+            xAxisRotation = Mathf.Clamp(xAxisRotation, -80f, 80f); // limit rotation
 
-            // Apply rotation
+            // Apply rotation, no need to look at player here 
             transform.rotation = Quaternion.Euler(xAxisRotation, yAxisRotation, 0);
         }
     }
