@@ -2,24 +2,28 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
+/*
+This Code Is Used To Load Up When Resuming A Game, Or When You Are Coming Back From The Settings Page
+First 2 Methods: Full Reload
+Last 2 Methods: Partial Reload (For When We Are Going From Settings Back To level, gamemanager still is tracking)
+*/
 public class LoadManager : MonoBehaviour
 {
     public static void LoadGameState()
     {
-        if (PlayerPrefs.HasKey("SavedScene"))
+        if (PlayerPrefs.HasKey("SavedScene")) // Ensure We Have A Save File (PlayerPref)
         {
-            // Load the saved scene
-            string savedScene = PlayerPrefs.GetString("SavedScene");
+            string sceneToLoad = PlayerPrefs.GetString("SavedScene"); // Get The Scene Saved In PlayerPref
             LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
-            levelLoader.LoadScene("StartPage", savedScene);
+            levelLoader.LoadScene("StartPage", sceneToLoad); // Transition To The Scene That We Was On
 
-            // Restore game state
+            // Tell GameManager To Fetch And Update Itself
             GameManager.Instance.LoadGameState();
 
-            // Start a coroutine to wait until the scene is fully loaded before adjusting the player's position
-            GameManager.Instance.StartCoroutine(WaitForSceneLoad());
+            // Co Routine To Ensure Scene Is Loaded
+            GameManager.Instance.StartCoroutine(WaitForPlayerInScene());
         }
-        else
+        else // Throws User Back To StartPage Again
         {
             LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
             levelLoader.LoadScene("StartPage", "StartPage");
@@ -27,87 +31,63 @@ public class LoadManager : MonoBehaviour
         }
     }
 
-    private static IEnumerator WaitForSceneLoad()
+    private static IEnumerator WaitForPlayerInScene() // Co routine that waits for scene to load and then Updates GameManager and Player
     {
-        // Wait until the scene is loaded and the player object is available
-        yield return new WaitUntil(() => GameObject.FindWithTag("Player") != null);
+        yield return new WaitUntil(() => GameObject.FindWithTag("Player") != null); // Wait Until The Player Object Is Found (So we Can Move It)
 
-        // Find the player object by tag
-        Transform playerTransform = GameObject.FindWithTag("Player").transform;
-
-        // Retrieve saved player state and update GameManager
+        Transform CurrentPlayerLocation = GameObject.FindWithTag("Player").transform;
         GameManager gameManager = GameManager.Instance;
 
-        // Restore position
-        float playerCoordX = PlayerPrefs.GetFloat("PlayerCoordX", 0);
-        float playerCoordY = PlayerPrefs.GetFloat("PlayerCoordY", 0);
-        float playerCoordZ = PlayerPrefs.GetFloat("PlayerCoordZ", 0);
-        playerTransform.position = new Vector3(playerCoordX, playerCoordY, playerCoordZ);
+        // Gets The Previous Location From The PlayerPref Abd Apply it to the Player
+        float SavedXCoord = PlayerPrefs.GetFloat("PlayerCoordX", 0);
+        float SavedYCoord = PlayerPrefs.GetFloat("PlayerCoordY", 0); // Defaults to 0
+        float SavedZCoord = PlayerPrefs.GetFloat("PlayerCoordZ", 0);
+        CurrentPlayerLocation.position = new Vector3(SavedXCoord, SavedYCoord, SavedZCoord);
 
-        // Restore health
-        int savedHealth = PlayerPrefs.GetInt("CurrentHealth", 100);
-        gameManager.UpdatePlayerHealth(savedHealth);
+        // Get the Fetched Inventory (Has To Be Saved as As String) And Split Up Into A Array
+        string fetchedInventory = PlayerPrefs.GetString("PlayerInventory", "");
+        string[] fetchedInventoryArray = string.IsNullOrEmpty(fetchedInventory) ? new string[0] : fetchedInventory.Split(',');
+        gameManager.UpdatePlayerCards(fetchedInventoryArray);
 
-        // Restore coins
-        int savedCoins = PlayerPrefs.GetInt("CurrentCoins", 0);
-        gameManager.UpdatePlayerCoinCount(savedCoins);
-
-        // Restore name
-        string savedName = PlayerPrefs.GetString("PlayerName", "Hero");
-        gameManager.UpdatePlayerName(savedName);
-
-        // Restore inventory (ensure this matches your inventory system)
-        // Example: Deserialize saved inventory strings if needed
-        string savedInventoryRaw = PlayerPrefs.GetString("PlayerInventory", "");
-        string[] inventoryItems = string.IsNullOrEmpty(savedInventoryRaw) ? new string[0] : savedInventoryRaw.Split(',');
-        gameManager.UpdatePlayerCards(inventoryItems);
-
-        // Restore additional game state like wins/losses
+        // Restores The Rest Of The Items Directy
+        gameManager.UpdatePlayerHealth(PlayerPrefs.GetInt("CurrentHealth", 100));
+        gameManager.UpdatePlayerCoinCount(PlayerPrefs.GetInt("CurrentCoins", 0));
+        gameManager.UpdatePlayerName(PlayerPrefs.GetString("PlayerName", "Hero"));
         gameManager.UpdateMinibattleWins(PlayerPrefs.GetInt("MinibattleWins", 0));
         gameManager.UpdateMinibattleLosses(PlayerPrefs.GetInt("MinibattleLosses", 0));
         gameManager.UpdateBigbattleWins(PlayerPrefs.GetInt("BigbattleWins", 0));
         gameManager.UpdateBigbattleLosses(PlayerPrefs.GetInt("BigbattleLosses", 0));
-
-        Debug.Log($"Game state restored: Health={savedHealth}, Coins={savedCoins}, Position={playerTransform.position}, Inventory={savedInventoryRaw}");
     }
 
     public static void TempLoadGameState()
     {
-        // Ensure the current scene is updated and saved
-        string savedScene = GameManager.Instance.GetCurrentScene();
-
-        // Find the LevelLoader instance
+        string sceneToLoad = GameManager.Instance.GetCurrentScene(); // Get The Scene Saved In PlayerPref
         LevelLoader levelLoader = Object.FindObjectOfType<LevelLoader>();
         if (levelLoader == null)
         {
             Debug.LogError("LevelLoader instance not found!");
             return;
         }
+        levelLoader.LoadScene("SettingsPage", sceneToLoad); // Transition To The Scene We Was On Before
 
-        // Load the saved scene
-        levelLoader.LoadScene("SettingsPage", savedScene);
-
-        // Start the coroutine to wait for the scene load
-        GameManager.Instance.StartCoroutine(TempWaitForPlayerInScene());
+        GameManager.Instance.StartCoroutine(TempWaitForPlayerInScene()); // CoRoutine Used to wait for player to be found
     }
 
     private static IEnumerator TempWaitForPlayerInScene()
     {
-        // Wait until the scene is loaded and the player object is available
-        yield return new WaitUntil(() => GameObject.FindWithTag("Player") != null);
+        yield return new WaitUntil(() => GameObject.FindWithTag("Player") != null); // Wait until the player is found in the scene so we can transform
 
-        // Find the player object
-        Transform playerTransform = GameObject.FindWithTag("Player").transform;
+        Transform CurrentPlayerLocation = GameObject.FindWithTag("Player").transform; // Current Players location
 
-        // Retrieve the saved player location from PlayerPrefs
-        float savedX = PlayerPrefs.GetFloat("templocation_x", 0); // Default to 0 if not found
-        float savedY = PlayerPrefs.GetFloat("templocation_y", 0); // Default to 0 if not found
-        float savedZ = PlayerPrefs.GetFloat("templocation_z", 0); // Default to 0 if not found
+        // Getting The Coords from the PlayerPrefs
+        float savedXCoord = PlayerPrefs.GetFloat("templocation_x", 0);
+        float savedYCoord = PlayerPrefs.GetFloat("templocation_y", 0);
+        float savedZCoord = PlayerPrefs.GetFloat("templocation_z", 0);
 
-        // Set the player's position to the saved coordinates
-        Vector3 savedPlayerLocation = new Vector3(savedX, savedY, savedZ);
-        playerTransform.position = savedPlayerLocation;
+        // Transform the players Location
+        Vector3 savedPlayerLocation = new Vector3(savedXCoord, savedYCoord, savedZCoord);
+        CurrentPlayerLocation.position = savedPlayerLocation;
 
-        Debug.Log("Player object found and position updated to: " + savedPlayerLocation);
     }
+
 }
