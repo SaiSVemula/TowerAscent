@@ -13,6 +13,7 @@ public class GeneralMonsterAI : BattleEntity
     private Transform player; // Reference to the player's transform
     private PlayerMovement playerMovementScript; // Reference to the player's movement script
     private bool isBattleTriggered = false; // Ensure the battle triggers only once
+    [SerializeField] public Transform BattleCamera; // Predefined battle camera position
 
     // Health Slider
     [SerializeField] public GameObject healthBarPrefab; // Reference to the health bar prefab

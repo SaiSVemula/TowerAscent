@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class CompanionAI : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class CompanionAI : MonoBehaviour
     public float RotationSpeed = 5f;
 
     private Coroutine dialogueCoroutine;
+    [SerializeField] private CompanionCard companionCard;
 
     void Start()
     {
@@ -80,8 +82,7 @@ public class CompanionAI : MonoBehaviour
         floatingText.SetActive(false);
         isBefriended = true;
 
-        // Add this companion to the party
-        GameManager.Instance.AddCompanionToParty(gameObject);
+        GameManager.Instance.AddCompanion(companionCard);
 
         if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
         dialogueCoroutine = StartCoroutine(DisplayCompanionMessages());

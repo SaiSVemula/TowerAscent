@@ -24,11 +24,11 @@ public class PlayerInventory : MonoBehaviour
 
     private void Start()
     {
-        // Add a few test cards to the inventory for display
-        AddCard(Resources.Load<Card>("Cards/Weapon Cards/Axe Chop"));
-        AddCard(Resources.Load<Card>("Cards/Defence Cards/Dodge"));
-        AddCard(Resources.Load<Card>("Cards/Magic Cards/Fireball"));
-        AddCard(Resources.Load<Card>("Cards/Healing Cards/First Aid")); 
+        // Add a few test cards to the inventory for display - Testing
+        //AddCard(Resources.Load<Card>("Cards/Weapon Cards/Axe Chop"));
+        //AddCard(Resources.Load<Card>("Cards/Defence Cards/Dodge"));
+        //AddCard(Resources.Load<Card>("Cards/Magic Cards/Fireball"));
+        //AddCard(Resources.Load<Card>("Cards/Healing Cards/First Aid")); 
         AddCard(Resources.Load<Card>("Cards/Combination Cards/Dagger Dodge"));
     }
 
