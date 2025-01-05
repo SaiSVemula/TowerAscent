@@ -570,10 +570,10 @@ public class MiniBattleManager : MonoBehaviour
         }
 
         // Clear the existing card (if any)
-        foreach (Transform child in cardPanel.transform)
-        {
-            Destroy(child.gameObject);
-        }
+        // foreach (Transform child in cardPanel.transform)
+        // {
+        //     Destroy(child.gameObject);
+        // }
 
         // Get the single card from playerBattle
         Card card = playerBattle.GetMiniBattleCard();
