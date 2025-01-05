@@ -51,6 +51,21 @@ public class ObjectiveManager : MonoBehaviour
         return index >= 0 && index < currentObjectiveIndex;
     }
 
+    public void SetObjectives(List<string> newObjectives)
+    {
+        objectives = newObjectives;
+        currentObjectiveIndex = 0;
+        UpdateObjectiveDisplay();
+    }
+
+    public void SetCurrentObjectiveIndex(int index)
+    {
+        currentObjectiveIndex = index;
+        UpdateObjectiveDisplay();
+    }
+
+
+
     // Triggered when the spider is defeated
     private void OnSpiderDefeated(string spiderID)
     {
