@@ -36,40 +36,7 @@ public class InventoryCardsRenderer : MonoBehaviour
             return;
         }
 
-        //Testing();
-
         RefreshInventoryUI(); // Display the initial inventory
-    }
-
-    private void Testing()
-    {
-        if (PlayerInventory.Instance == null)
-        {
-            Debug.LogError("PlayerInventory.Instance is not initialized!");
-            return;
-        }
-
-        // Add test cards to the inventory
-        List<Card> testCards = new List<Card>
-        {
-            Resources.Load<Card>("Cards/Weapon Cards/Axe Chop"),
-            Resources.Load<Card>("Cards/Magic Cards/Fireball"),
-            Resources.Load<Card>("Cards/Defence Cards/Dodge"),
-            Resources.Load<Card>("Cards/Healing Cards/First Aid"),
-            Resources.Load<Card>("Cards/Combination Cards/Dagger Dodge")
-        };
-
-        foreach (Card card in testCards)
-        {
-            if (card == null)
-            {
-                Debug.LogError("A test card could not be loaded! Check the card path.");
-            }
-            else
-            {
-                PlayerInventory.Instance.AddCard(card);
-            }
-        }
     }
 
     public void RefreshInventoryUI()
@@ -96,9 +63,17 @@ public class InventoryCardsRenderer : MonoBehaviour
             .Select(group => new { Card = group.First(), Count = group.Count() })
             .ToList();
 
+        // Inside InventoryCardsRenderer.cs
         foreach (var groupedCard in groupedCards)
         {
             if (groupedCard.Card == null) continue;
+
+            // Check if CardSprite is null and log a warning
+            if (groupedCard.Card.CardSprite == null)
+            {
+                Debug.LogWarning($"Card sprite is missing for {groupedCard.Card.Name}.");
+                continue; // Skip rendering this card
+            }
 
             // Create a new card GameObject
             GameObject newCard = new GameObject(groupedCard.Card.Name, typeof(RectTransform), typeof(Image));
@@ -127,21 +102,6 @@ public class InventoryCardsRenderer : MonoBehaviour
             // Add CardDisplay component and initialize it
             CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
             cardDisplay.Initialize(groupedCard.Card);
-
-            // Add a child for the card's text
-            GameObject textObj = new GameObject("CardText", typeof(RectTransform), typeof(Text));
-            textObj.transform.SetParent(newCard.transform, false);
-            RectTransform textRect = textObj.GetComponent<RectTransform>();
-            textRect.sizeDelta = new Vector2(150, 30); // Text size
-            textRect.anchoredPosition = new Vector2(0, -85); // Position below the card
-
-            // Configure the Text component
-            Text text = textObj.GetComponent<Text>();
-            text.text = $"{groupedCard.Card.Name} x{groupedCard.Count}"; // Display card name with quantity
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.fontSize = 20;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.black;
         }
     }
 
