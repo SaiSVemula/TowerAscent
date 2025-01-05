@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class CompanionAI : MonoBehaviour
 {
@@ -37,6 +35,13 @@ public class CompanionAI : MonoBehaviour
         }
 
         companionDialogueTextObject.SetActive(false);
+
+        if (GameManager.Instance.GetOwnedCompanions().Contains(companionCard))
+        {
+            isBefriended = true;
+            floatingText.SetActive(false);
+            Debug.Log($"{companionCard.CompanionName} is already befriended.");
+        }
     }
 
     void Update()
@@ -79,31 +84,16 @@ public class CompanionAI : MonoBehaviour
 
     public void Befriend()
     {
+        if (isBefriended)
+        {
+            Debug.LogWarning($"{companionCard.CompanionName} is already befriended. Cannot befriend again.");
+            return;
+        }
+
         floatingText.SetActive(false);
         isBefriended = true;
 
         GameManager.Instance.AddCompanion(companionCard);
-
-        if (dialogueCoroutine != null) StopCoroutine(dialogueCoroutine);
-        dialogueCoroutine = StartCoroutine(DisplayCompanionMessages());
-    }
-
-    private IEnumerator DisplayCompanionMessages()
-    {
-        companionDialogueTextObject.SetActive(true);
-
-        companionDialogueText.text = "Companion has joined your party";
-        yield return new WaitForSeconds(3f);
-
-        companionDialogueTextObject.SetActive(false);
-        yield return new WaitForSeconds(1f);
-
-        while (true)
-        {
-            companionDialogueTextObject.SetActive(true);
-            companionDialogueText.text = randomDialogueLines[Random.Range(0, randomDialogueLines.Length)];
-            yield return new WaitForSeconds(10f);
-            companionDialogueTextObject.SetActive(false);
-        }
+        Debug.Log($"{companionCard.CompanionName} has been befriended!");
     }
 }
