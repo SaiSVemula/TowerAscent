@@ -19,7 +19,6 @@ public class LoadoutButtons : MonoBehaviour
         {
             Debug.LogError("LevelLoader reference is missing.");
         }
-
     }
 
     public void ClearSlots()
@@ -87,11 +86,15 @@ public class LoadoutButtons : MonoBehaviour
 
         if (selectedCompanion != null)
         {
+            // Add the companion and set its type
             GameManager.Instance.AddCompanion(selectedCompanion);
+            GameManager.Instance.SetCompanionType(selectedCompanion.Type);
+            Debug.Log($"Companion {selectedCompanion.CompanionName} saved to GameManager with type {selectedCompanion.Type}");
         }
         else
         {
             GameManager.Instance.ClearCompanion(); // New method to clear companion
+            Debug.Log("No companion selected. Cleared companion in GameManager.");
         }
 
         if (levelLoader != null)
@@ -103,6 +106,20 @@ public class LoadoutButtons : MonoBehaviour
             Debug.LogError("LevelLoader reference is missing.");
         }
     }
+    public void AssignCompanionToLoadout(CompanionCard companionCard)
+    {
+        if (companionCard == null)
+        {
+            Debug.LogError("Attempted to assign a null companion to the loadout.");
+            return;
+        }
+
+        // Update the selected companion type in GameManager
+        GameManager.Instance.SetCompanionType(companionCard.Type);
+
+        Debug.Log($"Assigned companion {companionCard.CompanionName} to the loadout.");
+    }
+
 
     public void DisableInstructionsPanel()
     {

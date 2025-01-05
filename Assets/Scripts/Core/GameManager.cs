@@ -168,32 +168,44 @@ public class GameManager : MonoBehaviour
     // Add these new methods inside your GameManager class
     public void SaveOwnedCompanionsToPrefs()
     {
-        List<string> companionNames = ownedCompanions.Select(c => c.name).ToList();
+        List<string> companionNames = ownedCompanions.Select(c => c.CompanionName).ToList();
         string serializedCompanions = string.Join(",", companionNames);
         PlayerPrefs.SetString("OwnedCompanions", serializedCompanions);
         PlayerPrefs.Save();
+
         Debug.Log("Owned companions saved to PlayerPrefs.");
     }
 
     public void LoadOwnedCompanionsFromPrefs()
     {
         string serializedCompanions = PlayerPrefs.GetString("OwnedCompanions", "");
-        if (!string.IsNullOrEmpty(serializedCompanions))
-        {
-            string[] companionNames = serializedCompanions.Split(',');
-            ownedCompanions = new List<CompanionCard>();
-            foreach (string cName in companionNames)
-            {
-                var loadedCompanion = Resources.Load<CompanionCard>($"Cards/{cName}");
-                if (loadedCompanion != null) ownedCompanions.Add(loadedCompanion);
-            }
-            Debug.Log("Owned companions loaded from PlayerPrefs.");
-        }
-        else
+
+        if (string.IsNullOrEmpty(serializedCompanions))
         {
             Debug.Log("No owned companions found in PlayerPrefs.");
+            return;
         }
+
+        string[] companionNames = serializedCompanions.Split(',');
+        ownedCompanions = new List<CompanionCard>();
+
+        foreach (string cName in companionNames)
+        {
+            CompanionCard loadedCompanion = Resources.Load<CompanionCard>($"Cards/{cName}");
+            if (loadedCompanion != null)
+            {
+                ownedCompanions.Add(loadedCompanion);
+                Debug.Log($"Loaded companion: {loadedCompanion.CompanionName}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to load companion from Resources: {cName}");
+            }
+        }
+
+        Debug.Log($"Loaded {ownedCompanions.Count} companions from PlayerPrefs.");
     }
+
 
     public void SavePlayerInventoryToPrefs()
     {
@@ -229,11 +241,22 @@ public class GameManager : MonoBehaviour
     }
 
     // Loads a new scene
-    public void LoadScene(string nextScene)
+    public void LoadScene(string nextScene, List<string> newObjectives = null, int startingObjectiveIndex = 0)
     {
+        if (newObjectives != null)
+        {
+            ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+            if (objectiveManager != null)
+            {
+                objectiveManager.SetObjectives(newObjectives);
+                objectiveManager.SetCurrentObjectiveIndex(startingObjectiveIndex);
+            }
+        }
+
         SavePlayerState();
         SceneManager.LoadScene(nextScene);
     }
+
 
     // Resets state
     public void Clear()
@@ -370,47 +393,65 @@ public class GameManager : MonoBehaviour
         // Implementation goes here
     }
 
+    public List<string> GetObjectivesForScene(string sceneName)
+    {
+        if (sceneName == "Level1")
+        {
+            return new List<string> { "Talk to NPC3" };
+        }
+        // Add other levels here if needed
+        return new List<string>();
+    }
+
+
     // Adds a companion
     private CompanionCard selectedCompanion;
-
     public void AddCompanion(CompanionCard companion)
     {
-        if (companion != null)
+        if (companion == null)
         {
-            selectedCompanion = companion;
-            Debug.Log($"Companion added: {companion.CompanionName}");
+            Debug.LogError("Attempted to add a null companion to GameManager.");
+            return;
         }
-        else
+
+        // Prevent duplicate companions
+        if (ownedCompanions.Contains(companion))
         {
-            Debug.LogWarning("Tried to add a null companion to inventory.");
+            Debug.LogWarning($"Companion {companion.CompanionName} is already in the owned list.");
+            return;
         }
+
+        ownedCompanions.Add(companion);
+        SaveOwnedCompanionsToPrefs(); // Save to PlayerPrefs
+
+        Debug.Log($"Companion added: {companion.CompanionName}. Total companions: {ownedCompanions.Count}");
     }
 
     public void ClearCompanion()
     {
         selectedCompanion = null;
-        PlayerPrefs.SetInt("PlayerCompanionType", -1); // Default value for no companion
+        PlayerPrefs.SetInt("PlayerCompanionType", (int)CompanionType.None); // Set to None
         PlayerPrefs.Save();
-        Debug.Log("Companion cleared from loadout.");
+        Debug.Log("Companion cleared from loadout and set to None.");
     }
 
     public CompanionType GetCompanionType()
     {
-        if (selectedCompanion == null)
-        {
-            return CompanionType.None; // Default enum value for no companion
-        }
-
-        return selectedCompanion.Type;
+        int savedType = PlayerPrefs.GetInt("PlayerCompanionType", (int)CompanionType.None);
+        Debug.Log($"Loaded companion type: {(CompanionType)savedType}");
+        return (CompanionType)savedType;
     }
+
 
     // Sets companion type
     public void SetCompanionType(CompanionType companionType)
     {
         PlayerPrefs.SetInt("PlayerCompanionType", (int)companionType);
         PlayerPrefs.Save();
-        Debug.Log($"Companion type set to: {companionType}");
+        Debug.Log($"Companion type saved: {companionType}");
     }
+
+
 
     // Runs each time a scene is loaded
     private void SceneLoadup(Scene scene, LoadSceneMode mode)

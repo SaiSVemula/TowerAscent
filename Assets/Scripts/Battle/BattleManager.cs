@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
@@ -100,6 +101,39 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    //private void SpawnCompanion()
+    //{
+    //    if (companionInstance == null)
+    //    {
+    //        Debug.LogError("Companion prefab is not assigned in the Inspector!");
+    //        return;
+    //    }
+
+    //    CompanionType companionType = GameManager.Instance.GetCompanionType();
+    //    if (companionType == CompanionType.None)
+    //    {
+    //        Debug.Log("No companion selected. Skipping companion spawn.");
+    //        companionInstance.gameObject.SetActive(false);
+    //        return;
+    //    }
+
+    //    CompanionBattle companionBattle = companionInstance.GetComponent<CompanionBattle>();
+    //    if (companionBattle == null)
+    //    {
+    //        Debug.LogError("CompanionPrefab does not have a CompanionBattle component!");
+    //        return;
+    //    }
+
+    //    companionBattle.Initialize(companionType);
+    //    SetupCompanionVisuals(companionType);
+
+    //    companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2;
+    //    companionInstance.transform.rotation = Quaternion.identity;
+    //    companionInstance.gameObject.SetActive(true);
+
+    //    Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
+    //}
+
     private void SpawnCompanion()
     {
         if (companionInstance == null)
@@ -109,6 +143,8 @@ public class BattleManager : MonoBehaviour
         }
 
         CompanionType companionType = GameManager.Instance.GetCompanionType();
+        Debug.Log($"Retrieved companion type: {companionType}");
+
         if (companionType == CompanionType.None)
         {
             Debug.Log("No companion selected. Skipping companion spawn.");
@@ -132,6 +168,7 @@ public class BattleManager : MonoBehaviour
 
         Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
     }
+
 
     private void SetupCompanionVisuals(CompanionType companionType)
     {
@@ -234,6 +271,7 @@ public class BattleManager : MonoBehaviour
     {
         if (!isPlayerTurn)
         {
+            Debug.LogWarning("It's not the player's turn!");
             return;
         }
 
@@ -250,68 +288,106 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        // End the player's turn immediately to prevent further interactions
+        isPlayerTurn = false;
+
+        // Execute card logic
         string logMessage = selectedCard.Use(playerInstance, enemyInstance);
         battleUI.AddBattleLog(logMessage);
 
-        PlayerAnimator.SetTrigger("Attack");
+        // Disable all card buttons
+        Transform cardPanel = battleUI.cardPanel.transform;
+        foreach (Transform card in cardPanel)
+        {
+            Button cardButton = card.GetComponent<Button>();
+            if (cardButton != null)
+            {
+                cardButton.interactable = false;
+            }
+        }
 
-        GreenDragonAnimator.SetTrigger("GetHit");        
-        RedDragonAnimator.SetTrigger("GetHit");        
+        // Proceed to animations and effects
+        StartCoroutine(HandlePlayerCardAnimationAndTransition(selectedCard));
+    }
+
+    private IEnumerator HandlePlayerCardAnimationAndTransition(Card selectedCard)
+    {
+        // Trigger player attack animation
+        PlayerAnimator.SetTrigger("Attack");
+        AudioManager.instance.PlaySFX(1);
+
+        // Short delay for the animation to start
+        yield return new WaitForSeconds(0.2f);
+
+        // Trigger enemy hit animations
+        GreenDragonAnimator.SetTrigger("GetHit");
+        RedDragonAnimator.SetTrigger("GetHit");
         IceBossAnimator.SetTrigger("GetHit");
 
-        // Update effect timers after card usage
+        // Update effect timers for the player
         playerInstance.DecrementEffectTimers();
 
+        // Check if the enemy is defeated
         if (enemyInstance.CurrentHealth <= 0)
         {
             Debug.Log("Enemy defeated!");
 
-            // Death animations
-            GreenDragonAnimator.SetTrigger("Die");        
-            RedDragonAnimator.SetTrigger("Die");        
+            // Play enemy death animations
+            GreenDragonAnimator.SetTrigger("Die");
+            RedDragonAnimator.SetTrigger("Die");
             IceBossAnimator.SetTrigger("Die");
 
-            StartCoroutine(EndBattle(true));
-            return;
+            // End the battle
+            yield return StartCoroutine(EndBattle(true));
+            yield break;
         }
 
-        // Player's turn ends, companion and enemy turns occur
-        StartCoroutine(CompanionAndEnemyTurn());
+        // Wait for animations to complete before transitioning to the enemy's turn
+        yield return new WaitForSeconds(1f);
+
+        // Refresh the player’s cards after animations
+        battleUI.RenderCards(playerInstance.CardLoadout);
+
+        // Proceed to companion and enemy turns
+        StartCoroutine(CompanionAndEnemyTurn(selectedCard));
     }
 
-    private IEnumerator CompanionAndEnemyTurn()
+    private IEnumerator CompanionAndEnemyTurn(Card selectedCard)
     {
+        // Companion attacks first if alive
         if (companionInstance != null && companionInstance.CurrentHealth > 0)
         {
-            // Companion attacks first
             companionInstance.AttackEnemy(enemyInstance, battleUI);
             Debug.Log("Companion attacked the enemy.");
-            yield return new WaitForSeconds(1f);
 
-            // attack animations
+            // Trigger companion attack animations
             comp1Animator.SetTrigger("Attack");
             comp2Animator.SetTrigger("Attack");
             comp3Animator.SetTrigger("Attack");
+
+            // Wait for the companion's attack animation
+            yield return new WaitForSeconds(1f);
         }
 
         // Check if enemy is defeated
         if (enemyInstance.CurrentHealth <= 0)
         {
             Debug.Log("Enemy defeated by companion!");
-            StartCoroutine(EndBattle(true));
+            yield return StartCoroutine(EndBattle(true));
             yield break;
         }
 
         // Enemy's turn
-        isPlayerTurn = false;
-        yield return StartCoroutine(EnemyTurnWithDelay(null));
+        yield return StartCoroutine(EnemyTurnWithDelay(selectedCard));
+
+        // Reset cards for the player's turn
+        //battleUI.RenderCards(playerInstance.CardLoadout);
 
         // Player's turn starts again
         isPlayerTurn = true;
         battleUI.UpdateTurnIndicator(isPlayerTurn);
-        battleUI.RenderCards(playerInstance.CardLoadout);
+        //battleUI.EnableCardInteractions();
     }
-
     private IEnumerator EnemyTurnWithDelay(Card selectedCard)
     {
         yield return new WaitForSeconds(1f);
@@ -357,6 +433,7 @@ public class BattleManager : MonoBehaviour
             IceBossAnimator.SetTrigger("Attack");
 
             PlayerAnimator.SetTrigger("GetHit");
+            AudioManager.instance.PlaySFX(1);
         }
 
         // Enemy attacks the companion (if present and alive)
@@ -366,8 +443,6 @@ public class BattleManager : MonoBehaviour
             battleUI.AddBattleLog($"{enemyInstance.EnemyName} used {selectedEnemyCard.Name} on {companionInstance.CompanionName}. {logMessageCompanion}");
             Debug.Log($"{enemyInstance.EnemyName} attacked Companion: {logMessageCompanion}");
 
-            
-            // gethit animations
             comp1Animator.SetTrigger("GetHit");
             comp2Animator.SetTrigger("GetHit");
             comp3Animator.SetTrigger("GetHit");
@@ -382,11 +457,10 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log("Player has been defeated!");
 
-            PlayerAnimator.SetTrigger("Die"); // Death animation
+            PlayerAnimator.SetTrigger("Die");
 
-            // Win animations
-            GreenDragonAnimator.SetTrigger("Win");        
-            RedDragonAnimator.SetTrigger("Win");        
+            GreenDragonAnimator.SetTrigger("Win");
+            RedDragonAnimator.SetTrigger("Win");
             IceBossAnimator.SetTrigger("Win");
 
             yield return StartCoroutine(EndBattle(false));
@@ -395,10 +469,11 @@ public class BattleManager : MonoBehaviour
 
         if (companionInstance != null && companionInstance.CurrentHealth <= 0)
         {
-            // die animations
             comp1Animator.SetTrigger("Die");
             comp2Animator.SetTrigger("Die");
             comp3Animator.SetTrigger("Die");
+
+            AudioManager.instance.PlaySFX(2);
 
             Debug.Log("Companion has been defeated!");
             battleUI.AddBattleLog($"{companionInstance.CompanionName} has been defeated!");
@@ -415,24 +490,40 @@ public class BattleManager : MonoBehaviour
         // Display the battle result
         yield return StartCoroutine(battleUI.ShowBattleResult(playerWon));
 
+        yield return new WaitForSeconds(3f);
+
         // Disable player interactions after the battle
         isPlayerTurn = false;
 
         // Transition to the next scene
         Debug.Log("Transitioning to next scene...");
         string nextScene = "";
+
         if (playerWon)
         {
             nextScene = GameManager.Instance.NextScene;
+
+            if (nextScene == "Level1")
+            {
+                // Get objectives for Level 1
+                List<string> level1Objectives = GameManager.Instance.GetObjectivesForScene("Level1");
+
+                // Load Level 1 with objectives
+                GameManager.Instance.LoadScene("Level1", level1Objectives);
+            }
+            else
+            {
+                levelLoader.LoadScene("BattleScene", nextScene);
+            }
         }
         else
         {
-            // lost so back to scene.
+            // Return to the previous scene if the player loses
             nextScene = GameManager.Instance.PreviousScene;
+            levelLoader.LoadScene("BattleScene", nextScene);
         }
-        levelLoader.LoadScene("BattleScene", nextScene);
-        //levelLoader.LoadScene("BattleScene", "LevelTransitionCutScene");
     }
+
 
     private void SaveBattleResults(bool playerWon)
     {
