@@ -48,7 +48,16 @@ public class PanelManager : MonoBehaviour
 
     public void CloseAllPanels()
     {
-        if (inventoryPanel != null) inventoryPanel.SetActive(false);
-        if (shopMenuPanel != null) shopMenuPanel.SetActive(false);
+        if (inventoryPanel != null)
+        {
+            inventoryPanel.SetActive(false);
+            Debug.Log("Inventory panel closed.");
+        }
+        if (shopMenuPanel != null)
+        {
+            shopMenuPanel.SetActive(false);
+            Debug.Log("Shop menu panel closed.");
+        }
     }
+
 }

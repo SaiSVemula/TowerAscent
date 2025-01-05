@@ -38,11 +38,18 @@ public class Shopkeeper : MonoBehaviour
             HandlePlayerOutOfRange();
         }
 
-        if (shopMenu != null && shopMenu.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+        if (shopMenu != null)
         {
-            CloseShop();
+            Debug.Log($"ShopMenu Active: {shopMenu.activeSelf}"); // Check shop menu state
+
+            if (shopMenu.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+            {
+                Debug.Log("ESC detected, attempting to close shop...");
+                CloseShop();
+            }
         }
     }
+
 
     private void HandlePlayerInRange()
     {
@@ -96,7 +103,16 @@ public class Shopkeeper : MonoBehaviour
 
     private bool IsPlayerGrounded()
     {
-        // Check if the player's Rigidbody is grounded by evaluating the vertical velocity
-        return playerRigidbody != null && Mathf.Abs(playerRigidbody.velocity.y) < 0.01f;
+        if (playerRigidbody == null) return false;
+
+        // Perform a raycast downwards from the player's position to check for the ground
+        Ray ray = new Ray(player.position, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit, 1.1f)) // Adjust the ray length (1.1f) to match your player's height
+        {
+            return true; // Ground detected
+        }
+
+        return false; // No ground detected
     }
+
 }
