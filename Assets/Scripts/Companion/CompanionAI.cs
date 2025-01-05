@@ -86,14 +86,29 @@ public class CompanionAI : MonoBehaviour
     {
         if (isBefriended)
         {
-            Debug.LogWarning($"{companionCard.CompanionName} is already befriended. Cannot befriend again.");
+            Debug.LogWarning($"{companionCard.CompanionName} is already befriended and cannot be added again.");
+            return;
+        }
+
+        if (companionCard == null)
+        {
+            Debug.LogError("CompanionCard is null! Cannot befriend.");
+            return;
+        }
+
+        // Add the companion to GameManager's list
+        if (GameManager.Instance.GetOwnedCompanions().Contains(companionCard))
+        {
+            Debug.LogWarning($"{companionCard.CompanionName} is already in the owned list.");
+            isBefriended = true; // Mark as befriended for follow logic
+            floatingText.SetActive(false);
             return;
         }
 
         floatingText.SetActive(false);
         isBefriended = true;
-
         GameManager.Instance.AddCompanion(companionCard);
-        Debug.Log($"{companionCard.CompanionName} has been befriended!");
+
+        Debug.Log($"Companion befriended: {companionCard.CompanionName}. Total companions: {GameManager.Instance.GetOwnedCompanions().Count}");
     }
 }

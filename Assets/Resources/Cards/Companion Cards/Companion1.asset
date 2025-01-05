@@ -17,3 +17,4 @@ MonoBehaviour:
   description: 
   health: 50
   defense: 0
+  type: 1

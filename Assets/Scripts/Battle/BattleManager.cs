@@ -101,6 +101,39 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    //private void SpawnCompanion()
+    //{
+    //    if (companionInstance == null)
+    //    {
+    //        Debug.LogError("Companion prefab is not assigned in the Inspector!");
+    //        return;
+    //    }
+
+    //    CompanionType companionType = GameManager.Instance.GetCompanionType();
+    //    if (companionType == CompanionType.None)
+    //    {
+    //        Debug.Log("No companion selected. Skipping companion spawn.");
+    //        companionInstance.gameObject.SetActive(false);
+    //        return;
+    //    }
+
+    //    CompanionBattle companionBattle = companionInstance.GetComponent<CompanionBattle>();
+    //    if (companionBattle == null)
+    //    {
+    //        Debug.LogError("CompanionPrefab does not have a CompanionBattle component!");
+    //        return;
+    //    }
+
+    //    companionBattle.Initialize(companionType);
+    //    SetupCompanionVisuals(companionType);
+
+    //    companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2;
+    //    companionInstance.transform.rotation = Quaternion.identity;
+    //    companionInstance.gameObject.SetActive(true);
+
+    //    Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
+    //}
+
     private void SpawnCompanion()
     {
         if (companionInstance == null)
@@ -110,6 +143,8 @@ public class BattleManager : MonoBehaviour
         }
 
         CompanionType companionType = GameManager.Instance.GetCompanionType();
+        Debug.Log($"Retrieved companion type: {companionType}");
+
         if (companionType == CompanionType.None)
         {
             Debug.Log("No companion selected. Skipping companion spawn.");
@@ -133,6 +168,7 @@ public class BattleManager : MonoBehaviour
 
         Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
     }
+
 
     private void SetupCompanionVisuals(CompanionType companionType)
     {
