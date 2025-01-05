@@ -14,6 +14,7 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.SetInt("CurrentCoins", gm.GetPlayerCoinCount());
         PlayerPrefs.SetString("PlayerName", gm.GetPlayerName());
         
+        
         PlayerPrefs.SetInt("MinibattleWins", gm.GetMinibattleWins());
         PlayerPrefs.SetInt("MinibattleLosses", gm.GetMinibattleLosses());
         PlayerPrefs.SetInt("BigbattleWins", gm.GetBigbattleWins());

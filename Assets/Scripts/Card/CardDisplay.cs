@@ -3,31 +3,34 @@ using UnityEngine.UI;
 
 public class CardDisplay : MonoBehaviour
 {
-    public Card CardData { get; set; } // Reference to the Card scriptable object
+    public Card CardData { get; private set; } // Reference to the Card scriptable object
 
     [SerializeField] private Image cardImage; // UI Image to display the card's sprite
-    [SerializeField] private Text cardNameText; // UI Text to display the card's name
+    //[SerializeField] private Text cardNameText; // UI Text to display the card's name
 
     // Initialize card UI with the provided card data
     public void Initialize(Card card)
     {
         CardData = card;
 
-        if (cardImage != null && card.CardSprite != null)
+        // Check if CardSprite is null
+        if (CardData.CardSprite == null)
         {
-            cardImage.sprite = card.CardSprite; // Use the card's sprite
-        }
-        else
-        {
-            Debug.Log($"Card sprite is null for {card.Name}!");
+            Debug.LogError($"Card sprite is null for {CardData.Name}!");
+            return; // Prevent further execution
         }
 
-        if (cardNameText != null)
+        // Update UI elements
+        if (cardImage != null)
         {
-            cardNameText.text = card.Name; // Display the card's name
+            cardImage.sprite = CardData.CardSprite; // Use the card's sprite
         }
+
+        //if (cardNameText != null)
+        //{
+        //    cardNameText.text = CardData.Name; // Display the card's name
+        //}
     }
-
 
     public Card GetCard()
     {

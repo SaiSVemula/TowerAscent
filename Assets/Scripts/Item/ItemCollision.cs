@@ -5,17 +5,21 @@ using TMPro;
 
 public class ItemCollision : MonoBehaviour
 {
-    private Dictionary<string, List<Card>> cardPools = new Dictionary<string, List<Card>>(); // Store card pools
+    private Card ItemMagicCard;
+    private Card ItemWeaponCard;
+    private Card ItemDefenceCard;
+    private Card ItemHealingCard;
     [SerializeField] private TextMeshProUGUI cardAddedMessage; // Reference to the UI TextMeshPro element
     [SerializeField] private float textDisplayDuration = 2f; // How long the message stays on screen
 
     private void Start()
     {
-        // Load card pools from Resources folders
-        cardPools["MAGIC CARD"] = LoadCardsFromFolder("Cards/Magic Cards");
-        cardPools["WEAPON CARD"] = LoadCardsFromFolder("Cards/Weapon Cards");
-        cardPools["DEFENCE CARD"] = LoadCardsFromFolder("Cards/Defence Cards");
-        cardPools["HEALING CARD"] = LoadCardsFromFolder("Cards/Healing Cards");
+        // Load the card assets from the Resources folder
+        ItemMagicCard = Resources.Load<Card>("Cards/Magic Cards/Fireball"); 
+        ItemWeaponCard = Resources.Load<Card>("Cards/Weapon Cards/Axe Chop");
+        ItemDefenceCard = Resources.Load<Card>("Cards/Defence Cards/Dodge");
+        ItemHealingCard = Resources.Load<Card>("Cards/Healing Cards/First Aid");
+
 
         // Ensure the card message is disabled initially
         if (cardAddedMessage != null)
@@ -34,54 +38,45 @@ public class ItemCollision : MonoBehaviour
             {
                 string cardType = textComponent.text.Trim().ToUpper();
 
-                // Check if the card type exists in the dictionary
-                if (cardPools.ContainsKey(cardType) && cardPools[cardType].Count > 0)
+                // Assign a specific card based on the card type
+                Card assignedCard = null;
+                switch (cardType)
                 {
-                    // Get a random card from the respective pool
-                    Card randomCard = GetRandomCardFromPool(cardPools[cardType]);
+                    case "MAGIC CARD":
+                        assignedCard = ItemMagicCard;
+                        break;
+                    case "WEAPON CARD":
+                        assignedCard = ItemWeaponCard;
+                        break;
+                    case "DEFENCE CARD":
+                        assignedCard = ItemDefenceCard;
+                        break;
+                    case "HEALING CARD":
+                        assignedCard = ItemHealingCard;
+                        break;
+                    default:
+                        Debug.LogWarning($"Unrecognized card type: {cardType}");
+                        break;
+                }
 
-                    // Add the card to the player's inventory
-                    if (randomCard != null)
-                    {
-                        PlayerInventory.Instance.AddCard(randomCard);
-                        Debug.Log($"Player received a {cardType}: {randomCard.Name}");
+                // Add the assigned card to the player's inventory if valid
+                if (assignedCard != null)
+                {
+                    PlayerInventory.Instance.AddCard(assignedCard);
+                    Debug.Log($"Player received a {cardType}: {assignedCard.Name}");
 
-                        // Display the message on the screen
-                        ShowCardAddedMessage(randomCard.Name);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"No cards available in the pool for {cardType}.");
-                    }
+                    // Display the message on the screen
+                    ShowCardAddedMessage(assignedCard.Name);
                 }
                 else
                 {
-                    Debug.LogWarning($"No card pool found for type: {cardType}");
+                    Debug.LogWarning($"No card assigned for type: {cardType}");
                 }
             }
 
             // Disable the item after collection
             gameObject.SetActive(false);
         }
-    }
-
-    private List<Card> LoadCardsFromFolder(string folderPath)
-    {
-        // Load all cards from the specified Resources folder
-        Card[] cards = Resources.LoadAll<Card>(folderPath);
-        Debug.Log($"Loaded {cards.Length} cards from {folderPath}");
-        return new List<Card>(cards);
-    }
-
-    private Card GetRandomCardFromPool(List<Card> cardPool)
-    {
-        if (cardPool == null || cardPool.Count == 0)
-        {
-            return null;
-        }
-
-        int randomIndex = Random.Range(0, cardPool.Count);
-        return cardPool[randomIndex];
     }
 
     private void ShowCardAddedMessage(string cardName)

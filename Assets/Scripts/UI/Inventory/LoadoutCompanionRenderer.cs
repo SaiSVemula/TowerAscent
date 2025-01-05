@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class LoadoutCompanionsRenderer : MonoBehaviour
 {
@@ -28,20 +29,8 @@ public class LoadoutCompanionsRenderer : MonoBehaviour
             img.sprite = companion.CompanionSprite;
             img.color = Color.white;
 
-            // Add a child for the companion's text
-            GameObject textObj = new GameObject("CompanionText", typeof(RectTransform), typeof(Text));
-            textObj.transform.SetParent(newCompanion.transform, false);
-            RectTransform textRect = textObj.GetComponent<RectTransform>();
-            textRect.sizeDelta = new Vector2(150, 30); // Text size
-            textRect.anchoredPosition = new Vector2(0, -85); // Position below the companion card
-
-            // Configure the Text component
-            Text text = textObj.GetComponent<Text>();
-            text.text = companion.CompanionName;
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.fontSize = 14;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.black;
+            // Add DraggableItem component
+            newCompanion.AddComponent<DraggableItem>();
         }
     }
 }
