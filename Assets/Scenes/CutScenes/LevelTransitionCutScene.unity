@@ -404,7 +404,7 @@ Camera:
   m_BarrelClipping: 0.25
   m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
+  m_LensShift: {x: -0.03, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -3017,7 +3017,7 @@ GameObject:
   - component: {fileID: 553991399}
   m_Layer: 0
   m_Name: Directional Light
-  m_TagString: Untagged
+  m_TagString: SceneLight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4791,7 +4791,7 @@ GameObject:
   - component: {fileID: 912246198}
   - component: {fileID: 912246197}
   m_Layer: 6
-  m_Name: Camera
+  m_Name: Moving Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5329,7 +5329,7 @@ GameObject:
   - component: {fileID: 1007025468}
   - component: {fileID: 1007025467}
   m_Layer: 0
-  m_Name: light
+  m_Name: Moving Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7526,7 +7526,7 @@ MonoBehaviour:
   m_Path: {fileID: 523587608}
   m_UpdateMethod: 0
   m_PositionUnits: 1
-  m_Speed: 5
+  m_Speed: 2
   m_Position: 0
 --- !u!43 &1568316902
 Mesh:
@@ -8406,12 +8406,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dollyCart: {fileID: 1541343622}
-  speed: 0.3
-  directionalLight: {fileID: 1007025467}
-  lookAtTarget: {fileID: 0}
-  cameraTransform: {fileID: 49827489}
-  cameraOffset: {x: 0, y: 0, z: 0}
-  trackEndThreshold: 0.3
+  camSpeed: 2.5
+  movinglight: {fileID: 1007025467}
+  tolookAt: {fileID: 0}
+  movingCamera: {fileID: 49827489}
+  CameraTune: {x: 0, y: 2, z: -5}
+  WhenToStartTransition: 0.95
 --- !u!4 &1826887147
 Transform:
   m_ObjectHideFlags: 0
