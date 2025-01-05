@@ -333,7 +333,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &86497166
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1850,7 +1850,7 @@ RectTransform:
   m_Father: {fileID: 1878131518}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2223,7 +2223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &939437343
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4215,7 +4215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 132738, guid: aeb4794909bc89d43b72ad784903e0f5, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 425328, guid: aeb4794909bc89d43b72ad784903e0f5, type: 3}
       propertyPath: m_LocalScale.x
@@ -4640,7 +4640,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardImage: {fileID: 0}
-  cardNameText: {fileID: 0}
 --- !u!1 &1901500484
 GameObject:
   m_ObjectHideFlags: 0
@@ -5252,6 +5251,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: companion1
       objectReference: {fileID: 0}
+    - target: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5565,7 +5568,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1764547478032956539, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1934596949035953229, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5613,7 +5616,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2954063368411650915, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4520770853797541344, guid: 20d237685291d30469b5acad2cd986f8, type: 3}
       propertyPath: m_Enabled
@@ -5813,9 +5816,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6075760583859670787, guid: 8cd67129a07b92e4e86a855ab2e1902a, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7027953798921042397, guid: 8cd67129a07b92e4e86a855ab2e1902a, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

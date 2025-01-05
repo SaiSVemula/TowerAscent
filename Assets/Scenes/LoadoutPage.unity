@@ -278,6 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: MagicCard
   inventoryGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 0}
   slotText: {fileID: 610435013}
 --- !u!1001 &69189272
 PrefabInstance:
@@ -1401,7 +1402,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4513262946159632799, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
       propertyPath: m_Name
-      value: InventoryCardGrid
+      value: CardGrid
       objectReference: {fileID: 0}
     - target: {fileID: 5673457023343846218, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
       propertyPath: m_Name
@@ -1652,9 +1653,6 @@ PrefabInstance:
       addedObject: {fileID: 2061745783}
     - targetCorrespondingSourceObject: {fileID: 3358079743840049529, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 703252461}
-    - targetCorrespondingSourceObject: {fileID: 3358079743840049529, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 995342912}
     - targetCorrespondingSourceObject: {fileID: 3358079743840049529, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
       insertIndex: -1
@@ -1671,6 +1669,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8025541072450927284, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1194642788}
+    - targetCorrespondingSourceObject: {fileID: 9097555766850768584, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 918570853}
     - targetCorrespondingSourceObject: {fileID: 8309850551452515833, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 47379351}
@@ -1699,6 +1700,11 @@ RectTransform:
 --- !u!224 &547501817 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 345986398044788749, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
+  m_PrefabInstance: {fileID: 547501815}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &547501818 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 9097555766850768584, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
   m_PrefabInstance: {fileID: 547501815}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &547501819 stripped
@@ -1731,7 +1737,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardsButton: {fileID: 1751644307}
   companionsButton: {fileID: 2094686087}
-  grid: {fileID: 168739898}
+  cardGrid: {fileID: 1723011082}
+  companionGrid: {fileID: 918570852}
   cardsRenderer: {fileID: 547501819}
   companionsRenderer: {fileID: 547501822}
   noItemsText: {fileID: 995342913}
@@ -2143,42 +2150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: HealingCard
   inventoryGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 0}
   slotText: {fileID: 1759334783}
---- !u!1 &703252460
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 703252461}
-  m_Layer: 5
-  m_Name: Weaponrect
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &703252461
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 703252460}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 547501816}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -722, y: -120}
-  m_SizeDelta: {x: 107, y: 131}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &727335912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2499,8 +2472,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cddc330a3ca44aa43b76eb795e8f9a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelLoader: {fileID: 1999695326}
-  inventoryGrid: {fileID: 168739898}
+  cardsGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 918570853}
   loadoutSlots:
   - {fileID: 547501817}
   - {fileID: 47379351}
@@ -2754,6 +2727,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: CombinationCard
   inventoryGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 0}
   slotText: {fileID: 13999051}
 --- !u!1 &772447238 stripped
 GameObject:
@@ -2774,6 +2748,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: WeaponCard
   inventoryGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 0}
   slotText: {fileID: 599034390}
 --- !u!1 &789608146
 GameObject:
@@ -3203,6 +3178,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &918570852
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 918570853}
+  - component: {fileID: 918570854}
+  m_Layer: 5
+  m_Name: CompanionGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &918570853
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918570852}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 547501818}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 315.09338}
+  m_SizeDelta: {x: 0, y: 658.8016}
+  m_Pivot: {x: 0, y: 1}
+--- !u!114 &918570854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918570852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 20
+    m_Right: 0
+    m_Top: 13
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 150, y: 200}
+  m_Spacing: {x: 20, y: 20}
+  m_Constraint: 2
+  m_ConstraintCount: 3
 --- !u!1 &995342911
 GameObject:
   m_ObjectHideFlags: 0
@@ -3672,6 +3707,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: CompanionCard
   inventoryGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 0}
   slotText: {fileID: 1778518478}
 --- !u!1 &1163512240
 GameObject:
@@ -3819,8 +3855,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cddc330a3ca44aa43b76eb795e8f9a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelLoader: {fileID: 1999695326}
-  inventoryGrid: {fileID: 168739898}
+  cardsGrid: {fileID: 0}
+  companionsGrid: {fileID: 0}
   loadoutSlots:
   - {fileID: 547501817}
   - {fileID: 47379351}
@@ -4378,8 +4414,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cddc330a3ca44aa43b76eb795e8f9a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelLoader: {fileID: 1999695326}
-  inventoryGrid: {fileID: 0}
+  cardsGrid: {fileID: 0}
+  companionsGrid: {fileID: 0}
   loadoutSlots: []
   cardSlots: []
   instructionsPanel: {fileID: 72814454}
@@ -4528,6 +4564,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1666253829}
   m_CullTransparentMesh: 1
+--- !u!1 &1723011082 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4513262946159632799, guid: afaa9e7ac53b7f046913d1f222bd4ad0, type: 3}
+  m_PrefabInstance: {fileID: 547501815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1751644305
 GameObject:
   m_ObjectHideFlags: 0
@@ -4807,7 +4848,7 @@ GameObject:
   - component: {fileID: 1778518479}
   - component: {fileID: 1778518478}
   m_Layer: 5
-  m_Name: HealingCardText
+  m_Name: CompanionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5294,6 +5335,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: DefenceCard
   inventoryGrid: {fileID: 168739898}
+  companionsGrid: {fileID: 0}
   slotText: {fileID: 381815390}
 --- !u!1 &1933708972
 GameObject:
@@ -5389,17 +5431,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &1999695326 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8803794217570108637, guid: db4a4cc4818c16c4e96fadccba843fdb, type: 3}
-  m_PrefabInstance: {fileID: 7972148486584788416}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f63506172fe1c8741a788d45bd1d3933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2061745782
 GameObject:
   m_ObjectHideFlags: 0

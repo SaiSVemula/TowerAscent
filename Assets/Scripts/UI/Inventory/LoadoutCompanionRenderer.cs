@@ -1,18 +1,21 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 
 public class LoadoutCompanionsRenderer : MonoBehaviour
 {
+    private bool isRendered = false; // Track if the companions are already rendered
+
     public void RenderCompanions(List<CompanionCard> ownedCompanions, Transform grid)
     {
+        if (isRendered) return; // Skip rendering if already done
+
         foreach (var companion in ownedCompanions)
         {
             if (companion == null) continue;
 
             // Create a new companion GameObject
-            GameObject newCompanion = new GameObject(companion.CompanionName, typeof(RectTransform), typeof(Image));
+            GameObject newCompanion = new GameObject(companion.CompanionName, typeof(RectTransform), typeof(Image), typeof(CompanionCardDisplay));
 
             // Set the parent to the grid
             newCompanion.transform.SetParent(grid, false);
@@ -31,6 +34,12 @@ public class LoadoutCompanionsRenderer : MonoBehaviour
 
             // Add DraggableItem component
             newCompanion.AddComponent<DraggableItem>();
+
+            // Assign the CompanionCard data to the CompanionCardDisplay
+            var companionDisplay = newCompanion.GetComponent<CompanionCardDisplay>();
+            companionDisplay.Initialize(companion);
         }
+
+        isRendered = true; // Mark as rendered
     }
 }

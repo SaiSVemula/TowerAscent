@@ -30,8 +30,6 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        //Testing();//run only during development
-
         levelLoader = FindObjectOfType<LevelLoader>();
 
         if (levelLoader == null)
@@ -40,27 +38,11 @@ public class BattleManager : MonoBehaviour
         }
 
         battleUI.OnStartBattle += HandleStartBattle;
-    }
 
-    private void Testing()
-    {
-        GameManager.Instance.PreviousScene = "Level 1";
-        GameManager.Instance.NextScene = "Level 2";
-        GameManager.Instance.GameDifficulty = Difficulty.Easy;
-        GameManager.Instance.UpdatePlayerHealth(100);
-
-        GameManager.Instance.SetCompanionType(CompanionType.Companion1);
-
-        List<Card> cardLoadout = new List<Card>
-        {
-        Resources.Load<Card>("Cards/Weapon Cards/Axe Chop"),
-        Resources.Load<Card>("Cards/Magic Cards/Fireball"),
-        Resources.Load<Card>("Cards/Defence Cards/Dodge"),
-        Resources.Load<Card>("Cards/Healing Cards/First Aid"),
-        Resources.Load<Card>("Cards/Combination Cards/Dagger Dodge")
-        };
-
-        GameManager.Instance.CurrentCardLoadout = cardLoadout;
+        //PlayerAnimator = playerInstance.GetComponent.transform.Find("RPGH")<Animator>();
+        comp1Animator = companionInstance.transform.Find("companion1").GetComponent<Animator>();
+        comp2Animator = companionInstance.transform.Find("companion2").GetComponent<Animator>();
+        comp3Animator = companionInstance.transform.Find("companion3").GetComponent<Animator>();
     }
 
     private void HandleStartBattle()
@@ -126,14 +108,14 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Ensure the prefab's GameObject is initially disabled
-        companionInstance.gameObject.SetActive(false);
+        CompanionType companionType = GameManager.Instance.GetCompanionType();
+        if (companionType == CompanionType.None)
+        {
+            Debug.Log("No companion selected. Skipping companion spawn.");
+            companionInstance.gameObject.SetActive(false);
+            return;
+        }
 
-        // Determine the companion type
-        int companionTypeInt = PlayerPrefs.GetInt("PlayerCompanionType", 0); // Default to Companion1
-        CompanionType companionType = (CompanionType)companionTypeInt;
-
-        // Get the CompanionBattle component from the prefab
         CompanionBattle companionBattle = companionInstance.GetComponent<CompanionBattle>();
         if (companionBattle == null)
         {
@@ -141,15 +123,11 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Initialize the companion with the correct type
         companionBattle.Initialize(companionType);
-
-        // Optionally configure visuals if needed
         SetupCompanionVisuals(companionType);
 
-        // Set the position and enable the companion
-        companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2; // Adjust spawn offset
-        companionInstance.transform.rotation = Quaternion.identity; // Reset rotation
+        companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2;
+        companionInstance.transform.rotation = Quaternion.identity;
         companionInstance.gameObject.SetActive(true);
 
         Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
@@ -469,7 +447,7 @@ public class BattleManager : MonoBehaviour
         //}
 
         // Save the player's coins
-        GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.CurrentCoins1 + 10); // adding only 10 for now but will have a varied way to develop it.
+        GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.CurrentCoins1 + 10);
 
         // Save the enemy's defeat
         if (playerWon)

@@ -14,6 +14,7 @@ public class CompanionCard : ScriptableObject
 
     public string CompanionName => companionName;
     public Sprite CompanionSprite => companionSprite;
+    public CompanionType Type => type;
     public string Description => description;
     public int Health => health;
     public int Defense => defense;
