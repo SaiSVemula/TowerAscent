@@ -498,18 +498,32 @@ public class BattleManager : MonoBehaviour
         // Transition to the next scene
         Debug.Log("Transitioning to next scene...");
         string nextScene = "";
+
         if (playerWon)
         {
             nextScene = GameManager.Instance.NextScene;
+
+            if (nextScene == "Level1")
+            {
+                // Get objectives for Level 1
+                List<string> level1Objectives = GameManager.Instance.GetObjectivesForScene("Level1");
+
+                // Load Level 1 with objectives
+                GameManager.Instance.LoadScene("Level1", level1Objectives);
+            }
+            else
+            {
+                levelLoader.LoadScene("BattleScene", nextScene);
+            }
         }
         else
         {
-            // lost so back to scene.
+            // Return to the previous scene if the player loses
             nextScene = GameManager.Instance.PreviousScene;
+            levelLoader.LoadScene("BattleScene", nextScene);
         }
-        levelLoader.LoadScene("BattleScene", nextScene);
-        //levelLoader.LoadScene("BattleScene", "LevelTransitionCutScene");
     }
+
 
     private void SaveBattleResults(bool playerWon)
     {

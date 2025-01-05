@@ -241,11 +241,22 @@ public class GameManager : MonoBehaviour
     }
 
     // Loads a new scene
-    public void LoadScene(string nextScene)
+    public void LoadScene(string nextScene, List<string> newObjectives = null, int startingObjectiveIndex = 0)
     {
+        if (newObjectives != null)
+        {
+            ObjectiveManager objectiveManager = FindObjectOfType<ObjectiveManager>();
+            if (objectiveManager != null)
+            {
+                objectiveManager.SetObjectives(newObjectives);
+                objectiveManager.SetCurrentObjectiveIndex(startingObjectiveIndex);
+            }
+        }
+
         SavePlayerState();
         SceneManager.LoadScene(nextScene);
     }
+
 
     // Resets state
     public void Clear()
@@ -381,6 +392,17 @@ public class GameManager : MonoBehaviour
     {
         // Implementation goes here
     }
+
+    public List<string> GetObjectivesForScene(string sceneName)
+    {
+        if (sceneName == "Level1")
+        {
+            return new List<string> { "Talk to NPC3" };
+        }
+        // Add other levels here if needed
+        return new List<string>();
+    }
+
 
     // Adds a companion
     private CompanionCard selectedCompanion;
