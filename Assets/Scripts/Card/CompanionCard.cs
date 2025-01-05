@@ -10,6 +10,7 @@ public class CompanionCard : ScriptableObject
     [SerializeField] private string description; // Companion description
     [SerializeField] private int health; // Companion's health
     [SerializeField] private int defense; // Companion's defense
+    [SerializeField] private CompanionType type;
 
     public string CompanionName => companionName;
     public Sprite CompanionSprite => companionSprite;

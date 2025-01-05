@@ -417,6 +417,8 @@ public class MiniBattleManager : MonoBehaviour
         Debug.Log("Starting mini-battle with spider: " + spider.name);
         currentSpider = spider;
 
+        battleCameraPosition = currentSpider.BattleCamera;
+
         // Save the original camera state
         SaveOriginalCameraState();
 
