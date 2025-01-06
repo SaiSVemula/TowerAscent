@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Reflect all damage back to the enemy, attack multiple enemies with
     Chain Lightning and reduce magic damage for one turn.
   type: 3
-  cardSprite: {fileID: 21300000, guid: bd0539b84d4498d45ba8726d5ff92b9d, type: 3}
+  cardSprite: {fileID: 21300000, guid: 31aaa73d764494c46ba494e0c8363749, type: 3}
   subCards:
   - {fileID: 11400000, guid: 31e3d13621bfbb044b078219b3d2a900, type: 2}
   - {fileID: 11400000, guid: 3c587ffd2a0ca3f478121c0b7599d695, type: 2}
