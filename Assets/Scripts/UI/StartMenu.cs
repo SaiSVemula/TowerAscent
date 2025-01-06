@@ -35,7 +35,7 @@ public class StartMenu : MonoBehaviour
             float tempMasterVolume = PlayerPrefs.GetFloat("SoundMasterVol", 0.5f);
             float tempMusicVolume = PlayerPrefs.GetFloat("SoundMusicVol", 0.5f);
             float tempSFXVolume = PlayerPrefs.GetFloat("SoundSFXVol", 0.5f);
-            float tempbrightness = PlayerPrefs.GetFloat("lightBrightness", 0.5f);
+            float tempbrightness = PlayerPrefs.GetFloat("lightBrightness", 0f);
 
             // Clear PlayerPrefs (persistent storage)
             PlayerPrefs.DeleteAll();
