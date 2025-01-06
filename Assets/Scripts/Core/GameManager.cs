@@ -299,7 +299,7 @@ public class GameManager : MonoBehaviour
 
 
     // Loads a new scene
-    public void LoadScene(string nextScene, List<string> newObjectives = null, int startingObjectiveIndex = 0)
+    public void SaveObjectives(List<string> newObjectives = null, int startingObjectiveIndex = 0)
     {
         if (newObjectives != null)
         {
@@ -312,7 +312,6 @@ public class GameManager : MonoBehaviour
         }
 
         SavePlayerState();
-        SceneManager.LoadScene(nextScene);
     }
 
 
@@ -337,7 +336,7 @@ public class GameManager : MonoBehaviour
     }
 
     // Gives gold for mini battles
-    public void RewardMiniBattleGold(int rewardAmount)
+    public void RewardGold(int rewardAmount)
     {
         UpdatePlayerCoinCount(CurrentCoins1 + rewardAmount);
         Debug.Log($"Player rewarded with {rewardAmount} gold for mini-battle victory. Total coins: {CurrentCoins1}");
@@ -347,7 +346,7 @@ public class GameManager : MonoBehaviour
     public void AddMiniBattleWin(string spiderID, int rewardAmount)
     {
         minibattleWins++;
-        RewardMiniBattleGold(rewardAmount);
+        RewardGold(rewardAmount);
         MarkSpiderDefeated(spiderID);
         Debug.Log($"Mini-battle win recorded. Spider defeated: {spiderID}. Total wins: {minibattleWins}");
     }
