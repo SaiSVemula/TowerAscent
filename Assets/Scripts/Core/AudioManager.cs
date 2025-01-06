@@ -26,6 +26,10 @@ public class AudioManager : MonoBehaviour
 
     public string SavedScene;
 
+    private float mastervol;
+    private float musicvol;
+    private float sfxvol;
+
     void OnEnable()
     {
         // Subscribe to the sceneLoaded event
@@ -68,10 +72,26 @@ public class AudioManager : MonoBehaviour
 
         PlayMusic(StartScreen);
 
-        float mastervol = PlayerPrefs.GetFloat("SoundMasterVol", 0.5f);
-        float musicvol = PlayerPrefs.GetFloat("SoundMusicVol", 0.5f);
-        float sfxvol = PlayerPrefs.GetFloat("SoundSFXVol", 0.5f);
+    }
 
+    void Update()
+    {
+        mastervol = PlayerPrefs.GetFloat("SoundMasterVol", 0.5f);
+        musicvol = PlayerPrefs.GetFloat("SoundMusicVol", 0.5f);
+        sfxvol = PlayerPrefs.GetFloat("SoundSFXVol", 0.5f);
+        
+        UpdateVolume(mastervol, musicvol, sfxvol);
+    }
+
+    public void UpdateVolume(float masterVolume, float musicVolume, float sfxVolume)
+    {
+        // Set the master volume scale
+        float finalMusicVolume = masterVolume * musicVolume;
+        float finalSFXVolume = masterVolume * sfxVolume;
+
+        // Apply the calculated volumes to the audio sources
+        musicSource.volume = finalMusicVolume;
+        SFXSource.volume = finalSFXVolume;
     }
 
     public void PlayMusic(AudioClip clip)
