@@ -107,13 +107,14 @@ public class GameManager : MonoBehaviour
         {
             playerInstance.transform.position = PlayerCoord;
             playerInstance.CurrentHealth = CurrentHealth;
-            playerInstance.Gold = CurrentCoins;
+            playerInstance.Gold = CurrentCoins; // Restore gold
             playerInstance.Inventory = new List<string>(CardsInInventory);
             playerInstance.PlayerName = PlayerName;
             LoadMiniBattleCardPoolFromPrefs();
-            Debug.Log("Player state loaded.");
+            Debug.Log($"Player state loaded. Gold: {CurrentCoins}");
         }
     }
+
 
     // Getters for single variables
     public string GetCurrentScene() { return SavedScene; }
@@ -311,8 +312,9 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        SavePlayerState();
+        SavePlayerState(); // Save player state before loading the scene
     }
+
 
 
     // Resets state
@@ -517,6 +519,13 @@ public class GameManager : MonoBehaviour
         UpdateParticlesState();
         UpdatePostProcessingState();
         UpdateBrightnessState();
+
+        // Update gold UI
+        GoldCounter[] goldCounters = FindObjectsOfType<GoldCounter>();
+        foreach (var goldCounter in goldCounters)
+        {
+            goldCounter.UpdateGoldText();
+        }
     }
 
     // Toggles particles
