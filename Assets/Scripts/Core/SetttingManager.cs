@@ -185,7 +185,7 @@ public class SettingsManager : MonoBehaviour
 
             // Saves Players State And Calls SaveManager To Save The Game To PlayerPref
             GameManager.Instance.SavePlayerState();
-            SaveManager.SaveGameState();
+            SaveManager.SaveAllData();
             
         }
 

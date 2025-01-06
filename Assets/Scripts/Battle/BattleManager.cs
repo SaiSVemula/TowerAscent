@@ -495,11 +495,12 @@ public class BattleManager : MonoBehaviour
                 List<string> level1Objectives = GameManager.Instance.GetObjectivesForScene("Level1");
 
                 // Load Level 1 with objectives
-                GameManager.Instance.LoadScene("Level1", level1Objectives);
+                GameManager.Instance.SaveObjectives(level1Objectives);
+                
             }
             else
             {
-                levelLoader.LoadScene("BattleScene", nextScene);
+                levelLoader.LoadScene("BattleScene", "LevelTransitionCutScene");
             }
         }
         else
@@ -531,7 +532,7 @@ public class BattleManager : MonoBehaviour
         // Save the enemy's defeat
         if (playerWon)
         {
-            GameManager.Instance.UpdatePlayerCoinCount(rewardAmount);
+            GameManager.Instance.RewardGold(rewardAmount);
             string defeatedEnemy = enemyInstance.EnemyName;
             GameManager.Instance.CompleteObjective($"Defeated {defeatedEnemy}");
         }

@@ -31,7 +31,7 @@ public class OnCheckpointHit : MonoBehaviour
             GameManager.Instance.UpdatePlayerLocation(coordToSave);
             GameManager.Instance.SavePlayerState(); // updates players stats to gamemanager
 
-            SaveManager.SaveGameState(); // save gamemanagers updated fields to persistent storage
+            SaveManager.SaveAllData(); // save gamemanagers updated fields to persistent storage
 
             SetCheckpointState(true); // Sets Checkpoint to Green (Set)
         }
