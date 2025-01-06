@@ -20,16 +20,18 @@ public class GoldCounter : MonoBehaviour
         UpdateGoldText(); // Continuously update the coin count
     }
 
-    public void UpdateGoldText() // Changed from private to public
+    public void UpdateGoldText()
     {
         if (goldText != null && GameManager.Instance != null)
         {
             int currentCoins = GameManager.Instance.GetPlayerCoinCount();
             goldText.text = $"Gold: {currentCoins}";
+            Debug.Log($"GoldCounter updated. Gold: {currentCoins}");
         }
         else
         {
             Debug.LogError("GoldText reference or GameManager instance is missing!");
         }
     }
+
 }

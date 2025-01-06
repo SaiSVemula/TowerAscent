@@ -111,7 +111,33 @@ public class InventoryCardsRenderer : MonoBehaviour
             // Add CardDisplay component and initialize it
             CardDisplay cardDisplay = newCard.AddComponent<CardDisplay>();
             cardDisplay.Initialize(groupedCard.Card);
+
+            // Add text below the card to show the count
+            if (groupedCard.Count > 1)
+            {
+                AddCountText(newCard, groupedCard.Count);
+            }
         }
+    }
+
+    private void AddCountText(GameObject card, int count)
+    {
+        GameObject countTextObj = new GameObject("CountText", typeof(RectTransform), typeof(Text));
+        countTextObj.transform.SetParent(card.transform, false);
+
+        RectTransform rect = countTextObj.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(150, 30); // Text size
+        rect.anchorMin = new Vector2(0.5f, 0f); // Position below the card
+        rect.anchorMax = new Vector2(0.5f, 0f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(0, -15); // Slightly below the card
+
+        Text text = countTextObj.AddComponent<Text>();
+        text.text = $"x{count}"; // Display count
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.fontSize = 18;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.color = Color.black;
     }
 
     private void ClearInventoryUI()
