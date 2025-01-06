@@ -25,11 +25,6 @@ public class CardDisplay : MonoBehaviour
         {
             cardImage.sprite = CardData.CardSprite; // Use the card's sprite
         }
-
-        //if (cardNameText != null)
-        //{
-        //    cardNameText.text = CardData.Name; // Display the card's name
-        //}
     }
 
     public Card GetCard()
