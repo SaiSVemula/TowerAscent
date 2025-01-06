@@ -40,10 +40,11 @@ public class ObjectiveManager : MonoBehaviour
         {
             string completedObjective = objectives[currentObjectiveIndex];
             currentObjectiveIndex++;
-            UpdateObjectiveDisplay();
             Debug.Log($"Objective '{completedObjective}' marked as complete.");
         }
+        UpdateObjectiveDisplay();
     }
+
 
     public bool IsObjectiveComplete(string objectiveName)
     {
@@ -64,6 +65,11 @@ public class ObjectiveManager : MonoBehaviour
         UpdateObjectiveDisplay();
     }
 
+
+    public string GetCurrentObjective()
+    {
+        return currentObjectiveIndex < objectives.Count ? objectives[currentObjectiveIndex] : null;
+    }
 
 
     // Triggered when the spider is defeated
