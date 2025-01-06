@@ -188,7 +188,6 @@ public class SettingsManager : MonoBehaviour
             SaveManager.SaveAllData();
             
         }
-
     }
 
 

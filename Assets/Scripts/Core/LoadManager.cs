@@ -9,57 +9,6 @@ Last 2 Methods: Partial Reload (For When We Are Going From Settings Back To leve
 */
 public class LoadManager : MonoBehaviour
 {
-    //public static void LoadGameState()
-    //{
-    //    if (PlayerPrefs.HasKey("SavedScene")) // Ensure We Have A Save File (PlayerPref)
-    //    {
-    //        string sceneToLoad = PlayerPrefs.GetString("SavedScene"); // Get The Scene Saved In PlayerPref
-    //        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
-    //        levelLoader.LoadScene("StartPage", sceneToLoad); // Transition To The Scene That We Was On
-
-    //        // Tell GameManager To Fetch And Update Itself
-    //        GameManager.Instance.LoadGameState();
-
-    //        // Co Routine To Ensure Scene Is Loaded
-    //        GameManager.Instance.StartCoroutine(WaitForPlayerInScene());
-    //    }
-    //    else // Throws User Back To StartPage Again
-    //    {
-    //        LevelLoader levelLoader = FindObjectOfType<LevelLoader>();
-    //        levelLoader.LoadScene("StartPage", "StartPage");
-    //        Debug.LogWarning("No saved scene found in PlayerPrefs.");
-    //    }
-    //}
-
-    //private static IEnumerator WaitForPlayerInScene() // Co routine that waits for scene to load and then Updates GameManager and Player
-    //{
-    //    yield return new WaitUntil(() => GameObject.FindWithTag("Player") != null); // Wait Until The Player Object Is Found (So we Can Move It)
-
-    //    Transform CurrentPlayerLocation = GameObject.FindWithTag("Player").transform;
-    //    GameManager gameManager = GameManager.Instance;
-
-    //    // Gets The Previous Location From The PlayerPref Abd Apply it to the Player
-    //    float SavedXCoord = PlayerPrefs.GetFloat("PlayerCoordX", 0);
-    //    float SavedYCoord = PlayerPrefs.GetFloat("PlayerCoordY", 0); // Defaults to 0
-    //    float SavedZCoord = PlayerPrefs.GetFloat("PlayerCoordZ", 0);
-    //    CurrentPlayerLocation.position = new Vector3(SavedXCoord, SavedYCoord, SavedZCoord);
-
-    //    // Get the Fetched Inventory (Has To Be Saved as As String) And Split Up Into A Array
-    //    string fetchedInventory = PlayerPrefs.GetString("PlayerInventory", "");
-    //    string[] fetchedInventoryArray = string.IsNullOrEmpty(fetchedInventory) ? new string[0] : fetchedInventory.Split(',');
-    //    gameManager.UpdatePlayerCards(fetchedInventoryArray);
-
-    //    // Restores The Rest Of The Items Directy
-    //    gameManager.UpdatePlayerHealth(PlayerPrefs.GetInt("CurrentHealth", 100));
-    //    gameManager.UpdatePlayerCoinCount(PlayerPrefs.GetInt("CurrentCoins", 0));
-    //    gameManager.UpdatePlayerName(PlayerPrefs.GetString("PlayerName", "Hero"));
-    //    gameManager.UpdateMinibattleWins(PlayerPrefs.GetInt("MinibattleWins", 0));
-    //    gameManager.UpdateMinibattleLosses(PlayerPrefs.GetInt("MinibattleLosses", 0));
-    //    gameManager.UpdateBigbattleWins(PlayerPrefs.GetInt("BigbattleWins", 0));
-    //    gameManager.UpdateBigbattleLosses(PlayerPrefs.GetInt("BigbattleLosses", 0));
-    //}
-
-    //private static Vector3 PlayerPosition;
     public static void TempLoadGameState()
     {
         string sceneToLoad = GameManager.Instance.PreviousScene; // Get The Scene Saved In PlayerPref
