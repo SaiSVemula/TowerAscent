@@ -5,30 +5,27 @@ public class Shopkeeper : MonoBehaviour
     public GameObject floatingText; // Text to display when the player is near
     public GameObject shopMenu;     // Reference to the shop menu UI
     public float detectionRadius = 10f; // Radius for detecting the player
-    private Transform player;       // Reference to the player's transform
-    private Rigidbody playerRigidbody; // Reference to the player's Rigidbody
+    public Rigidbody playerRigidbody; // Reference to the player's Rigidbody (assign in inspector)
+    private Vector3 savedVelocity; // To save player's velocity when paused
+    private bool wasKinematic; // To save the Rigidbody's kinematic state
+    private bool isShopOpen = false; // Track if the shop is open
 
     protected virtual void Start()
     {
         if (floatingText != null) floatingText.SetActive(false);
         if (shopMenu != null) shopMenu.SetActive(false);
 
-        player = GameObject.FindWithTag("Player")?.transform;
-        if (player != null)
+        if (playerRigidbody == null)
         {
-            playerRigidbody = player.GetComponent<Rigidbody>();
-        }
-        else
-        {
-            Debug.LogError("Player not found. Ensure the Player object has the 'Player' tag.");
+            Debug.LogError("Player Rigidbody not assigned in the inspector.");
         }
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (playerRigidbody == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, playerRigidbody.transform.position);
         if (distanceToPlayer <= detectionRadius)
         {
             HandlePlayerInRange();
@@ -38,37 +35,22 @@ public class Shopkeeper : MonoBehaviour
             HandlePlayerOutOfRange();
         }
 
-        if (shopMenu != null)
+        if (isShopOpen && Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log($"ShopMenu Active: {shopMenu.activeSelf}"); // Check shop menu state
-
-            if (shopMenu.activeSelf && Input.GetKeyDown(KeyCode.Escape))
-            {
-                Debug.Log("ESC detected, attempting to close shop...");
-                CloseShop();
-            }
+            CloseShop();
         }
     }
-
 
     private void HandlePlayerInRange()
     {
         if (floatingText != null && !floatingText.activeSelf)
         {
             floatingText.SetActive(true);
-            Debug.Log("Floating text activated.");
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && !isShopOpen)
         {
-            if (IsPlayerGrounded())
-            {
-                Interact();
-            }
-            else
-            {
-                Debug.Log("Cannot open shop while jumping.");
-            }
+            OpenShop();
         }
     }
 
@@ -77,42 +59,68 @@ public class Shopkeeper : MonoBehaviour
         if (floatingText != null && floatingText.activeSelf)
         {
             floatingText.SetActive(false);
-            Debug.Log("Floating text deactivated.");
         }
     }
 
-    public virtual void Interact()
+    private void OpenShop()
     {
-        if (PanelManager.Instance != null)
+        if (PanelManager.Instance != null && shopMenu != null)
         {
-            PanelManager.Instance.OpenShopMenu(); // Open Shop Menu Panel
-            Time.timeScale = 0f;
+            // Prevent opening Shop if Bag is already open
+            if (PanelManager.Instance.IsPlayerMovementPaused() && !isShopOpen)
+            {
+                Debug.Log("Cannot open Shop while another menu is open.");
+                return;
+            }
+
+            shopMenu.SetActive(true); // Open Shop Menu
+            isShopOpen = true;
+            PanelManager.Instance.PausePlayerMovement();
+            PausePlayerMovement();
+            Time.timeScale = 0f; // Pause the game
             Debug.Log("Shop menu opened.");
         }
     }
 
-    public void CloseShop()
+    private void CloseShop()
     {
-        if (PanelManager.Instance != null)
+        if (PanelManager.Instance != null && shopMenu != null)
         {
-            PanelManager.Instance.CloseAllPanels(); // Close all panels
-            Time.timeScale = 1f;
+            shopMenu.SetActive(false); // Close Shop Menu
+            isShopOpen = false;
+            PanelManager.Instance.CloseAllPanels(); // Notify PanelManager
+            ResumePlayerMovement();
+            Time.timeScale = 1f; // Resume the game
             Debug.Log("Shop menu closed.");
         }
     }
 
-    private bool IsPlayerGrounded()
+
+    private void PausePlayerMovement()
     {
-        if (playerRigidbody == null) return false;
-
-        // Perform a raycast downwards from the player's position to check for the ground
-        Ray ray = new Ray(player.position, Vector3.down);
-        if (Physics.Raycast(ray, out RaycastHit hit, 1.1f)) // Adjust the ray length (1.1f) to match your player's height
+        if (playerRigidbody != null)
         {
-            return true; // Ground detected
-        }
+            savedVelocity = playerRigidbody.velocity; // Save current velocity
+            wasKinematic = playerRigidbody.isKinematic; // Save kinematic state
 
-        return false; // No ground detected
+            playerRigidbody.velocity = Vector3.zero; // Stop the Rigidbody
+            playerRigidbody.isKinematic = true; // Temporarily freeze the Rigidbody
+        }
+        else
+        {
+            Debug.LogWarning("Player Rigidbody not assigned in the inspector.");
+        }
     }
 
+    private void ResumePlayerMovement()
+    {
+        if (playerRigidbody != null)
+        {
+            playerRigidbody.isKinematic = wasKinematic; // Restore original kinematic state
+            if (!wasKinematic) // Only restore velocity if the Rigidbody was not kinematic
+            {
+                playerRigidbody.velocity = savedVelocity; // Restore previous velocity
+            }
+        }
+    }
 }
