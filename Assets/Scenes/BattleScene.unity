@@ -4075,6 +4075,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1438546959266459337, guid: 47302152230212e4d9b2f8063ce5cc22, type: 3}
   m_PrefabInstance: {fileID: 1721353633}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1721353635 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4540229000190281644, guid: 47302152230212e4d9b2f8063ce5cc22, type: 3}
+  m_PrefabInstance: {fileID: 1721353633}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1833279461
 GameObject:
   m_ObjectHideFlags: 0
@@ -4398,9 +4403,9 @@ MonoBehaviour:
   GreenDragonAnimator: {fileID: 1873333583}
   RedDragonAnimator: {fileID: 716400284}
   IceBossAnimator: {fileID: 2120433457}
-  comp1Animator: {fileID: 0}
-  comp2Animator: {fileID: 0}
-  comp3Animator: {fileID: 0}
+  comp1Animator: {fileID: 2108245697}
+  comp2Animator: {fileID: 1721353635}
+  comp3Animator: {fileID: 2085297408}
 --- !u!1 &1880434643
 GameObject:
   m_ObjectHideFlags: 0
@@ -5199,6 +5204,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1438546959266459337, guid: 53847b90628c60a438970975d6981eb4, type: 3}
   m_PrefabInstance: {fileID: 2085297406}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &2085297408 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4540229000190281644, guid: 53847b90628c60a438970975d6981eb4, type: 3}
+  m_PrefabInstance: {fileID: 2085297406}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2108245695
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5263,6 +5273,11 @@ PrefabInstance:
 --- !u!4 &2108245696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1438546959266459337, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+  m_PrefabInstance: {fileID: 2108245695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2108245697 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4540229000190281644, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
   m_PrefabInstance: {fileID: 2108245695}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2120433454 stripped

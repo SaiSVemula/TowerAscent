@@ -14,7 +14,8 @@ public class AudioManager : MonoBehaviour
 
     
     [Header("Audio Clips")]
-    public AudioClip StartScreenANDCutscene;
+    public AudioClip StartScreen;
+    public AudioClip Cutscene;
     public AudioClip Level0;
     public AudioClip Level1;
     public AudioClip Level2;
@@ -65,17 +66,18 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
         SFXSource = gameObject.AddComponent<AudioSource>();
 
+        PlayMusic(StartScreen);
+
         float mastervol = PlayerPrefs.GetFloat("SoundMasterVol", 0.5f);
         float musicvol = PlayerPrefs.GetFloat("SoundMusicVol", 0.5f);
         float sfxvol = PlayerPrefs.GetFloat("SoundSFXVol", 0.5f);
 
     }
 
-
     public void PlayMusic(AudioClip clip)
     {
         musicSource.clip = clip;
-        musicSource.loop = false; // Loop the background music
+        musicSource.loop = true; // Loop the background music
         musicSource.Play();
     }
 
@@ -89,8 +91,8 @@ public class AudioManager : MonoBehaviour
 
         switch (sceneName)
         {
-            case "StartPage":
-                newClip = StartScreenANDCutscene;
+            case "StartCutScene":
+                newClip = Cutscene;
                 break;
             case "Level 0":
                 newClip = Level0;
@@ -108,7 +110,6 @@ public class AudioManager : MonoBehaviour
                 newClip = CardScreen;
                 break;
         }
-        
         
         PlayMusic(newClip);
         Debug.Log("Clip playing" + musicSource.volume);

@@ -99,40 +99,18 @@ public class BattleManager : MonoBehaviour
             playerInstance.transform.rotation = Quaternion.identity;
             Debug.Log("Player instance found and repositioned.");
         }
+
+        // Assign the player's animator to PlayerAnimator
+        PlayerAnimator = playerInstance.GetComponentInChildren<Animator>();
+        if (PlayerAnimator == null)
+        {
+            Debug.LogError("Animator component not found on player instance!");
+        }
+        else
+        {
+            Debug.Log("PlayerAnimator successfully assigned.");
+        }
     }
-
-    //private void SpawnCompanion()
-    //{
-    //    if (companionInstance == null)
-    //    {
-    //        Debug.LogError("Companion prefab is not assigned in the Inspector!");
-    //        return;
-    //    }
-
-    //    CompanionType companionType = GameManager.Instance.GetCompanionType();
-    //    if (companionType == CompanionType.None)
-    //    {
-    //        Debug.Log("No companion selected. Skipping companion spawn.");
-    //        companionInstance.gameObject.SetActive(false);
-    //        return;
-    //    }
-
-    //    CompanionBattle companionBattle = companionInstance.GetComponent<CompanionBattle>();
-    //    if (companionBattle == null)
-    //    {
-    //        Debug.LogError("CompanionPrefab does not have a CompanionBattle component!");
-    //        return;
-    //    }
-
-    //    companionBattle.Initialize(companionType);
-    //    SetupCompanionVisuals(companionType);
-
-    //    companionInstance.transform.position = playerSpawnPoint.position + Vector3.right * 2;
-    //    companionInstance.transform.rotation = Quaternion.identity;
-    //    companionInstance.gameObject.SetActive(true);
-
-    //    Debug.Log($"Spawned companion: {companionType} with {companionBattle.MaxHealth} HP.");
-    //}
 
     private void SpawnCompanion()
     {
@@ -314,7 +292,7 @@ public class BattleManager : MonoBehaviour
     {
         // Trigger player attack animation
         PlayerAnimator.SetTrigger("Attack");
-        AudioManager.instance.PlaySFX(1);
+        AudioManager.instance.PlaySFX(4);
 
         // Short delay for the animation to start
         yield return new WaitForSeconds(0.2f);
@@ -323,6 +301,7 @@ public class BattleManager : MonoBehaviour
         GreenDragonAnimator.SetTrigger("GetHit");
         RedDragonAnimator.SetTrigger("GetHit");
         IceBossAnimator.SetTrigger("GetHit");
+        AudioManager.instance.PlaySFX(3);
 
         // Update effect timers for the player
         playerInstance.DecrementEffectTimers();
@@ -345,7 +324,7 @@ public class BattleManager : MonoBehaviour
         // Wait for animations to complete before transitioning to the enemy's turn
         yield return new WaitForSeconds(1f);
 
-        // Refresh the player’s cards after animations
+        // Refresh the playerï¿½s cards after animations
         battleUI.RenderCards(playerInstance.CardLoadout);
 
         // Proceed to companion and enemy turns
@@ -373,6 +352,12 @@ public class BattleManager : MonoBehaviour
         if (enemyInstance.CurrentHealth <= 0)
         {
             Debug.Log("Enemy defeated by companion!");
+
+            // Play enemy death animations
+            GreenDragonAnimator.SetTrigger("Die");
+            RedDragonAnimator.SetTrigger("Die");
+            IceBossAnimator.SetTrigger("Die");
+
             yield return StartCoroutine(EndBattle(true));
             yield break;
         }
@@ -433,7 +418,7 @@ public class BattleManager : MonoBehaviour
             IceBossAnimator.SetTrigger("Attack");
 
             PlayerAnimator.SetTrigger("GetHit");
-            AudioManager.instance.PlaySFX(1);
+            AudioManager.instance.PlaySFX(3);
         }
 
         // Enemy attacks the companion (if present and alive)
@@ -458,6 +443,7 @@ public class BattleManager : MonoBehaviour
             Debug.Log("Player has been defeated!");
 
             PlayerAnimator.SetTrigger("Die");
+            AudioManager.instance.PlaySFX(2);
 
             GreenDragonAnimator.SetTrigger("Win");
             RedDragonAnimator.SetTrigger("Win");
@@ -527,22 +513,25 @@ public class BattleManager : MonoBehaviour
 
     private void SaveBattleResults(bool playerWon)
     {
-        // Update the player's statistics
-        //if (playerWon)
-        //{
-        //    GameManager.Instance.AddMiniBattleWin(); 
-        //}
-        //else
-        //{
-        //    GameManager.Instance.AddMiniBattleLoss();
-        //}
-
         // Save the player's coins
-        GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.CurrentCoins1 + 10);
+        int difficulty = PlayerPrefs.GetInt("PlayersGameDifficulty", 0);
+        int rewardAmount = 0;
+        switch (difficulty) {
+            case 0:
+                rewardAmount = 10;
+                break;
+            case 1: 
+                rewardAmount = 15;
+                break;
+            case 2:
+                rewardAmount = 25;
+                break;
+        }
 
         // Save the enemy's defeat
         if (playerWon)
         {
+            GameManager.Instance.UpdatePlayerCoinCount(rewardAmount);
             string defeatedEnemy = enemyInstance.EnemyName;
             GameManager.Instance.CompleteObjective($"Defeated {defeatedEnemy}");
         }

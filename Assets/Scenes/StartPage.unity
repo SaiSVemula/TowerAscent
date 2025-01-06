@@ -1478,13 +1478,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicSource: {fileID: 1753527078}
   SFXSource: {fileID: 6736121}
-  StartScreenANDCutscene: {fileID: 8300000, guid: 6201e89dd022b3e49baa219848e9d557, type: 3}
+  StartScreen: {fileID: 8300000, guid: 6201e89dd022b3e49baa219848e9d557, type: 3}
+  Cutscene: {fileID: 8300000, guid: 90a0ae5c3370b2d42a340839e5474c87, type: 3}
   Level0: {fileID: 8300000, guid: 428cc144cdc827a468cca4bf50bea1b5, type: 3}
   Level1: {fileID: 8300000, guid: 72847c989caa29546a19d8ee3505f0dc, type: 3}
   Level2: {fileID: 8300000, guid: 70ff1b5fa16867b41856f01bb3678194, type: 3}
   BossBattle: {fileID: 8300000, guid: 1d826400db8341b41af16bf6e11196aa, type: 3}
   CardScreen: {fileID: 8300000, guid: 90752545bf533734c834184b2879c0d9, type: 3}
-  sfx: []
+  sfx:
+  - {fileID: 8300000, guid: fda305f81cd944a42ac6f44f52aab2b6, type: 3}
+  - {fileID: 8300000, guid: d7ed30cd5a57ce140a835d15fffdbcd3, type: 3}
+  - {fileID: 8300000, guid: 0e396f7cfb51be34aa9ef0cca3869ac8, type: 3}
+  - {fileID: 8300000, guid: 6f87f98863773bd4fa4ca2e4fecbe5ad, type: 3}
+  - {fileID: 8300000, guid: 6a543d522401d9644974f0c04aa56ab2, type: 3}
+  - {fileID: 8300000, guid: 4e8312b9fa250e541bff23143618ad9a, type: 3}
   SavedScene: 
 --- !u!4 &1705564997
 Transform:
