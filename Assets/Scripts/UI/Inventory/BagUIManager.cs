@@ -92,6 +92,9 @@ public class BagUIManager : MonoBehaviour
     {
         if (PanelManager.Instance != null)
         {
+
+            AudioManager.instance.PlaySFX(5);
+            
             isBagOpen = !isBagOpen; // Toggle bag state
 
             if (isBagOpen)
