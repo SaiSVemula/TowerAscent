@@ -40,10 +40,25 @@ public class ObjectiveManager : MonoBehaviour
         {
             string completedObjective = objectives[currentObjectiveIndex];
             currentObjectiveIndex++;
-            Debug.Log($"Objective '{completedObjective}' marked as complete.");
+
+            // Check if the current objective is "Talk to NPC3"
+            if (completedObjective == "Talk to NPC3")
+            {
+                Debug.Log("Objective 'Talk to NPC3' completed. Updating to 'Defeat the final boss!'");
+                if (currentObjectiveIndex < objectives.Count)
+                {
+                    objectives[currentObjectiveIndex] = "Defeat the final boss!";
+                    UpdateObjectiveDisplay();
+                }
+            }
+            else
+            {
+                Debug.Log($"Objective '{completedObjective}' marked as complete.");
+            }
         }
         UpdateObjectiveDisplay();
     }
+
 
 
     public bool IsObjectiveComplete(string objectiveName)

@@ -133,25 +133,28 @@ public class GeneralNPC : MonoBehaviour
         }
     }
 
-private void HandleObjectiveAndConditions()
-{
-    if (objectiveManager != null)
+    private void HandleObjectiveAndConditions()
     {
-        string currentObjective = objectiveManager.GetCurrentObjective();
-
-        // Check for specific NPC interactions
-        if ((currentObjective == "Talk to NPC1" && npcName == "NPC1") ||
-            (currentObjective == "Talk to NPC2" && npcName == "NPC2") ||
-            (currentObjective == "Talk to NPC3" && npcName == "NPC3")) // Add case for NPC3
+        if (objectiveManager != null)
         {
-            objectiveManager.CompleteCurrentObjective();
-            Debug.Log($"Objective '{currentObjective}' completed by talking to {npcName}.");
+            string currentObjective = objectiveManager.GetCurrentObjective();
+
+            if ((currentObjective == "Talk to NPC1" && npcName == "NPC1") ||
+                (currentObjective == "Talk to NPC2" && npcName == "NPC2") ||
+                (currentObjective == "Talk to NPC3" && npcName == "NPC3"))
+            {
+                objectiveManager.CompleteCurrentObjective();
+
+                if (npcName == "NPC3")
+                {
+                    Debug.Log("Talking to NPC3: Updating the next objective to 'Defeat the final boss!'");
+                }
+            }
         }
+
+        CheckAndDisableObjects();
     }
 
-    // Check all conditions, including spider defeat
-    CheckAndDisableObjects();
-}
 
 
 

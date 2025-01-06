@@ -134,7 +134,14 @@ public class GameManager : MonoBehaviour
     public void UpdateSavedScene(string scene) { SavedScene = scene; }
     public void UpdatePlayerLocation(Vector3 location) { PlayerCoord = location; }
     public void UpdatePlayerHealth(int health) { CurrentHealth = health; }
-    public void UpdatePlayerCoinCount(int coins) { CurrentCoins = coins; }
+
+    public void UpdatePlayerCoinCount(int coins)
+    {
+        CurrentCoins = Mathf.Max(0, coins); // Ensures gold never goes below 0
+        Debug.Log($"Player coin count updated. New total: {CurrentCoins}");
+    }
+
+
     public void UpdatePlayerCards(string[] cards) { CardsInInventory = cards; }
     public void UpdatePlayerName(string name) { PlayerName = name; }
     public void UpdateMinibattleWins(int wins) { minibattleWins = wins; }
@@ -309,11 +316,17 @@ public class GameManager : MonoBehaviour
             {
                 objectiveManager.SetObjectives(newObjectives);
                 objectiveManager.SetCurrentObjectiveIndex(startingObjectiveIndex);
+
+                if (newObjectives.Contains("Defeat the final boss!"))
+                {
+                    Debug.Log("Objective for 'Defeat the final boss!' saved.");
+                }
             }
         }
 
-        SavePlayerState(); // Save player state before loading the scene
+        SavePlayerState();
     }
+
 
 
 

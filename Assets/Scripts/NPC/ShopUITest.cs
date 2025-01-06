@@ -60,6 +60,7 @@ public class ShopUITest : MonoBehaviour
             Button button = newCard.AddComponent<Button>();
             button.onClick.AddListener(() => OnCardClicked(newCard));
 
+
             int price = Random.Range(5, 31);
             AddCardText(newCard, "CardPrice", $"Price: {price} Gold", new Vector2(0, -110), 18);
 
@@ -100,12 +101,21 @@ public class ShopUITest : MonoBehaviour
         }
 
         int cardPrice = cardPrices[clickedCard];
+        int playerGold = GameManager.Instance.GetPlayerCoinCount();
+
+        if (playerGold < cardPrice)
+        {
+            ShowMessage($"You don't have enough gold to buy {cardDisplay.CardData.Name}! Price: {cardPrice} Gold.");
+            return;
+        }
 
         if (clickedCard == lastClickedCard)
         {
-            GameManager.Instance.UpdatePlayerCoinCount(GameManager.Instance.GetPlayerCoinCount() - cardPrice);
+            // Deduct gold and add the card to inventory
+            GameManager.Instance.UpdatePlayerCoinCount(playerGold - cardPrice);
             PlayerInventory.Instance.AddCard(cardDisplay.CardData);
 
+            // Update UI
             goldCounter.UpdateGoldText();
             ShowMessage($"You bought {cardDisplay.CardData.Name} for {cardPrice} Gold!");
 
@@ -117,6 +127,7 @@ public class ShopUITest : MonoBehaviour
             lastClickedCard = clickedCard;
         }
     }
+
 
     private void ShowMessage(string text)
     {
