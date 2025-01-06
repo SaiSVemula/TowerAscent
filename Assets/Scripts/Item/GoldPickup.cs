@@ -40,10 +40,27 @@ public class GoldPickup : MonoBehaviour
                 ShowGoldPickupMessage();
             }
 
+            // Hide the gold object immediately
+            foreach (Transform child in transform)
+            {
+                child.gameObject.SetActive(false); // Disable all child objects
+            }
+
             // Delay destruction to allow the coroutine to finish
             StartCoroutine(DestroyAfterDelay());
         }
     }
+
+    private System.Collections.IEnumerator DestroyAfterDelay()
+    {
+        yield return new WaitForSeconds(textDisplayDuration);
+
+        Debug.Log("Gold object destroyed.");
+        Destroy(gameObject); // Destroy the parent GameObject after the delay
+    }
+
+
+
 
     private void ShowGoldPickupMessage()
     {
@@ -73,10 +90,5 @@ public class GoldPickup : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator DestroyAfterDelay()
-    {
-        yield return new WaitForSeconds(textDisplayDuration);
-        Debug.Log("Gold object destroyed.");
-        Destroy(gameObject);
-    }
+
 }

@@ -92,9 +92,16 @@ public class BagUIManager : MonoBehaviour
     {
         if (PanelManager.Instance != null)
         {
+            // Prevent opening Bag if Shop is already open
+            if (PanelManager.Instance.IsPlayerMovementPaused() && !isBagOpen)
+            {
+                Debug.Log("Cannot open Bag while another menu is open.");
+                return;
+            }
 
+            // Play audio feedback when toggling the bag
             AudioManager.instance.PlaySFX(5);
-            
+
             isBagOpen = !isBagOpen; // Toggle bag state
 
             if (isBagOpen)
@@ -113,6 +120,8 @@ public class BagUIManager : MonoBehaviour
             }
         }
     }
+
+
 
     private void PausePlayerMovement()
     {
