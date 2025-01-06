@@ -133,16 +133,27 @@ public class GeneralNPC : MonoBehaviour
         }
     }
 
-    private void HandleObjectiveAndConditions()
+private void HandleObjectiveAndConditions()
+{
+    if (objectiveManager != null)
     {
-        if (objectiveManager != null)
+        string currentObjective = objectiveManager.GetCurrentObjective();
+
+        // Check for specific NPC interactions
+        if ((currentObjective == "Talk to NPC1" && npcName == "NPC1") ||
+            (currentObjective == "Talk to NPC2" && npcName == "NPC2") ||
+            (currentObjective == "Talk to NPC3" && npcName == "NPC3")) // Add case for NPC3
         {
             objectiveManager.CompleteCurrentObjective();
+            Debug.Log($"Objective '{currentObjective}' completed by talking to {npcName}.");
         }
-
-        // Check all conditions, including spider defeat
-        CheckAndDisableObjects();
     }
+
+    // Check all conditions, including spider defeat
+    CheckAndDisableObjects();
+}
+
+
 
     private void CheckAndDisableObjects()
     {
@@ -165,6 +176,7 @@ public class GeneralNPC : MonoBehaviour
             }
         }
     }
+
 
 
     public void HandleBarrierCollision()
