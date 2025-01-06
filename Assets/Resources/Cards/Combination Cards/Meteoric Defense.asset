@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Launches a powerful meteor shower while taking significantly reduced
     damage for one turn.
   type: 3
-  cardSprite: {fileID: 21300000, guid: 300859bf685d212468b5ebc54e95a957, type: 3}
+  cardSprite: {fileID: 21300000, guid: 6bce997928c2e3b42a12ad000ad8cd19, type: 3}
   subCards:
   - {fileID: 11400000, guid: 5769e46a3d06dea468ffe09a87ad0fb9, type: 2}
   - {fileID: 11400000, guid: 35282f693e7cfaa499ccb08dd3f005e6, type: 2}
