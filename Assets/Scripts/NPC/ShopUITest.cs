@@ -60,7 +60,6 @@ public class ShopUITest : MonoBehaviour
             Button button = newCard.AddComponent<Button>();
             button.onClick.AddListener(() => OnCardClicked(newCard));
 
-            AddCardText(newCard, "CardName", card.Name, new Vector2(0, -75), 20);
             int price = Random.Range(5, 31);
             AddCardText(newCard, "CardPrice", $"Price: {price} Gold", new Vector2(0, -110), 18);
 
