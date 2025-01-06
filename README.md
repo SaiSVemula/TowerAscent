@@ -39,6 +39,9 @@
 ### RPG Hero https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/rpg-hero-pbr-hp-polyart-121480 (Assets/CharacterModels/Player (RPGHero))
 ### Horror School Props https://assetstore.unity.com/packages/3d/props/furniture/horror-school-props-112589 (Assets/CharacterModels/HorrorSchoolProps)
 ### Battle Scene Background Asset Low Poly Gladiators Arena https://assetstore.unity.com/packages/3d/environments/fantasy/low-poly-gladiators-arena-167116
+### FREE Low Poly Human - RPG Character (Used for Companions) https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/free-low-poly-human-rpg-character-219979
+### Stylized NPC - Peasant Nolant (DEMO) (Used for npcs) https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/stylized-npc-peasant-nolant-demo-252440
+### Spider polygon (used for monsters) https://assetstore.unity.com/packages/3d/characters/animals/insects/spider-polygon-221108
 
 ### MUSIC
 ### Level 0 - "Teller of the Tales" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/
