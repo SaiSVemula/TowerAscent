@@ -7,8 +7,8 @@ public class PanelManager : MonoBehaviour
     public GameObject shopMenuPanel;    // Reference to ShopMenuPanel
     private string settingsSceneName = "SettingsPage"; // Replace with the exact name of your Settings Scene
 
-    // Singleton instance for global access
-    public static PanelManager Instance;
+    public static PanelManager Instance; // Singleton instance
+    private bool isPlayerMovementPaused = false; // Track if player movement is paused
 
     private void Awake()
     {
@@ -22,12 +22,28 @@ public class PanelManager : MonoBehaviour
         }
     }
 
+    public bool IsPlayerMovementPaused()
+    {
+        return isPlayerMovementPaused;
+    }
+
+    public void PausePlayerMovement()
+    {
+        isPlayerMovementPaused = true;
+    }
+
+    public void ResumePlayerMovement()
+    {
+        isPlayerMovementPaused = false;
+    }
+
     public void OpenInventory()
     {
         CloseAllPanels(); // Close all panels before opening inventory
         if (inventoryPanel != null)
         {
             inventoryPanel.SetActive(true);
+            PausePlayerMovement();
         }
     }
 
@@ -37,6 +53,7 @@ public class PanelManager : MonoBehaviour
         if (shopMenuPanel != null)
         {
             shopMenuPanel.SetActive(true);
+            PausePlayerMovement();
         }
     }
 
@@ -58,6 +75,7 @@ public class PanelManager : MonoBehaviour
             shopMenuPanel.SetActive(false);
             Debug.Log("Shop menu panel closed.");
         }
-    }
 
+        ResumePlayerMovement(); // Resume movement when all panels are closed
+    }
 }

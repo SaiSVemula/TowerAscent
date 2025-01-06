@@ -15,6 +15,12 @@ public class NotesInteraction : MonoBehaviour
     {
         floatingText.SetActive(false); // Hide floating text initially
         noteUI.SetActive(false);      // Hide the note UI initially
+
+        // Ensure the noteText component is not null
+        if (noteText == null)
+        {
+            Debug.LogError("NoteText is not assigned in the Inspector!");
+        }
     }
 
     // What to do when the player is near
@@ -48,16 +54,7 @@ public class NotesInteraction : MonoBehaviour
             noteUI.SetActive(!noteUI.activeSelf);
 
             // Hide floating text when the note UI is active
-            if (noteUI.activeSelf)
-            {
-                floatingText.SetActive(false);
-                // Set the text for the note (example)
-                noteText.text = "This is the content of the note. Replace with your text.";
-            }
-            else
-            {
-                floatingText.SetActive(true);
-            }
+            floatingText.SetActive(!noteUI.activeSelf);
         }
     }
 }
