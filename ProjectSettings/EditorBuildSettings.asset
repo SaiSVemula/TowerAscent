@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/StartPage.unity
+    path: Assets/Scenes/Pages/StartPage.unity
     guid: a9aa0fd333827c64db1fd5ef37d58c4f
   - enabled: 1
     path: Assets/Scenes/CutScenes/StartCutScene.unity
@@ -30,13 +30,13 @@ EditorBuildSettings:
     path: Assets/Scenes/Level 2.unity
     guid: 112132522e48be94cbc0df18eb4f82c2
   - enabled: 1
-    path: Assets/Scenes/SettingsPage.unity
+    path: Assets/Scenes/Pages/SettingsPage.unity
     guid: 670912cd87f22334388b783ddc668733
   - enabled: 1
     path: Assets/Scenes/LoadoutPage.unity
     guid: 237a094e398341641860dbe8a0875844
   - enabled: 1
-    path: Assets/Scenes/EndPage.unity
+    path: Assets/Scenes/Pages/EndPage.unity
     guid: 850b6171144119a438907575524fd9c5
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
