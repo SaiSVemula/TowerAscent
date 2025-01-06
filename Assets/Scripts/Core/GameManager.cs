@@ -84,6 +84,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Updates card inventory to save cards....
+    public void UpdateCardsInInventory()
+    {
+        if (PlayerInventory.Instance != null)
+        {
+            // Fetch owned cards from PlayerInventory and update CardsInInventory
+            var ownedCards = PlayerInventory.Instance.GetOwnedCards();
+            CardsInInventory = ownedCards.Select(card => card.Name).ToArray();
+            Debug.Log($"Updated CardsInInventory: {string.Join(", ", CardsInInventory)}");
+        }
+        else
+        {
+            Debug.LogWarning("PlayerInventory instance is null. Cannot update CardsInInventory.");
+        }
+    }
+
     // Loads player info
     public void LoadPlayerState()
     {
@@ -104,7 +120,7 @@ public class GameManager : MonoBehaviour
     public Vector3 GetPlayerLocation() { return PlayerCoord; }
     public int GetPlayerHealth() { return CurrentHealth; }
     public int GetPlayerCoinCount() { return CurrentCoins; }
-    public string[] GetPlayerCards() { return CardsInInventory; }
+    public string[] GetPlayerCards() { Debug.Log($"{CardsInInventory}"); return CardsInInventory; }
     public List<CompanionCard> GetOwnedCompanions() { return new List<CompanionCard>(ownedCompanions); }
     public string GetPlayerName() { return PlayerName; }
     public int GetMinibattleWins() { return minibattleWins; }
@@ -114,6 +130,7 @@ public class GameManager : MonoBehaviour
 
     // Updaters for single variables
     public void UpdateCurrentScene() { SavedScene = SceneManager.GetActiveScene().name; }
+    public void UpdateSavedScene(string scene) { SavedScene = scene; }
     public void UpdatePlayerLocation(Vector3 location) { PlayerCoord = location; }
     public void UpdatePlayerHealth(int health) { CurrentHealth = health; }
     public void UpdatePlayerCoinCount(int coins) { CurrentCoins = coins; }
@@ -191,7 +208,7 @@ public class GameManager : MonoBehaviour
 
         foreach (string cName in companionNames)
         {
-            CompanionCard loadedCompanion = Resources.Load<CompanionCard>($"Cards/{cName}");
+            CompanionCard loadedCompanion = Resources.Load<CompanionCard>($"Cards/Companion Cards/{cName}");
             if (loadedCompanion != null)
             {
                 ownedCompanions.Add(loadedCompanion);
@@ -206,6 +223,21 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Loaded {ownedCompanions.Count} companions from PlayerPrefs.");
     }
 
+    public void LoadPlayerInventoryFromPrefs()
+    {
+        string serializedInventory = PlayerPrefs.GetString("PlayerInventory", "");
+        Debug.Log($"Player Inventory: {serializedInventory}");
+        if (string.IsNullOrEmpty(serializedInventory))
+        {
+            Debug.Log("No player inventory found in PlayerPrefs.");
+            CardsInInventory = new string[0]; // Initialize as empty array
+            return;
+        }
+
+        CardsInInventory = serializedInventory.Split(',');
+        Debug.Log($"Loaded Player Inventory: {string.Join(", ", CardsInInventory)}");
+    }
+
 
     public void SavePlayerInventoryToPrefs()
     {
@@ -213,32 +245,58 @@ public class GameManager : MonoBehaviour
         {
             string serializedInventory = string.Join(",", CardsInInventory);
             PlayerPrefs.SetString("PlayerInventory", serializedInventory);
+            Debug.Log($"Saved Player Inventory: {serializedInventory}");
         }
         else
         {
             PlayerPrefs.SetString("PlayerInventory", "");
+            Debug.Log("Player inventory is empty or null.");
         }
         PlayerPrefs.Save();
-        Debug.Log("Player inventory saved to PlayerPrefs.");
     }
 
+
     // Modify your LoadGameState to load owned companions plus ensure spiders & mini-battle pool also load
+    //public void LoadGameState()
+    //{
+    //    if (playerInstance != null)
+    //    {
+    //        playerInstance.transform.position = PlayerCoord;
+    //        CurrentHealth = PlayerPrefs.GetInt("CurrentHealth", 100);
+    //        playerInstance.Gold = CurrentCoins;
+    //        playerInstance.Inventory = new List<string>(CardsInInventory);
+    //        playerInstance.PlayerName = PlayerName;
+    //        LoadOwnedCompanionsFromPrefs();
+    //        LoadMiniBattleCardPoolFromPrefs();
+    //        LoadSpiderStates();
+    //        Debug.Log("Game state loaded.");
+    //    }
+    //    hasGameStateLoaded = true;
+    //}
     public void LoadGameState()
     {
         if (playerInstance != null)
         {
+            // Restore player position and core stats
             playerInstance.transform.position = PlayerCoord;
-            CurrentHealth = PlayerPrefs.GetInt("CurrentHealth", 100);
+            playerInstance.CurrentHealth = PlayerPrefs.GetInt("CurrentHealth", 100);
             playerInstance.Gold = CurrentCoins;
-            playerInstance.Inventory = new List<string>(CardsInInventory);
             playerInstance.PlayerName = PlayerName;
+
+            // Load additional game data
             LoadOwnedCompanionsFromPrefs();
             LoadMiniBattleCardPoolFromPrefs();
             LoadSpiderStates();
+            LoadPlayerInventoryFromPrefs(); 
+
+            // Apply inventory cards to the PlayerInventory instance
+            PlayerInventory.Instance.LoadCardsFromGameManager();
+
             Debug.Log("Game state loaded.");
         }
         hasGameStateLoaded = true;
     }
+
 
     // Loads a new scene
     public void LoadScene(string nextScene, List<string> newObjectives = null, int startingObjectiveIndex = 0)

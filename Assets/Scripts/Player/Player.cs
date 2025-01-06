@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     private int currentHealth;
 
 
-    // Inventory (placeholder for future implementation)
+    // Inventory 
     public List<string> Inventory = new List<string>();
 
     // Objectives: Key-value pairs for objective names and their completion status

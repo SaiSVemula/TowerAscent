@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 public enum CompanionType
 {
     None = 0,
@@ -10,7 +9,6 @@ public enum CompanionType
     Companion2,
     Companion3,
 }
-
 public class CompanionBattle : BattleEntity
 {
     public string CompanionName { get; private set; }
