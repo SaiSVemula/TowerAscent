@@ -32,7 +32,22 @@
 ## External Assets
 ###   Low Poly Simple Nature Pack (3D Model Tree Used In First CutScene And First Level) https://assetstore.unity.com/packages/3d/environments/landscapes/low-poly-simple-nature-pack-162153 (Assets/SimpleNaturePack)
 ### Lava Rocks Texture #1 (2D Texture Used In Lava Levels Floor) https://assetstore.unity.com/packages/2d/textures-materials/floors/lava-rocks-texture-1-hand-painted-seamless-tileable-232710 (Assets/Texture_Me)
-## SANDEEP ROHAAN MOHSIN ADD EXTERNAL ASSETS HERE
+### 32 RPG Animations (some idle and attack animations) https://assetstore.unity.com/packages/p/free-32-rpg-animations-215058 (Assets/Animations)
+### Dragon for Boss Monster https://assetstore.unity.com/packages/3d/characters/creatures/dragon-for-boss-monster-hp-79398 (Assets/Animations/DragonAnimations) (Assets/Animations/CharacterModsels/L1 Boss - DragonsHP)
+### Mini Legion Lich PBR HP Polyart https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/mini-legion-lich-pbr-hp-polyart-91497 (assets/CharacterModels/L2 Boss)
+### Various Attitudes https://assetstore.unity.com/packages/3d/animations/various-attitudes-animations-motion-cast-free01-253521 (Assets/Animations/NPCAnimations)
+### RPG Hero https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/rpg-hero-pbr-hp-polyart-121480 (Assets/CharacterModels/Player (RPGHero))
+### Horror School Props https://assetstore.unity.com/packages/3d/props/furniture/horror-school-props-112589 (Assets/CharacterModels/HorrorSchoolProps)
+
+### MUSIC
+### Level 0 - "Teller of the Tales" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/
+### Cutscene - "Long Note Two" Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/
+### Boss - “Mistake the Getaway” Kevin MacLeod (incompetech.com)Licensed under Creative Commons: By Attribution 4.0 Licensehttp://creativecommons.org/licenses/by/4.0/
+### Start Screen - “The tale of the fire” (opengameart.org)
+### Level 1 - “LavaLand” (opengameart.org)
+### Level 2 - “Seven and Eight” (opengameart.org)
+### The Last Encounter (Extended) by Matthew Pablowww.matthewpablo.com
+### All other SFX - https://opengameart.org/ 
 
 ## Player Controls
 ###     WASD Or Arrow Key Controls: Move the player forward, backward, left, and right.
