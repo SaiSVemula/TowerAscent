@@ -32,11 +32,11 @@ public class PlayerMovement : MonoBehaviour
         bool CurrentlyRunning = playerControls.Player.MakePlayerRun.IsPressed(); // is the left shift pressed to indicate running?
         bool JumpPressed = playerControls.Player.MakePlayerJump.triggered; // is space pressed to indicate user wants to jump?
         MakePlayerMove(UsersKeyStroke, CurrentlyRunning);
-        if (JumpPressed) 
+        if (JumpPressed)
         {
             MakePlayerJump();
         }
-        UpdateAnimator(UsersKeyStroke, CurrentlyRunning); 
+        UpdateAnimator(UsersKeyStroke, CurrentlyRunning);
     }
 
     private void MakePlayerMove(Vector2 UsersKeyStroke, bool CurrentlyRunning) // code to move player and apply walk or run speed
@@ -63,12 +63,12 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //Makes a player jump by first checking whether the player is not already jumping (by checking if player is not touching the floor)
-    private void MakePlayerJump() 
+    private void MakePlayerJump()
     {
-        if (PlayerOnTheFloor) 
-        { 
-            PlayerRigidBody.AddForce(Vector3.up * 4.5f, ForceMode.Impulse); 
-            
+        if (PlayerOnTheFloor)
+        {
+            PlayerRigidBody.AddForce(Vector3.up * 4.5f, ForceMode.Impulse);
+
             // Update jump animation
             animator.SetTrigger("Jump");
         }

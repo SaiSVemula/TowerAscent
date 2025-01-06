@@ -62,6 +62,13 @@ public class MiniBattleManager : MonoBehaviour
             cameraMovement.enabled = false;
         }
 
+        // Lock player movement
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            playerMovement.LockMovement(true); // Explicitly lock movement
+        }
+
         // Disable UI and initialize mini-battle
         DisableUI();
         miniBattleUI.SetActive(true);
@@ -77,6 +84,7 @@ public class MiniBattleManager : MonoBehaviour
         UpdateTurnIndicator();
     }
 
+
     public void EndMiniBattle(bool playerWon)
     {
         Debug.Log($"Ending mini-battle. Player won: {playerWon}");
@@ -84,17 +92,17 @@ public class MiniBattleManager : MonoBehaviour
         // Restore the camera to its original position
         StartCoroutine(SmoothTransitionToPosition(originalCameraPosition, originalCameraRotation));
 
-        // Disable player camera controls
+        // Re-enable player camera controls
         if (cameraMovement != null)
         {
             cameraMovement.enabled = true;
         }
 
-        // Re-enable player movement
+        // Unlock player movement
         PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
         if (playerMovement != null)
         {
-            playerMovement.enabled = true;
+            playerMovement.LockMovement(false); // Explicitly unlock movement
         }
 
         // Re-enable UI
@@ -111,7 +119,11 @@ public class MiniBattleManager : MonoBehaviour
         {
             GameManager.Instance.AddMiniBattleLoss();
         }
+
+        Debug.Log("Mini-battle ended. Player movement unlocked.");
     }
+
+
 
     private void SaveOriginalCameraState()
     {
